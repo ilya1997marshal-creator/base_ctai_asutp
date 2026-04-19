@@ -9,7 +9,7 @@
 
   let data = null;
 
-  // Переключение темы
+  // Логика переключения темы
   function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -43,14 +43,14 @@
     }
   }
 
-  // Отображение контента выбранного блока
+  // Наполнение модального окна контентом
   function showBlock(category) {
     const items = (data.items || []).filter(i => i.categoryId === category.id);
     modalTitle.textContent = category.title;
     modalList.innerHTML = "";
 
     if (items.length === 0) {
-      modalList.innerHTML = `<li style="color:var(--text-muted); text-align:center; padding: 30px 0;">Файлы скоро появятся</li>`;
+      modalList.innerHTML = `<li style="color:var(--text-muted); text-align:center; padding: 30px 0; font-weight:500;">Материалы еще не добавлены</li>`;
     } else {
       items.forEach(item => {
         const li = document.createElement("li");
@@ -68,7 +68,7 @@
     openModal();
   }
 
-  // Генерация кнопок на главной
+  // Создание кнопок блоков на главной странице
   function renderTabs() {
     if (!tabsEl || !data) return;
     tabsEl.innerHTML = "";
@@ -81,16 +81,15 @@
     });
   }
 
-  // Слушатели закрытия модалки
   if (modalBackdrop) modalBackdrop.onclick = closeModal;
   if (modalClose) modalClose.onclick = closeModal;
 
-  // Загрузка данных из JSON
+  // Первичная загрузка данных
   fetch("data/instructions.json")
     .then(r => r.json())
     .then(json => {
       data = json;
       renderTabs();
     })
-    .catch(err => console.error("Ошибка загрузки:", err));
+    .catch(err => console.error("Ошибка при загрузке данных:", err));
 })();

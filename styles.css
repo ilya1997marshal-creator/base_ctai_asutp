@@ -1,5 +1,6 @@
 :root[data-theme="light"] {
   --bg-color: #7ca8d2;
+  --bg-pattern: #f0f3f6; /* Светло-серый паттерн для светлой темы */
   --panel-color: rgba(255, 255, 255, 0.95);
   --primary-color: #24a1de;
   --text-main: #222222;
@@ -18,6 +19,7 @@
 
 :root[data-theme="dark"] {
   --bg-color: #0e1621;
+  --bg-pattern: #070a0e; /* Глубокий черный паттерн для темной темы */
   --panel-color: #17212b;
   --primary-color: #2b5278;
   --text-main: #ffffff;
@@ -44,11 +46,12 @@ body {
   font-family: "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: var(--bg-color);
   
-  /* НОВЫЙ ДЕТАЛИЗИРОВАННЫЙ ФОН: АВТОМАТИКА АСУ ТП (SVG) */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%' viewBox='0 0 800 1200' preserveAspectRatio='xMidYMid slice'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3C!-- ПЛК Siemens-style --%3E%3Crect x='100' y='100' width='150' height='200' rx='5'/%3E%3Crect x='110' y='120' width='30' height='10' rx='2'/%3E%3Crect x='110' y='140' width='30' height='10' rx='2'/%3E%3Crect x='110' y='160' width='30' height='10' rx='2'/%3E%3Crect x='160' y='120' width='70' height='160' rx='2'/%3E%3C!-- Датчик давления --%3E%3Ccircle cx='400' cy='300' r='60'/%3E%3Crect x='390' y='360' width='20' height='100'/%3E%3Cpath d='M360 460h80l-40 40z'/%3E%3Cpath d='M360 300a40 40 0 0 1 80 0' stroke='%23ffffff' stroke-width='4' fill='none'/%3E%3Crect x='398' y='270' width='4' height='40' transform='rotate(45 400 300)'/%3E%3C!-- Микросхема --%3E%3Crect x='600' y='150' width='120' height='120' rx='10'/%3E%3Crect x='580' y='170' width='20' height='10'/%3E%3Crect x='580' y='190' width='20' height='10'/%3E%3Crect x='580' y='210' width='20' height='10'/%3E%3Crect x='580' y='230' width='20' height='10'/%3E%3Crect x='720' y='170' width='20' height='10'/%3E%3Crect x='720' y='190' width='20' height='10'/%3E%3Crect x='720' y='210' width='20' height='10'/%3E%3Crect x='720' y='230' width='20' height='10'/%3E%3Crect x='620' y='130' width='10' height='20'/%3E%3Crect x='640' y='130' width='10' height='20'/%3E%3Crect x='660' y='130' width='10' height='20'/%3E%3Crect x='680' y='130' width='10' height='20'/%3E%3Crect x='620' y='270' width='10' height='20'/%3E%3Crect x='640' y='270' width='10' height='20'/%3E%3Crect x='660' y='270' width='10' height='20'/%3E%3Crect x='680' y='270' width='10' height='20'/%3E%3C!-- Компоненты автоматики --%3E%3Crect x='50' y='500' width='80' height='120' rx='5'/%3E%3Ccircle cx='90' cy='540' r='15'/%3E%3Crect x='70' y='570' width='40' height='40'/%3E%3Crect x='200' y='550' width='120' height='80' rx='5'/%3E%3Crect x='220' y='570' width='80' height='10'/%3E%3Crect x='220' y='590' width='80' height='10'/%3E%3Crect x='450' y='600' width='250' height='100' rx='5'/%3E%3Crect x='470' y='620' width='10' height='60'/%3E%3Crect x='490' y='620' width='10' height='60'/%3E%3Crect x='510' y='620' width='10' height='60'/%3E%3Crect x='530' y='620' width='10' height='60'/%3E%3Crect x='550' y='620' width='10' height='60'/%3E%3C!-- Печатная плата --%3E%3Crect x='150' y='750' width='500' height='300' rx='10'/%3E%3Ccircle cx='200' cy='800' r='10'/%3E%3Ccircle cx='200' cy='850' r='10'/%3E%3Ccircle cx='200' cy='900' r='10'/%3E%3Ccircle cx='200' cy='950' r='10'/%3E%3Ccircle cx='600' cy='800' r='10'/%3E%3Ccircle cx='600' cy='850' r='10'/%3E%3Ccircle cx='600' cy='900' r='10'/%3E%3Ccircle cx='600' cy='950' r='10'/%3E%3Cpath d='M200 800h400M200 850h400M200 900h400M200 950h400' stroke='%23ffffff' stroke-width='2' fill='none'/%3E%3Crect x='300' y='820' width='200' height='160' rx='5'/%3E%3C/g%3E%3C/svg%3E");
+  /* НОВЫЙ ТОНКИЙ, БЕСШОВНЫЙ ПАТТЕРН ЭЛЕКТРОНИКИ И АВТОМАТИКИ (SVG) */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' stroke-width='0.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='%23ffffff' fill='none'%3E%3Cg fill-opacity='0.03' id='g'%3E%3Cpath d='M10 10h5a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2zM30 10l5 5h10l5-5h5a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-30a2 2 0 0 1-2-2v-10a2 2 0 0 1 2-2zM10 30l5 5h10M10 30h2l5 5h10M10 40a5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5zM10 60h2v5h-2zM10 70l10 10v-10zM10 80h10l-5 5z'/%3E%3Cpath d='M30 30h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2v-10a2 2 0 0 1 2-2zM50 30h2v5h-2zM60 30l10 10v-10zM70 30h10l-5 5zM30 50h10v2a3 3 0 0 1-3 3h-4a3 3 0 0 1-3-3v-2zM30 60a5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5zM50 60h2v5h-2z'/%3E%3Cpath d='M60 50h10v2a3 3 0 0 1-3 3h-4a3 3 0 0 1-3-3v-2zM70 60a5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5zM30 80l5 5h10l5-5h5a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-30a2 2 0 0 1-2-2v-10a2 2 0 0 1 2-2zM60 80a5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5zM70 80h2v5h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   background-attachment: fixed;
-  background-position: center;
-  background-size: cover; /* Изображение растягивается на весь экран */
+  background-position: top left;
+  background-repeat: repeat; /* Повторяется бесшовно */
+  background-size: 80px 80px; /* Уменьшенный, аккуратный масштаб */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
