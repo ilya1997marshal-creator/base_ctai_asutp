@@ -12,20 +12,22 @@
   
   <title>База данных ЦТАИ АСУ ТП</title>
   
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=32">
-  <link rel="icon" type="image/png" href="apple-touch-icon.png?v=32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=33">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png?v=33">
   
-  <link rel="stylesheet" href="styles.css?v=32">
+  <link rel="stylesheet" href="styles.css?v=33">
   
   <script>
+    // Мгновенная установка темы до отрисовки
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
 
+    // Регистрация Service Worker для работы оффлайн
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('SW registered'))
-          .catch(err => console.log('SW error', err));
+          .then(reg => console.log('SW зарегистрирован'))
+          .catch(err => console.log('Ошибка SW', err));
       });
     }
   </script>
@@ -48,7 +50,8 @@
     <main class="main">
       <section id="screen-main" class="tab-content active">
         <div class="panel">
-          <nav class="blocks" id="tabs-main"></nav>
+          <nav class="blocks" id="tabs-main">
+            </nav>
         </div>
       </section>
 
@@ -80,7 +83,7 @@
           <div class="empty-state">
             <span class="empty-icon">🎓</span>
             <h3>Обучение</h3>
-            <p>Раздел в разработке.</p>
+            <p>Раздел находится в разработке.</p>
           </div>
         </div>
       </section>
@@ -92,11 +95,12 @@
             <h3>Поддержка</h3>
             <p class="support-text">Выберите удобный способ связи с разработчиком:</p>
             <div class="support-buttons">
-               <button type="button" class="action-main-btn support-choice-btn" onclick="window.location.href='mailto:i.rygih@mail.ru?subject=База ЦТАИ'">
-                 📧 Почта (Mail / Gmail)
+               <button type="button" class="action-main-btn" onclick="window.location.href='mailto:i.rygih@mail.ru?subject=База ЦТАИ'">
+                 📧 Написать на почту
                </button>
-               <button type="button" class="action-main-btn support-choice-btn" style="background: #0088cc; margin-top: 12px;" onclick="window.open('https://t.me/IlyaMar5hal', '_blank')">
-                 ✈️ Telegram
+               
+               <button type="button" class="action-main-btn" style="background: #0088cc; margin-top: 15px;" onclick="window.open('https://t.me/IlyaMar5hal', '_blank')">
+                 ✈️ Написать в Telegram
                </button>
             </div>
           </div>
@@ -134,6 +138,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=32"></script>
+  <script src="app.js?v=33"></script>
 </body>
 </html>
