@@ -3,29 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="База ЦТАИ">
-  
   <link rel="manifest" href="manifest.json">
-  
   <title>База данных ЦТАИ АСУ ТП</title>
-  
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=35">
-  <link rel="icon" type="image/png" href="apple-touch-icon.png?v=35">
-  
-  <link rel="stylesheet" href="styles.css?v=35">
-  
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css?v=37">
   <script>
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
-
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('SW registered'))
-          .catch(err => console.log('SW error', err));
+        navigator.serviceWorker.register('./sw.js').then(reg => console.log('SW ok')).catch(err => console.log('SW error', err));
       });
     }
   </script>
@@ -48,8 +39,7 @@
     <main class="main">
       <section id="screen-main" class="tab-content active">
         <div class="panel">
-          <nav class="blocks" id="tabs-main">
-            </nav>
+          <nav class="blocks" id="tabs-main"></nav>
         </div>
       </section>
 
@@ -59,28 +49,20 @@
             <button type="button" id="showScheduleBtn" class="action-main-btn">📅 График работы</button>
             <button type="button" id="showEduScheduleBtn" class="action-main-btn" style="margin-top: 15px; background: #34c759;">🎓 График обучений</button>
           </div>
-          
           <div id="schedule-container" hidden>
             <div class="table-header-row">
               <button type="button" id="backToCharts" class="back-btn">← Назад</button>
-              <span id="tableMonthTitle" class="table-month-title">Апрель 2026</span>
+              <span id="tableMonthTitle" class="table-month-title"></span>
             </div>
-            <div class="table-wrapper">
-              <table id="work-schedule"></table>
-            </div>
-            <div id="schedule-legend" class="table-legend">
-              </div>
+            <div class="table-wrapper"><table id="work-schedule"></table></div>
+            <div id="schedule-legend" class="table-legend"></div>
           </div>
         </div>
       </section>
 
       <section id="screen-edu" class="tab-content">
         <div class="panel">
-          <div class="empty-state">
-            <span class="empty-icon">🎓</span>
-            <h3>Обучение</h3>
-            <p>Раздел в разработке.</p>
-          </div>
+          <div class="empty-state"><span class="empty-icon">🎓</span><h3>Обучение</h3><p>Раздел в разработке.</p></div>
         </div>
       </section>
 
@@ -89,14 +71,10 @@
           <div class="support-page">
             <span class="support-large-icon">✉️</span>
             <h3>Поддержка</h3>
-            <p class="support-text">Выберите удобный способ связи с разработчиком:</p>
+            <p class="support-text">Выберите удобный способ связи:</p>
             <div class="support-buttons">
-               <button type="button" class="action-main-btn" onclick="window.location.href='mailto:i.rygih@mail.ru?subject=База ЦТАИ'">
-                 📧 Написать на почту
-               </button>
-               <button type="button" class="action-main-btn" style="background: #0088cc; margin-top: 15px;" onclick="window.open('https://t.me/IlyaMar5hal', '_blank')">
-                 ✈️ Написать в Telegram
-               </button>
+               <button type="button" class="action-main-btn" onclick="window.location.href='mailto:i.rygih@mail.ru'">📧 Почта</button>
+               <button type="button" class="action-main-btn" style="background: #0088cc; margin-top: 15px;" onclick="window.open('https://t.me/IlyaMar5hal', '_blank')">✈️ Telegram</button>
             </div>
           </div>
         </div>
@@ -104,18 +82,10 @@
     </main>
 
     <nav class="bottom-nav">
-      <button class="nav-item active" data-screen="main">
-        <span class="nav-icon">🏠</span><span class="nav-label">Главная</span>
-      </button>
-      <button class="nav-item" data-screen="charts">
-        <span class="nav-icon">📈</span><span class="nav-label">Графики</span>
-      </button>
-      <button class="nav-item" data-screen="edu">
-        <span class="nav-icon">🎓</span><span class="nav-label">Тесты</span>
-      </button>
-      <button class="nav-item" data-screen="support">
-        <span class="nav-icon">💬</span><span class="nav-label">Помощь</span>
-      </button>
+      <button class="nav-item active" data-screen="main"><span class="nav-icon">🏠</span><span class="nav-label">Главная</span></button>
+      <button class="nav-item" data-screen="charts"><span class="nav-icon">📈</span><span class="nav-label">Графики</span></button>
+      <button class="nav-item" data-screen="edu"><span class="nav-icon">🎓</span><span class="nav-label">Тесты</span></button>
+      <button class="nav-item" data-screen="support"><span class="nav-icon">💬</span><span class="nav-label">Помощь</span></button>
     </nav>
   </div>
 
@@ -123,16 +93,11 @@
     <div class="modal-backdrop" id="modalBackdrop"></div>
     <div class="modal-content">
       <div class="modal-head">
-        <div class="phantom" style="width: 24px;"></div>
-        <h2 id="modalTitle" class="modal-title"></h2>
-        <button type="button" class="modal-close" id="modalClose">✕</button>
+        <div style="width:24px"></div><h2 id="modalTitle" class="modal-title"></h2><button type="button" class="modal-close" id="modalClose">✕</button>
       </div>
-      <div class="modal-body">
-        <ul id="modalList" class="modal-list"></ul>
-      </div>
+      <div class="modal-body"><ul id="modalList" class="modal-list"></ul></div>
     </div>
   </div>
-
-  <script src="app.js?v=35"></script>
+  <script src="app.js?v=37"></script>
 </body>
 </html>
