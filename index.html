@@ -8,16 +8,27 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="База ЦТАИ">
   
+  <link rel="manifest" href="manifest.json">
+  
   <title>База данных ЦТАИ АСУ ТП</title>
   
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=26">
-  <link rel="icon" type="image/png" href="apple-touch-icon.png?v=26">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=27">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png?v=27">
   
-  <link rel="stylesheet" href="styles.css?v=26">
+  <link rel="stylesheet" href="styles.css?v=27">
   
   <script>
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // Регистрация Service Worker для работы офлайн
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW registered'))
+          .catch(err => console.log('SW error', err));
+      });
+    }
   </script>
 </head>
 <body>
@@ -114,6 +125,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=26"></script>
+  <script src="app.js?v=27"></script>
 </body>
 </html>
