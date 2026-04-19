@@ -1,120 +1,93 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="База ЦТАИ">
-    <title>База данных ЦТАИ АСУ ТП</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="stylesheet" href="styles.css?v=45">
-    <script>
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=45').catch(e => console.error(e));
-            });
-        }
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="База ЦТАИ">
+  <link rel="manifest" href="manifest.json">
+  <title>База данных ЦТАИ АСУ ТП</title>
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css?v=41">
+  <script>
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
 </head>
 <body>
-    <div class="bg-layer"></div>
+  <div class="app">
+    <header class="header">
+      <div class="header-top">
+        <button type="button" id="themeToggle" class="theme-toggle">
+          <span class="sun-icon">☀️</span>
+          <span class="moon-icon">🌙</span>
+        </button>
+      </div>
+      <h1 class="title">База данных</h1>
+      <p class="subtitle">ЦТАИ АСУ ТП</p>
+    </header>
 
-    <div class="app">
-        <header class="header">
-            <div class="header-top">
-                <button type="button" id="themeToggle" class="theme-toggle">
-                    <span class="sun-icon">☀️</span>
-                    <span class="moon-icon">🌙</span>
-                </button>
-            </div>
-            <h1 class="title">База данных</h1>
-            <p class="subtitle">ЦТАИ АСУ ТП</p>
-        </header>
-
-        <main class="main">
-            <section id="screen-main" class="tab-content active">
-                <div class="panel">
-                    <div class="blocks" id="blocksContainer"></div>
-                </div>
-            </section>
-
-            <section id="screen-charts" class="tab-content">
-                <div class="panel">
-                    <div id="charts-init">
-                        <button type="button" id="showScheduleBtn" class="action-main-btn">📅 График работы</button>
-                    </div>
-                    <div id="schedule-container" hidden>
-                        <div class="table-header-row">
-                            <button type="button" id="backToCharts" class="back-btn">← Назад</button>
-                            <span id="tableMonthTitle" class="table-month-title"></span>
-                        </div>
-                        <div class="table-wrapper">
-                            <table id="work-schedule"></table>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="screen-edu" class="tab-content">
-                <div class="panel">
-                    <div class="empty-state">
-                        <span class="empty-icon">🎓</span>
-                        <h3>Обучение</h3>
-                        <p>Раздел скоро появится.</p>
-                    </div>
-                </div>
-            </section>
-
-            <section id="screen-support" class="tab-content">
-                <div class="panel">
-                    <div class="support-page">
-                        <span class="support-large-icon">✉️</span>
-                        <h3>Поддержка</h3>
-                        <button type="button" class="action-main-btn" style="margin-top:20px;" onclick="window.location.href='mailto:i.rygih@mail.ru'">📧 Почта</button>
-                        <button type="button" class="action-main-btn" style="background: #0088cc; margin-top: 15px;" onclick="window.open('https://t.me/IlyaMar5hal', '_blank')">✈️ Telegram</button>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <nav class="bottom-nav">
-            <button class="nav-item active" data-screen="main">
-                <span class="nav-icon">🏠</span>
-                <span class="nav-label">Главная</span>
-            </button>
-            <button class="nav-item" data-screen="charts">
-                <span class="nav-icon">📈</span>
-                <span class="nav-label">Графики</span>
-            </button>
-            <button class="nav-item" data-screen="edu">
-                <span class="nav-icon">🎓</span>
-                <span class="nav-label">Тесты</span>
-            </button>
-            <button class="nav-item" data-screen="support">
-                <span class="nav-icon">💬</span>
-                <span class="nav-label">Помощь</span>
-            </button>
-        </nav>
-    </div>
-
-    <div id="modal" class="modal" hidden>
-        <div class="modal-backdrop" id="modalBackdrop"></div>
-        <div class="modal-content">
-            <div class="modal-head">
-                <h2 id="modalTitle"></h2>
-                <button type="button" class="modal-close" id="modalClose">✕</button>
-            </div>
-            <div class="modal-body">
-                <ul id="modalList" class="modal-list"></ul>
-            </div>
+    <main class="main">
+      <section id="screen-main" class="tab-content active">
+        <div class="panel">
+          <nav class="blocks" id="tabs-main"></nav>
         </div>
-    </div>
+      </section>
 
-    <script src="app.js?v=45"></script>
+      <section id="screen-charts" class="tab-content">
+        <div class="panel">
+          <div id="charts-init">
+            <button type="button" id="showScheduleBtn" class="action-main-btn">📅 График работы</button>
+          </div>
+          <div id="schedule-container" hidden>
+            <div class="table-header-row">
+              <button type="button" id="backToCharts" class="back-btn">← Назад</button>
+              <span id="tableMonthTitle" class="table-month-title"></span>
+            </div>
+            <div class="table-wrapper">
+              <table id="work-schedule"></table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-edu" class="tab-content">
+        <div class="panel">
+          <div class="empty-state"><h3>🎓 Обучение</h3><p>Скоро здесь появятся тесты.</p></div>
+        </div>
+      </section>
+
+      <section id="screen-support" class="tab-content">
+        <div class="panel">
+          <div class="support-page">
+            <h3>✉️ Поддержка</h3>
+            <button class="action-main-btn" style="margin-top:20px;" onclick="window.location.href='mailto:i.rygih@mail.ru'">Написать на почту</button>
+            <button class="action-main-btn" style="background:#0088cc; margin-top:10px;" onclick="window.open('https://t.me/IlyaMar5hal', '_blank')">Telegram</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-screen="main"><span class="nav-icon">🏠</span><span class="nav-label">Главная</span></button>
+      <button class="nav-item" data-screen="charts"><span class="nav-icon">📈</span><span class="nav-label">Графики</span></button>
+      <button class="nav-item" data-screen="edu"><span class="nav-icon">🎓</span><span class="nav-label">Тесты</span></button>
+      <button class="nav-item" data-screen="support"><span class="nav-icon">💬</span><span class="nav-label">Помощь</span></button>
+    </nav>
+  </div>
+
+  <div id="modal" class="modal" hidden>
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-content">
+      <div class="modal-head">
+        <h2 id="modalTitle"></h2>
+        <button id="modalClose" class="modal-close">✕</button>
+      </div>
+      <div class="modal-body"><ul id="modalList" class="modal-list"></ul></div>
+    </div>
+  </div>
+
+  <script src="app.js?v=41"></script>
 </body>
 </html>
