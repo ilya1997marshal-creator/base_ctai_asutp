@@ -2,20 +2,19 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="База ЦТАИ">
   
   <title>База данных ЦТАИ АСУТП</title>
   
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
-  <link rel="icon" type="image/png" href="apple-touch-icon.png?v=3">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=5">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png?v=5">
   
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=5">
   <script>
-    // Мгновенная установка темы до рендеринга страницы
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
   </script>
@@ -37,7 +36,7 @@
 
     <main class="main">
       <section class="panel">
-        <h2 class="panel-title">Блоки</h2>
+        <h2 class="panel-title">Доступные блоки</h2>
         <nav class="blocks" id="tabs"></nav>
       </section>
     </main>
@@ -55,6 +54,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

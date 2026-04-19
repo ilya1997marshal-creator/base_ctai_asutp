@@ -9,12 +9,19 @@
 
   let data = null;
 
-  // Логика темы
+  // Управление темой с сохранением
   function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
+    
+    // Плавная смена мета-цвета для статус-бара
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', newTheme === 'dark' ? '#0e1621' : '#7ca8d2');
+    }
   }
 
   if (themeToggle) themeToggle.onclick = toggleTheme;
@@ -31,8 +38,8 @@
 
   function openPdf(url) {
     const pdfAbsolute = new URL(url, window.location.href).href;
-    const ua = navigator.userAgent;
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(ua) || (navigator.maxTouchPoints > 0 && window.matchMedia("(max-width: 900px)").matches);
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || 
+                     (navigator.maxTouchPoints > 0 && window.matchMedia("(max-width: 900px)").matches);
 
     if (isMobile) {
       const googleViewerUrl = "https://docs.google.com/viewer?url=" + encodeURIComponent(pdfAbsolute);
@@ -48,7 +55,7 @@
     modalList.innerHTML = "";
 
     if (items.length === 0) {
-      modalList.innerHTML = "<li style='color:var(--text-muted)'>Файлы еще не добавлены</li>";
+      modalList.innerHTML = `<li style="color:var(--text-muted); text-align:center; padding: 40px 0;">Файлы будут добавлены позже</li>`;
     } else {
       items.forEach(item => {
         const li = document.createElement("li");
@@ -87,5 +94,5 @@
       data = json;
       renderTabs();
     })
-    .catch(err => console.error("Ошибка загрузки:", err));
+    .catch(err => console.error("Ошибка:", err));
 })();
