@@ -14,6 +14,7 @@
 
   let data = null;
 
+  // Функция для открытия ссылки в новой вкладке (надежный метод для мобильных)
   function openInNewTab(href) {
     const a = document.createElement("a");
     a.href = href;
@@ -37,22 +38,26 @@
 
   function openPdfViewer(url, title) {
     if (!pdfFrame || !pdfViewer) return;
+    
+    // Формируем абсолютные пути для корректной работы PDF.js
     const pdfAbsolute = new URL(url, window.location.href).href;
     const viewerUrl = new URL("pdfjs/web/viewer.html", window.location.href);
     viewerUrl.searchParams.set("file", pdfAbsolute);
 
     pdfTitle.textContent = title || "Документ";
-    pdfOpenSafari.href = viewerUrl.href;
+    if (pdfOpenSafari) pdfOpenSafari.href = viewerUrl.href;
 
-    const isPhone =
-      navigator.maxTouchPoints > 0 &&
-      window.matchMedia("(max-width: 900px)").matches;
+    // ОПРЕДЕЛЕНИЕ МОБИЛЬНОГО УСТРОЙСТВА (Android, iPhone, iPad и т.д.)
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+                     || (navigator.maxTouchPoints > 0 && window.matchMedia("(max-width: 900px)").matches);
 
-    if (isPhone) {
+    if (isMobile) {
+      // На Android и iOS открываем просмотрщик в новой вкладке браузера
       openInNewTab(viewerUrl.href);
       return;
     }
 
+    // На компьютерах открываем во встроенном фрейме поверх страницы
     pdfFrame.src = viewerUrl.href;
     pdfViewer.hidden = false;
     document.body.style.overflow = "hidden";
@@ -98,6 +103,7 @@
   }
 
   function renderTabs() {
+    if (!tabsEl) return;
     tabsEl.innerHTML = "";
     data.categories.forEach(function (cat) {
       const btn = document.createElement("button");
@@ -110,16 +116,19 @@
     });
   }
 
-  modalBackdrop.addEventListener("click", closeModal);
-  modalClose.addEventListener("click", closeModal);
+  // Обработчики событий
+  if (modalBackdrop) modalBackdrop.addEventListener("click", closeModal);
+  if (modalClose) modalClose.addEventListener("click", closeModal);
   if (pdfClose) pdfClose.addEventListener("click", closePdfViewer);
 
   if (pdfOpenSafari) {
     pdfOpenSafari.addEventListener("click", function () {
-      setTimeout(closePdfViewer, 50);
+      // Небольшая задержка перед закрытием вьюера, чтобы ссылка успела сработать
+      setTimeout(closePdfViewer, 100);
     });
   }
 
+  // Закрытие по кнопке Escape
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Escape") return;
     if (pdfViewer && !pdfViewer.hidden) {
@@ -130,6 +139,7 @@
     if (modal && !modal.hidden) closeModal();
   });
 
+  // Загрузка данных
   fetch("data/instructions.json")
     .then(function (r) {
       if (!r.ok) throw new Error("Не удалось загрузить data/instructions.json");
@@ -141,7 +151,9 @@
     })
     .catch(function (err) {
       console.error(err);
-      tabsEl.innerHTML =
-        "<p style='padding:1rem;color:#b91c1c'>Ошибка загрузки данных. Откройте сайт через сервер (Live Server) или проверьте путь.</p>";
+      if (tabsEl) {
+        tabsEl.innerHTML =
+          "<p style='padding:1rem;color:#b91c1c'>Ошибка загрузки данных. Убедитесь, что файл data/instructions.json существует и формат JSON корректен.</p>";
+      }
     });
 })();
