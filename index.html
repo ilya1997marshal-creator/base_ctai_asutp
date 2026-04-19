@@ -12,22 +12,20 @@
   
   <title>База данных ЦТАИ АСУ ТП</title>
   
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=33">
-  <link rel="icon" type="image/png" href="apple-touch-icon.png?v=33">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=35">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png?v=35">
   
-  <link rel="stylesheet" href="styles.css?v=33">
+  <link rel="stylesheet" href="styles.css?v=35">
   
   <script>
-    // Мгновенная установка темы до отрисовки
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
 
-    // Регистрация Service Worker для работы оффлайн
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('SW зарегистрирован'))
-          .catch(err => console.log('Ошибка SW', err));
+          .then(reg => console.log('SW registered'))
+          .catch(err => console.log('SW error', err));
       });
     }
   </script>
@@ -58,22 +56,20 @@
       <section id="screen-charts" class="tab-content">
         <div class="panel">
           <div id="charts-init">
-            <button type="button" id="showScheduleBtn" class="action-main-btn">График работы</button>
+            <button type="button" id="showScheduleBtn" class="action-main-btn">📅 График работы</button>
+            <button type="button" id="showEduScheduleBtn" class="action-main-btn" style="margin-top: 15px; background: #34c759;">🎓 График обучений</button>
           </div>
           
           <div id="schedule-container" hidden>
             <div class="table-header-row">
               <button type="button" id="backToCharts" class="back-btn">← Назад</button>
-              <span class="table-month-title">Апрель 2026</span>
+              <span id="tableMonthTitle" class="table-month-title">Апрель 2026</span>
             </div>
             <div class="table-wrapper">
               <table id="work-schedule"></table>
             </div>
-            <div class="table-legend">
-              <div class="legend-item"><span class="dot d1219"></span> 08:00 – 20:00</div>
-              <div class="legend-item"><span class="dot d1202"></span> 20:00 – 08:00</div>
-              <div class="legend-item"><span class="dot dotp"></span> Отпуск</div>
-            </div>
+            <div id="schedule-legend" class="table-legend">
+              </div>
           </div>
         </div>
       </section>
@@ -83,7 +79,7 @@
           <div class="empty-state">
             <span class="empty-icon">🎓</span>
             <h3>Обучение</h3>
-            <p>Раздел находится в разработке.</p>
+            <p>Раздел в разработке.</p>
           </div>
         </div>
       </section>
@@ -98,7 +94,6 @@
                <button type="button" class="action-main-btn" onclick="window.location.href='mailto:i.rygih@mail.ru?subject=База ЦТАИ'">
                  📧 Написать на почту
                </button>
-               
                <button type="button" class="action-main-btn" style="background: #0088cc; margin-top: 15px;" onclick="window.open('https://t.me/IlyaMar5hal', '_blank')">
                  ✈️ Написать в Telegram
                </button>
@@ -138,6 +133,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=33"></script>
+  <script src="app.js?v=35"></script>
 </body>
 </html>

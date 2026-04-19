@@ -6,12 +6,19 @@
   const themeToggle = document.getElementById("themeToggle");
 
   const showScheduleBtn = document.getElementById("showScheduleBtn");
+  const showEduScheduleBtn = document.getElementById("showEduScheduleBtn");
   const backToCharts = document.getElementById("backToCharts");
   const chartsInit = document.getElementById("charts-init");
   const scheduleContainer = document.getElementById("schedule-container");
   const tableEl = document.getElementById("work-schedule");
+  const tableMonthTitle = document.getElementById("tableMonthTitle");
+  const scheduleLegend = document.getElementById("schedule-legend");
 
-  const scheduleData = [
+  // Общий список фамилий
+  const staffNames = ["Лагутенков Р.С.", "Миронов С.А.", "Куштанов А.А.", "Рыжих И.Н.", "Бондаренко Т.А."];
+
+  // Данные для графика работы
+  const workData = [
     { name: "Лагутенков Р.С.", shifts: { 3: "1219", 4: "1219", 7: "0828", 8: "1202", 12: "1219", 15: "1219", 16: "1202", 18: "1202", 20: "1202", 23: "1219", 24: "1202", 25: "1202", 27: "1219", 28: "1202" } },
     { name: "Миронов С.А.", shifts: { 3: "1219", 4: "1219", 9: "1202", 11: "0804", 12: "1219", 15: "1219", 16: "1202", 18: "1202", 20: "1202", 23: "1219", 24: "1202", 25: "1202", 27: "1219", 28: "1202" } },
     { name: "Куштанов А.А.", shifts: { 2: "1219", 3: "1202", 4: "1202", 7: "0828", 8: "1202", 11: "1219", 12: "1202", 14: "1219", 15: "1202", 18: "1219", 21: "1219", 24: "1219", 25: "1202", 28: "1202", 30: "1219" } },
@@ -21,14 +28,31 @@
 
   const weekends = [4, 5, 11, 12, 18, 19, 25, 26];
 
-  function renderTable() {
+  // Генерация данных обучения (1 раз в год для каждого)
+  const eduData = staffNames.map(name => {
+    return {
+      name: name,
+      month: Math.floor(Math.random() * 12) + 1, // Месяц 1-12
+      day: Math.floor(Math.random() * 25) + 1   // День 1-25
+    };
+  });
+
+  // Рендер таблицы ГРАФИК РАБОТЫ
+  function renderWorkTable() {
+    tableMonthTitle.textContent = "Апрель 2026";
+    scheduleLegend.innerHTML = `
+      <div class="legend-item"><span class="dot d1219"></span> 08:00 – 20:00</div>
+      <div class="legend-item"><span class="dot d1202"></span> 20:00 – 08:00</div>
+      <div class="legend-item"><span class="dot dotp"></span> Отпуск</div>
+    `;
+
     let html = `<thead><tr><th class="name-col">Сотрудник</th>`;
     for (let i = 1; i <= 30; i++) {
       html += `<th class="${weekends.includes(i) ? 'weekend' : ''}">${i}</th>`;
     }
     html += `</tr></thead><tbody>`;
 
-    scheduleData.forEach(row => {
+    workData.forEach(row => {
       html += `<tr><td class="name-col" onclick="toggleFocus(this.parentElement)">${row.name}</td>`;
       for (let i = 1; i <= 30; i++) {
         const val = row.shifts[i] || "";
@@ -40,10 +64,35 @@
       }
       html += `</tr>`;
     });
-    html += `</tbody>`;
-    tableEl.innerHTML = html;
+    tableEl.innerHTML = html + "</tbody>";
   }
 
+  // Рендер таблицы ГРАФИК ОБУЧЕНИЯ
+  function renderEduTable() {
+    tableMonthTitle.textContent = "Обучение 2026 (Охрана труда)";
+    scheduleLegend.innerHTML = `
+      <div class="legend-item"><span class="dot dedu"></span> День обучения</div>
+    `;
+
+    const monthNames = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
+    
+    let html = `<thead><tr><th class="name-col">Сотрудник</th>`;
+    monthNames.forEach(m => html += `<th>${m}</th>`);
+    html += `</tr></thead><tbody>`;
+
+    staffNames.forEach(name => {
+      const edu = eduData.find(e => e.name === name);
+      html += `<tr><td class="name-col" onclick="toggleFocus(this.parentElement)">${name}</td>`;
+      for (let m = 1; m <= 12; m++) {
+        const isEduMonth = (edu.month === m);
+        html += `<td class="${isEduMonth ? 'cell-edu' : ''}">${isEduMonth ? edu.day : ''}</td>`;
+      }
+      html += `</tr>`;
+    });
+    tableEl.innerHTML = html + "</tbody>";
+  }
+
+  // Функция фокуса на строке
   window.toggleFocus = function(rowElement) {
     const isFocused = rowElement.classList.contains("focused-row");
     document.querySelectorAll("#work-schedule tr").forEach(r => r.classList.remove("focused-row"));
@@ -55,6 +104,7 @@
     }
   };
 
+  // Навигация
   navButtons.forEach(btn => {
     btn.onclick = () => {
       const screenId = btn.getAttribute("data-screen");
@@ -80,15 +130,19 @@
     };
   });
 
-  showScheduleBtn.onclick = () => { renderTable(); chartsInit.hidden = true; scheduleContainer.hidden = false; };
+  // Кнопки графиков
+  showScheduleBtn.onclick = () => { renderWorkTable(); chartsInit.hidden = true; scheduleContainer.hidden = false; };
+  showEduScheduleBtn.onclick = () => { renderEduTable(); chartsInit.hidden = true; scheduleContainer.hidden = false; };
   backToCharts.onclick = () => { scheduleContainer.hidden = true; chartsInit.hidden = false; tableEl.classList.remove("has-focus"); };
 
+  // Тема
   themeToggle.onclick = () => {
     const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
   };
 
+  // Загрузка инструкций
   fetch("data/instructions.json")
     .then(r => r.json())
     .then(json => {
@@ -111,9 +165,8 @@
         container.appendChild(b);
       });
     })
-    .catch(e => console.log("JSON error", e));
+    .catch(e => console.log("JSON Load Error", e));
 
   document.getElementById("modalClose").onclick = () => document.getElementById("modal").hidden = true;
   document.getElementById("modalBackdrop").onclick = () => document.getElementById("modal").hidden = true;
-
 })();
