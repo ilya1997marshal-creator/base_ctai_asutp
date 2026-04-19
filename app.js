@@ -11,7 +11,6 @@
   const scheduleContainer = document.getElementById("schedule-container");
   const tableEl = document.getElementById("work-schedule");
 
-  // Актуальный график на Апрель 2026 (на базе твоего фото)
   const scheduleData = [
     { name: "Лагутенков Р.С.", shifts: { 3: "1219", 4: "1219", 7: "0828", 8: "1202", 12: "1219", 15: "1219", 16: "1202", 18: "1202", 20: "1202", 23: "1219", 24: "1202", 25: "1202", 27: "1219", 28: "1202" } },
     { name: "Миронов С.А.", shifts: { 3: "1219", 4: "1219", 9: "1202", 11: "0804", 12: "1219", 15: "1219", 16: "1202", 18: "1202", 20: "1202", 23: "1219", 24: "1202", 25: "1202", 27: "1219", 28: "1202" } },
@@ -45,7 +44,6 @@
     tableEl.innerHTML = html;
   }
 
-  // Функция фокуса на строке при нажатии на фамилию
   window.toggleFocus = function(rowElement) {
     const isFocused = rowElement.classList.contains("focused-row");
     document.querySelectorAll("#work-schedule tr").forEach(r => r.classList.remove("focused-row"));
@@ -57,7 +55,6 @@
     }
   };
 
-  // Переключение вкладок
   navButtons.forEach(btn => {
     btn.onclick = () => {
       const screenId = btn.getAttribute("data-screen");
@@ -75,7 +72,6 @@
       pageTitle.textContent = titles[screenId][0];
       pageSubtitle.textContent = titles[screenId][1];
 
-      // Сброс состояния графиков при уходе с вкладки
       if (screenId !== 'charts') {
         chartsInit.hidden = false;
         scheduleContainer.hidden = true;
@@ -87,14 +83,12 @@
   showScheduleBtn.onclick = () => { renderTable(); chartsInit.hidden = true; scheduleContainer.hidden = false; };
   backToCharts.onclick = () => { scheduleContainer.hidden = true; chartsInit.hidden = false; tableEl.classList.remove("has-focus"); };
 
-  // Тема
   themeToggle.onclick = () => {
     const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
   };
 
-  // Загрузка инструкций
   fetch("data/instructions.json")
     .then(r => r.json())
     .then(json => {
@@ -117,9 +111,8 @@
         container.appendChild(b);
       });
     })
-    .catch(e => console.log("Ошибка загрузки JSON", e));
+    .catch(e => console.log("JSON error", e));
 
-  // Закрытие модалки
   document.getElementById("modalClose").onclick = () => document.getElementById("modal").hidden = true;
   document.getElementById("modalBackdrop").onclick = () => document.getElementById("modal").hidden = true;
 

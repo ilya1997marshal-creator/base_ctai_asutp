@@ -12,17 +12,15 @@
   
   <title>База данных ЦТАИ АСУ ТП</title>
   
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=31">
-  <link rel="icon" type="image/png" href="apple-touch-icon.png?v=31">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=32">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png?v=32">
   
-  <link rel="stylesheet" href="styles.css?v=31">
+  <link rel="stylesheet" href="styles.css?v=32">
   
   <script>
-    // Мгновенная установка темы до рендера страницы
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
 
-    // Регистрация Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -50,8 +48,7 @@
     <main class="main">
       <section id="screen-main" class="tab-content active">
         <div class="panel">
-          <nav class="blocks" id="tabs-main">
-            </nav>
+          <nav class="blocks" id="tabs-main"></nav>
         </div>
       </section>
 
@@ -93,8 +90,15 @@
           <div class="support-page">
             <span class="support-large-icon">✉️</span>
             <h3>Поддержка</h3>
-            <p class="support-text">Возникли вопросы или предложения по приложению?</p>
-            <a href="mailto:i.rygih@mail.ru?subject=База ЦТАИ" class="action-main-btn">Написать разработчику</a>
+            <p class="support-text">Выберите удобный способ связи с разработчиком:</p>
+            <div class="support-buttons">
+               <button type="button" class="action-main-btn support-choice-btn" onclick="window.location.href='mailto:i.rygih@mail.ru?subject=База ЦТАИ'">
+                 📧 Почта (Mail / Gmail)
+               </button>
+               <button type="button" class="action-main-btn support-choice-btn" style="background: #0088cc; margin-top: 12px;" onclick="window.open('https://t.me/your_telegram_username', '_blank')">
+                 ✈️ Telegram
+               </button>
+            </div>
           </div>
         </div>
       </section>
@@ -130,6 +134,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=31"></script>
+  <script src="app.js?v=32"></script>
 </body>
 </html>

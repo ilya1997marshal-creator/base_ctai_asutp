@@ -62,7 +62,6 @@ body {
   padding-bottom: calc(85px + env(safe-area-inset-bottom));
 }
 
-/* Шапка */
 .header { 
   text-align: center; 
   padding: calc(45px + env(safe-area-inset-top)) 20px 20px; 
@@ -87,7 +86,6 @@ body {
 .title { font-size: 26px; font-weight: 800; }
 .subtitle { font-size: 15px; opacity: 0.6; }
 
-/* Контент и центрирование */
 .main { 
   flex: 1; 
   display: flex; 
@@ -100,8 +98,8 @@ body {
   width: 100%;
   padding: 0 15px;
   flex-direction: column;
-  justify-content: center; /* Центр по вертикали */
-  align-items: center;     /* Центр по горизонтали */
+  justify-content: center; 
+  align-items: center;     
 }
 .tab-content.active { display: flex; animation: fadeIn 0.3s ease; }
 
@@ -116,7 +114,6 @@ body {
   overflow-y: auto; 
 }
 
-/* Сетка кнопок */
 .blocks { 
   display: grid; 
   grid-template-columns: repeat(2, 1fr); 
@@ -140,12 +137,10 @@ body {
 }
 .action-main-btn:active { transform: scale(0.97); }
 
-/* Страница поддержки */
 .support-page { text-align: center; }
 .support-large-icon { font-size: 50px; display: block; margin-bottom: 10px; }
 .support-text { margin-bottom: 25px; opacity: 0.7; font-size: 15px; }
 
-/* Таблица графиков */
 .table-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 .back-btn { background: none; border: none; color: var(--primary-color); font-weight: 800; font-size: 16px; cursor: pointer; }
 .table-wrapper { 
@@ -171,11 +166,9 @@ th { background: var(--table-head-bg); font-weight: 700; }
   border-right: 2px solid var(--table-border);
 }
 
-/* Подсветка строк */
 table.has-focus tbody tr { opacity: 0.2; filter: blur(1px); }
 table.has-focus tbody tr.focused-row { opacity: 1; filter: blur(0); }
 
-/* Цвета ячеек */
 .cell-1219 { background-color: var(--shift-day-bg) !important; color: var(--shift-day-text) !important; font-weight: 800; }
 .cell-1202 { background-color: var(--shift-night-bg) !important; color: var(--shift-night-text) !important; font-weight: 800; }
 .cell-otp { background-color: var(--shift-otp-bg) !important; color: var(--shift-otp-text) !important; font-weight: 800; }
@@ -188,7 +181,6 @@ table.has-focus tbody tr.focused-row { opacity: 1; filter: blur(0); }
 .d1202 { background: var(--shift-night-text); }
 .dotp { background: var(--shift-otp-text); }
 
-/* Нижнее меню */
 .bottom-nav { 
   position: fixed; bottom: 0; left: 0; right: 0; 
   height: calc(85px + env(safe-area-inset-bottom)); 
@@ -207,7 +199,6 @@ table.has-focus tbody tr.focused-row { opacity: 1; filter: blur(0); }
 .nav-icon { font-size: 26px; margin-bottom: 4px; }
 .nav-label { font-size: 11px; font-weight: 700; }
 
-/* Модалка */
 .modal { position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .modal[hidden] { display: none !important; }
 .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); }
