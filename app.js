@@ -14,6 +14,16 @@
 
   let data = null;
 
+  function openInNewTab(href) {
+    const a = document.createElement("a");
+    a.href = href;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
   function openModal() {
     modal.hidden = false;
     document.body.style.overflow = "hidden";
@@ -27,22 +37,20 @@
 
   function openPdfViewer(url, title) {
     if (!pdfFrame || !pdfViewer) return;
-    var pdfAbsolute = new URL(url, window.location.href).href;
-    var viewerUrl = new URL("pdfjs/web/viewer.html", window.location.href);
+    const pdfAbsolute = new URL(url, window.location.href).href;
+    const viewerUrl = new URL("pdfjs/web/viewer.html", window.location.href);
     viewerUrl.searchParams.set("file", pdfAbsolute);
 
     pdfTitle.textContent = title || "Документ";
     pdfOpenSafari.href = viewerUrl.href;
 
-    var isPhone =
+    const isPhone =
       navigator.maxTouchPoints > 0 &&
       window.matchMedia("(max-width: 900px)").matches;
 
     if (isPhone) {
-      var tab = window.open(viewerUrl.href, "_blank", "noopener,noreferrer");
-      if (tab) {
-        return;
-      }
+      openInNewTab(viewerUrl.href);
+      return;
     }
 
     pdfFrame.src = viewerUrl.href;
