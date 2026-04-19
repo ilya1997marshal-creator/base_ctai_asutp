@@ -6,17 +6,17 @@
   
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="База ЦТАИ">
+  <meta name="apple-mobile-web-app-title" content="База ЦТАI">
   
   <title>База данных ЦТАИ АСУ ТП</title>
   
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=21">
-  <link rel="icon" type="image/png" href="apple-touch-icon.png?v=21">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=23">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png?v=23">
   
-  <link rel="stylesheet" href="styles.css?v=21">
+  <link rel="stylesheet" href="styles.css?v=23">
   
   <script>
-    // Скрипт против "белой вспышки" при загрузке темной темы
+    // Мгновенная установка темы
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
   </script>
@@ -25,7 +25,7 @@
   <div class="app">
     <header class="header">
       <div class="header-top">
-        <button type="button" id="themeToggle" class="theme-toggle" aria-label="Смена темы">
+        <button type="button" id="themeToggle" class="theme-toggle">
           <span class="sun-icon">☀️</span>
           <span class="moon-icon">🌙</span>
         </button>
@@ -37,7 +37,6 @@
     </header>
 
     <main class="main">
-      
       <section id="screen-main" class="tab-content active">
         <div class="panel">
           <nav class="blocks" id="tabs-main">
@@ -51,7 +50,7 @@
             <div class="empty-state">
               <span class="empty-icon">📈</span>
               <h3>Графики смен</h3>
-              <p>Выберите нужный график для просмотра внутри приложения.</p>
+              <p>Нажмите на фамилию, чтобы подсветить свой график и скрыть остальные.</p>
             </div>
             <button type="button" id="showScheduleBtn" class="action-main-btn">График работы</button>
           </div>
@@ -62,7 +61,8 @@
               <span class="table-month-title">Апрель 2026</span>
             </div>
             <div class="table-wrapper">
-              <table id="work-schedule"></table>
+              <table id="work-schedule">
+                </table>
             </div>
             <div class="table-legend">
               <div class="legend-item"><span class="dot d1219"></span> 08:00 – 20:00</div>
@@ -78,7 +78,7 @@
           <div class="empty-state">
             <span class="empty-icon">🎓</span>
             <h3>Обучение</h3>
-            <p>Тесты ПТЭ и справочные материалы находятся в разработке.</p>
+            <p>Материалы для подготовки скоро появятся здесь.</p>
           </div>
         </div>
       </section>
@@ -87,38 +87,31 @@
         <div class="panel">
           <div class="support-page">
             <span class="support-large-icon">✉️</span>
-            <h3>Связь с разработчиком</h3>
-            <p>Нашли неточность в базе или есть предложения? Напишите нам.</p>
-            <a href="mailto:i.rygih@mail.ru?subject=База ЦТАИ" class="support-action-btn">
-              Написать письмо
-            </a>
+            <h3>Поддержка</h3>
+            <p>Есть идеи по улучшению? Напишите нам.</p>
+            <a href="mailto:i.rygih@mail.ru?subject=База ЦТАИ" class="support-action-btn">Написать разработчику</a>
           </div>
         </div>
       </section>
-
     </main>
 
     <nav class="bottom-nav">
       <button class="nav-item active" data-screen="main">
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">Главная</span>
+        <span class="nav-icon">🏠</span><span class="nav-label">Главная</span>
       </button>
       <button class="nav-item" data-screen="charts">
-        <span class="nav-icon">📈</span>
-        <span class="nav-label">Графики</span>
+        <span class="nav-icon">📈</span><span class="nav-label">Графики</span>
       </button>
       <button class="nav-item" data-screen="edu">
-        <span class="nav-icon">🎓</span>
-        <span class="nav-label">Тесты</span>
+        <span class="nav-icon">🎓</span><span class="nav-label">Тесты</span>
       </button>
       <button class="nav-item" data-screen="support">
-        <span class="nav-icon">💬</span>
-        <span class="nav-label">Помощь</span>
+        <span class="nav-icon">💬</span><span class="nav-label">Помощь</span>
       </button>
     </nav>
   </div>
 
-  <div id="modal" class="modal" role="dialog" aria-modal="true" hidden>
+  <div id="modal" class="modal" hidden>
     <div class="modal-backdrop" id="modalBackdrop"></div>
     <div class="modal-content">
       <div class="modal-head">
@@ -126,12 +119,10 @@
         <h2 id="modalTitle" class="modal-title"></h2>
         <button type="button" class="modal-close" id="modalClose">✕</button>
       </div>
-      <div class="modal-body">
-        <ul id="modalList" class="modal-list"></ul>
-      </div>
+      <div class="modal-body"><ul id="modalList" class="modal-list"></ul></div>
     </div>
   </div>
 
-  <script src="app.js?v=21"></script>
+  <script src="app.js?v=23"></script>
 </body>
 </html>

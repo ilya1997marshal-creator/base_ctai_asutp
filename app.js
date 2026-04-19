@@ -1,19 +1,16 @@
 (function () {
-  // Навигация
   const navButtons = document.querySelectorAll(".nav-item");
   const screens = document.querySelectorAll(".tab-content");
   const pageTitle = document.getElementById("pageTitle");
   const pageSubtitle = document.getElementById("pageSubtitle");
   const themeToggle = document.getElementById("themeToggle");
 
-  // График
   const showScheduleBtn = document.getElementById("showScheduleBtn");
   const backToCharts = document.getElementById("backToCharts");
   const chartsInit = document.getElementById("charts-init");
   const scheduleContainer = document.getElementById("schedule-container");
   const tableEl = document.getElementById("work-schedule");
 
-  // ДАННЫЕ ГРАФИКА (Апрель 2026)
   const scheduleData = [
     { name: "Лагутенков Р.С.", shifts: { 3: "1219", 4: "1219", 8: "0828", 9: "1202", 13: "1219", 16: "1219", 17: "1202", 19: "1202", 21: "1202", 24: "1219", 25: "1202", 26: "1202", 28: "1219", 29: "1202" } },
     { name: "Миронов С.А.", shifts: { 3: "1219", 4: "1219", 10: "1202", 11: "0804", 12: "1219", 16: "1219", 17: "1202", 19: "1202", 21: "1202", 24: "1219", 25: "1202", 26: "1202", 28: "1219", 29: "1202" } },
@@ -25,22 +22,21 @@
   const weekends = [4, 5, 11, 12, 18, 19, 25, 26];
 
   function renderTable() {
-    let html = `<thead><tr><th class="name-col">ФИО</th>`;
+    let html = `<thead><tr><th class="name-col">Сотрудник</th>`;
     for (let i = 1; i <= 30; i++) {
       html += `<th class="${weekends.includes(i) ? 'weekend' : ''}">${i}</th>`;
     }
     html += `</tr></thead><tbody>`;
 
     scheduleData.forEach(row => {
-      html += `<tr><td class="name-col">${row.name}</td>`;
+      html += `<tr><td class="name-col" onclick="toggleFocus(this.parentElement)">${row.name}</td>`;
       for (let i = 1; i <= 30; i++) {
         const val = row.shifts[i] || "";
-        let cellClass = "";
-        if (val === "1219") cellClass = "cell-1219";
-        else if (val === "1202") cellClass = "cell-1202";
-        else if (val === "ОТП") cellClass = "cell-otp";
-        
-        html += `<td class="${cellClass} ${weekends.includes(i) ? 'weekend' : ''}">${val}</td>`;
+        let c = "";
+        if (val === "1219") c = "cell-1219";
+        else if (val === "1202") c = "cell-1202";
+        else if (val === "ОТП") c = "cell-otp";
+        html += `<td class="${c} ${weekends.includes(i) ? 'weekend' : ''}">${val}</td>`;
       }
       html += `</tr>`;
     });
@@ -48,7 +44,19 @@
     tableEl.innerHTML = html;
   }
 
-  // ОБРАБОТКА НАВИГАЦИИ
+  // ФУНКЦИЯ ФОКУСА
+  window.toggleFocus = function(rowElement) {
+    if (rowElement.classList.contains("focused-row")) {
+      tableEl.classList.remove("has-focus");
+      rowElement.classList.remove("focused-row");
+    } else {
+      document.querySelectorAll("tr").forEach(r => r.classList.remove("focused-row"));
+      tableEl.classList.add("has-focus");
+      rowElement.classList.add("focused-row");
+    }
+  };
+
+  // НАВИГАЦИЯ
   navButtons.forEach(btn => {
     btn.onclick = () => {
       const screenId = btn.getAttribute("data-screen");
@@ -56,86 +64,44 @@
       screens.forEach(s => s.classList.remove("active"));
       btn.classList.add("active");
       document.getElementById(`screen-${screenId}`).classList.add("active");
+      
+      const cfg = { main:["База данных","ЦТАИ"], charts:["Графики","Смены"], edu:["Обучение","Тесты"], support:["Помощь","Связь"] };
+      pageTitle.textContent = cfg[screenId][0];
+      pageSubtitle.textContent = cfg[screenId][1];
 
-      // Смена заголовка
-      const titles = { 
-        main: ["База данных", "ЦТАИ АСУ ТП"], 
-        charts: ["Графики", "Смены персонала"], 
-        edu: ["Обучение", "Тесты и ПТЭ"], 
-        support: ["Помощь", "Обратная связь"] 
-      };
-      pageTitle.textContent = titles[screenId][0];
-      pageSubtitle.textContent = titles[screenId][1];
-
-      // Сброс вложенных видов
       if (screenId !== 'charts') {
         chartsInit.hidden = false;
         scheduleContainer.hidden = true;
+        tableEl.classList.remove("has-focus");
       }
     };
   });
 
-  // Логика кнопок графика
-  showScheduleBtn.onclick = () => { 
-    renderTable(); 
-    chartsInit.hidden = true; 
-    scheduleContainer.hidden = false; 
-  };
-  backToCharts.onclick = () => { 
-    scheduleContainer.hidden = true; 
-    chartsInit.hidden = false; 
-  };
+  showScheduleBtn.onclick = () => { renderTable(); chartsInit.hidden = true; scheduleContainer.hidden = false; };
+  backToCharts.onclick = () => { scheduleContainer.hidden = true; chartsInit.hidden = false; tableEl.classList.remove("has-focus"); };
 
-  // ТЕМА
   themeToggle.onclick = () => {
-    const current = document.documentElement.getAttribute('data-theme');
-    const next = current === 'light' ? 'dark' : 'light';
+    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
   };
 
-  // ЗАГРУЗКА ДАННЫХ ДЛЯ ГЛАВНОЙ
-  let appData = null;
-  fetch("data/instructions.json")
-    .then(r => r.json())
-    .then(json => {
-      appData = json;
-      const container = document.getElementById("tabs-main");
-      container.innerHTML = "";
-      json.categories.forEach(c => {
-        const b = document.createElement("button");
-        b.type = "button";
-        b.textContent = c.title;
-        b.onclick = () => openCategory(c.id);
-        container.appendChild(b);
-      });
-    })
-    .catch(err => console.error("Ошибка загрузки JSON:", err));
+  // КАТЕГОРИИ
+  fetch("data/instructions.json").then(r => r.json()).then(json => {
+    const container = document.getElementById("tabs-main");
+    json.categories.forEach(c => {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = c.title;
+      b.onclick = () => {
+        const items = json.items.filter(it => it.categoryId === c.id);
+        document.getElementById("modalTitle").textContent = c.title;
+        document.getElementById("modalList").innerHTML = items.map(it => `<li><a href="#" onclick="window.open('https://docs.google.com/viewer?url=' + encodeURIComponent(new URL('${it.pdf}', window.location.href).href), '_blank')">${it.title}</a></li>`).join("");
+        document.getElementById("modal").hidden = false;
+      };
+      container.appendChild(b);
+    });
+  });
 
-  function openCategory(id) {
-    const modal = document.getElementById("modal");
-    const category = appData.categories.find(c => c.id === id);
-    const items = appData.items.filter(it => it.categoryId === id);
-    
-    document.getElementById("modalTitle").textContent = category.title;
-    const list = document.getElementById("modalList");
-    
-    if (items.length === 0) {
-      list.innerHTML = "<li>Файлов пока нет</li>";
-    } else {
-      list.innerHTML = items.map(it => `
-        <li>
-          <a href="#" onclick="event.preventDefault(); window.open('https://docs.google.com/viewer?url=' + encodeURIComponent(new URL('${it.pdf}', window.location.href).href), '_blank')">
-            ${it.title}
-          </a>
-        </li>
-      `).join("");
-    }
-    modal.hidden = false;
-  }
-
-  // ЗАКРЫТИЕ МОДАЛКИ
   document.getElementById("modalClose").onclick = () => document.getElementById("modal").hidden = true;
   document.getElementById("modalBackdrop").onclick = () => document.getElementById("modal").hidden = true;
-
 })();
