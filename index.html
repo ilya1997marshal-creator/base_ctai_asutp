@@ -20,6 +20,23 @@
       <section class="panel" aria-labelledby="blocks-heading">
         <h2 id="blocks-heading" class="panel-title">Блоки</h2>
         <p class="panel-hint">Нажмите на блок, чтобы открыть список файлов.</p>
+
+        <div class="panel-search-tip" role="note">
+          <p class="panel-search-tip-title">Поиск по словам в PDF на телефоне (iPhone)</p>
+          <p class="panel-search-tip-lead">
+            В браузере лупа внутри веб-просмотрщика PDF часто <strong>не находит</strong> текст — это ограничение Safari. Надёжный способ:
+          </p>
+          <ol class="panel-search-tip-steps">
+            <li>Откройте нужную инструкцию — документ откроется в новой вкладке.</li>
+            <li>На <strong>серой панели</strong> над документом нажмите кнопку <strong>«Скачать»</strong> (стрелка вниз / загрузить файл).</li>
+            <li>Откройте сохранённый файл в приложении <strong>«Файлы»</strong> (или через загрузки Safari).</li>
+            <li>В «Файлах» откройте PDF и воспользуйтесь <strong>поиском</strong> (лупа или поле поиска вверху — зависит от версии iOS).</li>
+          </ol>
+          <p class="panel-search-tip-foot">
+            На <strong>компьютере</strong> поиск по тексту в том же просмотрщике PDF обычно работает сразу (лупа на панели PDF).
+          </p>
+        </div>
+
         <nav class="blocks" id="tabs" aria-label="Блоки"></nav>
       </section>
     </main>
@@ -44,13 +61,13 @@
       <button type="button" class="pdf-back" id="pdfClose" aria-label="Закрыть документ">← Назад</button>
       <div class="pdf-bar-center">
         <span id="pdfTitle" class="pdf-doc-title"></span>
-        <span class="pdf-hint">На телефоне документ открывается в новой вкладке — поиск: лупа на серой панели PDF. Поиск в шапке сайта по документу не подходит.</span>
+        <span class="pdf-hint">На iPhone лучше не полагаться на лупу здесь: скачайте PDF кнопкой на серой панели и откройте в «Файлах» — там поиск по словам. На ПК лупа на этой панели обычно работает.</span>
       </div>
       <a id="pdfOpenSafari" class="pdf-safari" href="#" target="_blank" rel="noopener noreferrer">Открыть в Safari</a>
     </div>
     <iframe id="pdfFrame" class="pdf-frame" title="Просмотр PDF"></iframe>
   </div>
 
-  <script src="app.js?v=2"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>

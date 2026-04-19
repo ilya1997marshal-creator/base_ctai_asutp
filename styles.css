@@ -405,3 +405,51 @@ body {
   border: none;
   background: #525659;
 }
+
+/* Подсказка: поиск по PDF на телефоне */
+.panel-search-tip {
+  margin: 0 0 1rem;
+  padding: 0.85rem 0.95rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--tg-text);
+  background: rgba(51, 144, 236, 0.08);
+  border: 1px solid rgba(51, 144, 236, 0.22);
+  border-radius: var(--radius-md);
+}
+
+.panel-search-tip-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--tg-text);
+}
+
+.panel-search-tip-lead {
+  margin: 0 0 0.5rem;
+  color: var(--tg-muted);
+}
+
+.panel-search-tip-lead strong {
+  color: var(--tg-text);
+}
+
+.panel-search-tip-steps {
+  margin: 0 0 0.6rem;
+  padding-left: 1.2rem;
+  color: var(--tg-text);
+}
+
+.panel-search-tip-steps li {
+  margin-bottom: 0.35rem;
+}
+
+.panel-search-tip-foot {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--tg-muted);
+}
+
+.panel-search-tip-foot strong {
+  color: var(--tg-text);
+}
