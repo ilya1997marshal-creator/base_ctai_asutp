@@ -27,7 +27,6 @@
   function openModal() {
     modal.hidden = false;
     document.body.style.overflow = "hidden";
-    modalClose.focus();
   }
 
   function closeModal() {
@@ -36,46 +35,31 @@
   }
 
   function openPdfViewer(url, title) {
-    if (!pdfFrame || !pdfViewer) return;
-    
-    // 1. Прямая ссылка на PDF
+    // 1. Создаем абсолютно точный путь
     const pdfAbsolute = new URL(url, window.location.href).href;
     
-    // 2. Ссылка для PDF.js (для ПК и iPhone)
-    const viewerUrl = new URL("pdfjs/web/viewer.html", window.location.href);
-    viewerUrl.searchParams.set("file", pdfAbsolute);
-
-    pdfTitle.textContent = title || "Документ";
-    if (pdfOpenSafari) pdfOpenSafari.href = pdfAbsolute;
-
-    // Определяем браузер и устройство
     const ua = navigator.userAgent;
-    const isYaBrowser = ua.includes("YaBrowser") || ua.includes("YandexSearch");
-    const isAndroid = /Android/i.test(ua);
-    const isIOS = /iPhone|iPad|iPod/i.test(ua) || 
-                  (navigator.maxTouchPoints > 0 && window.matchMedia("(max-width: 900px)").matches);
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(ua) || (navigator.maxTouchPoints > 0 && window.matchMedia("(max-width: 900px)").matches);
 
-    // СПЕЦИАЛЬНАЯ ЛОГИКА ДЛЯ ЯНДЕКСА И АНДРОИД
-    if (isAndroid || isYaBrowser) {
-      // Открываем файл напрямую. Яндекс предложит либо открыть его внутри, либо скачать.
-      // Это исключает ошибку "пустого экрана" вьюера.
-      openInNewTab(pdfAbsolute);
+    // Если это мобилка или Яндекс — просто переходим по ссылке
+    if (isMobile || ua.includes("YaBrowser")) {
+      console.log("Opening direct link:", pdfAbsolute);
+      window.location.href = pdfAbsolute; // Пробуем открыть в текущем окне для надежности
       return;
     }
 
-    if (isIOS) {
-      openInNewTab(viewerUrl.href);
-      return;
+    // Для ПК
+    if (pdfFrame && pdfViewer) {
+      const viewerUrl = new URL("pdfjs/web/viewer.html", window.location.href);
+      viewerUrl.searchParams.set("file", pdfAbsolute);
+      pdfTitle.textContent = title || "Документ";
+      pdfFrame.src = viewerUrl.href;
+      pdfViewer.hidden = false;
+      document.body.style.overflow = "hidden";
     }
-
-    // Для обычных компьютеров (Chrome/Edge/Firefox на Windows/Mac)
-    pdfFrame.src = viewerUrl.href;
-    pdfViewer.hidden = false;
-    document.body.style.overflow = "hidden";
   }
 
   function closePdfViewer() {
-    if (!pdfFrame || !pdfViewer) return;
     pdfViewer.hidden = true;
     pdfFrame.src = "about:blank";
     if (modal.hidden) document.body.style.overflow = "";
@@ -87,19 +71,18 @@
     modalList.innerHTML = "";
 
     if (items.length === 0) {
-      const p = document.createElement("p");
-      p.className = "empty-hint";
-      p.textContent = "В этом блоке пока нет PDF.";
-      modalList.appendChild(p);
+      modalList.innerHTML = "<li>В этом блоке пока нет PDF.</li>";
     } else {
       items.forEach(item => {
         const li = document.createElement("li");
         const a = document.createElement("a");
-        a.href = item.pdf;
+        // ВАЖНО: добавляем параметр версии к самому PDF, чтобы убить кэш файла
+        const pdfWithVersion = item.pdf + "?v=" + new Date().getTime();
+        a.href = pdfWithVersion;
         a.textContent = item.title;
         a.addEventListener("click", e => {
           e.preventDefault();
-          openPdfViewer(item.pdf, item.title);
+          openPdfViewer(pdfWithVersion, item.title);
         });
         li.appendChild(a);
         modalList.appendChild(li);
@@ -115,14 +98,14 @@
       const btn = document.createElement("button");
       btn.type = "button";
       btn.textContent = cat.title;
-      btn.addEventListener("click", () => showBlock(cat));
+      btn.onclick = () => showBlock(cat);
       tabsEl.appendChild(btn);
     });
   }
 
-  if (modalBackdrop) modalBackdrop.addEventListener("click", closeModal);
-  if (modalClose) modalClose.addEventListener("click", closeModal);
-  if (pdfClose) pdfClose.addEventListener("click", closePdfViewer);
+  if (modalBackdrop) modalBackdrop.onclick = closeModal;
+  if (modalClose) modalClose.onclick = closeModal;
+  if (pdfClose) pdfClose.onclick = closePdfViewer;
 
   fetch("data/instructions.json")
     .then(r => r.json())
@@ -130,5 +113,8 @@
       data = json;
       renderTabs();
     })
-    .catch(err => console.error("Ошибка загрузки:", err));
+    .catch(err => {
+      console.error("Data error:", err);
+      alert("Ошибка загрузки JSON. Проверьте файл data/instructions.json");
+    });
 })();
