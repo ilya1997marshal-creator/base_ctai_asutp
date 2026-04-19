@@ -72,18 +72,32 @@ th, td { border: 1px solid var(--table-border); padding: 12px 0; text-align: cen
   position: sticky; left: 0; background: var(--panel-color); 
   text-align: left; padding-left: 12px; font-weight: 700; z-index: 10; 
   border-right: 2px solid var(--table-border); width: 150px; min-width: 150px; cursor: pointer;
+  transition: background-color 0.3s;
 }
+
+/* ФУНКЦИЯ ФОКУСА (БЛЮР) */
+/* Когда у таблицы есть класс has-focus, все строки затухают */
+table.has-focus tbody tr { 
+  opacity: 0.1; 
+  filter: blur(2px);
+  pointer-events: none; /* Чтобы нельзя было случайно нажать на другие строки в блюре */
+}
+
+/* Исключаем из затухания только ту строку, у которой есть класс focused-row */
+table.has-focus tbody tr.focused-row { 
+  opacity: 1 !important; 
+  filter: blur(0) !important;
+  pointer-events: auto;
+  position: relative;
+  z-index: 20;
+}
+
+/* Фикс для зафиксированной колонки фамилий при блюре */
+table.has-focus tbody tr.focused-row .name-col {
+  background-color: var(--panel-color);
+}
+
 .weekend { background: var(--table-weekend); }
-
-/* ФУНКЦИЯ ФОКУСА */
-tr { transition: opacity 0.3s ease, filter 0.3s ease; }
-table.has-focus tr:not(.focused-row):not(:first-child) { 
-  opacity: 0.15; 
-  filter: blur(1.5px); 
-}
-tr.focused-row { transform: scale(1.01); z-index: 20; position: relative; }
-
-/* Цвета смен */
 .cell-1219 { background-color: var(--shift-day-bg) !important; color: var(--shift-day-text) !important; font-weight: 800; }
 .cell-1202 { background-color: var(--shift-night-bg) !important; color: var(--shift-night-text) !important; font-weight: 800; }
 .cell-otp { background-color: var(--shift-otp-bg) !important; color: var(--shift-otp-text) !important; font-weight: 800; }

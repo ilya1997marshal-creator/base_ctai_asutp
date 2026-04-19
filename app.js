@@ -44,13 +44,18 @@
     tableEl.innerHTML = html;
   }
 
-  // ФУНКЦИЯ ФОКУСА
+  // ФУНКЦИЯ ФОКУСА (ИСПРАВЛЕННАЯ)
   window.toggleFocus = function(rowElement) {
-    if (rowElement.classList.contains("focused-row")) {
+    const isFocused = rowElement.classList.contains("focused-row");
+    
+    // Сбрасываем фокус со всех строк
+    document.querySelectorAll("#work-schedule tr").forEach(r => r.classList.remove("focused-row"));
+    
+    if (isFocused) {
+      // Если строка уже была в фокусе — выключаем режим блюра
       tableEl.classList.remove("has-focus");
-      rowElement.classList.remove("focused-row");
     } else {
-      document.querySelectorAll("tr").forEach(r => r.classList.remove("focused-row"));
+      // Иначе включаем блюр и выделяем текущую строку
       tableEl.classList.add("has-focus");
       rowElement.classList.add("focused-row");
     }
@@ -65,9 +70,9 @@
       btn.classList.add("active");
       document.getElementById(`screen-${screenId}`).classList.add("active");
       
-      const cfg = { main:["База данных","ЦТАИ"], charts:["Графики","Смены"], edu:["Обучение","Тесты"], support:["Помощь","Связь"] };
-      pageTitle.textContent = cfg[screenId][0];
-      pageSubtitle.textContent = cfg[screenId][1];
+      const titles = { main:["База данных","ЦТАИ"], charts:["Графики","Смены"], edu:["Обучение","Тесты"], support:["Помощь","Связь"] };
+      pageTitle.textContent = titles[screenId][0];
+      pageSubtitle.textContent = titles[screenId][1];
 
       if (screenId !== 'charts') {
         chartsInit.hidden = false;
@@ -86,7 +91,7 @@
     localStorage.setItem('theme', next);
   };
 
-  // КАТЕГОРИИ
+  // ДАННЫЕ PDF
   fetch("data/instructions.json").then(r => r.json()).then(json => {
     const container = document.getElementById("tabs-main");
     json.categories.forEach(c => {
