@@ -47,7 +47,7 @@
     modalList.innerHTML = "";
 
     if (items.length === 0) {
-      modalList.innerHTML = `<li style="color:var(--text-muted); text-align:center; padding: 30px 0;">Файлов пока нет</li>`;
+      modalList.innerHTML = `<li style="color:var(--text-muted); text-align:center; padding: 30px 0; font-weight:500;">Файлы скоро появятся</li>`;
     } else {
       items.forEach(item => {
         const li = document.createElement("li");
