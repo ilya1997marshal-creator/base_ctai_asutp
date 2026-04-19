@@ -9,19 +9,11 @@
 
   let data = null;
 
-  // Управление темой с сохранением
   function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
-    
-    // Плавная смена мета-цвета для статус-бара
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-    if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', newTheme === 'dark' ? '#0e1621' : '#7ca8d2');
-    }
   }
 
   if (themeToggle) themeToggle.onclick = toggleTheme;
@@ -55,7 +47,7 @@
     modalList.innerHTML = "";
 
     if (items.length === 0) {
-      modalList.innerHTML = `<li style="color:var(--text-muted); text-align:center; padding: 40px 0;">Файлы будут добавлены позже</li>`;
+      modalList.innerHTML = `<li style="color:var(--text-muted); text-align:center; padding: 40px 0;">Файлы скоро появятся</li>`;
     } else {
       items.forEach(item => {
         const li = document.createElement("li");
@@ -94,5 +86,5 @@
       data = json;
       renderTabs();
     })
-    .catch(err => console.error("Ошибка:", err));
+    .catch(err => console.error("Ошибка загрузки:", err));
 })();
