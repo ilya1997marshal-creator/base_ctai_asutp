@@ -1,4 +1,4 @@
-/* Стиль в духе светлой темы Telegram: спокойные тона, скругления, сетка блоков */
+/* Стиль в духе светлой темы Telegram + просмотр PDF */
 
 :root {
   --tg-bg: #e7edf2;
@@ -44,7 +44,6 @@ body {
   flex-direction: column;
 }
 
-/* Шапка */
 .header {
   background: var(--tg-surface);
   border-bottom: 1px solid var(--tg-line);
@@ -72,7 +71,6 @@ body {
   max-width: 36em;
 }
 
-/* Основная зона — панель с блоками */
 .main {
   flex: 1;
   padding: 1rem;
@@ -103,7 +101,6 @@ body {
   color: var(--tg-muted);
 }
 
-/* Сетка кнопок-блоков */
 .blocks {
   display: grid;
   grid-template-columns: 1fr;
@@ -119,7 +116,6 @@ body {
 
 @media (min-width: 620px) {
   .blocks {
-    grid-template-columns: repeat(2, 1fr);
     gap: 0.65rem;
   }
 }
@@ -159,7 +155,7 @@ body {
   outline-offset: 2px;
 }
 
-/* Модальное окно */
+/* Модальное окно со списком PDF */
 .modal[hidden] {
   display: none !important;
 }
@@ -306,4 +302,106 @@ body {
   font-size: 0.92rem;
   line-height: 1.5;
   color: var(--tg-muted);
+}
+
+/* Просмотр PDF поверх страницы */
+.pdf-viewer[hidden] {
+  display: none !important;
+}
+
+.pdf-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  background: var(--tg-bg);
+}
+
+.pdf-viewer-bar {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.5rem 0.75rem;
+  padding: 0.65rem 0.75rem;
+  padding-top: max(0.65rem, env(safe-area-inset-top));
+  background: var(--tg-surface);
+  border-bottom: 1px solid var(--tg-line);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.pdf-back {
+  border: none;
+  border-radius: 12px;
+  padding: 0.45rem 0.75rem;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--tg-accent);
+  background: var(--tg-accent-soft);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pdf-back:active {
+  opacity: 0.85;
+}
+
+.pdf-bar-center {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pdf-doc-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--tg-text);
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pdf-hint {
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--tg-muted);
+}
+
+.pdf-safari {
+  align-self: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--tg-accent);
+  text-decoration: none;
+  padding: 0.35rem 0.5rem;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.pdf-safari:active {
+  background: rgba(51, 144, 236, 0.1);
+}
+
+@media (max-width: 480px) {
+  .pdf-viewer-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .pdf-safari {
+    text-align: center;
+    width: 100%;
+  }
+}
+
+.pdf-frame {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: #525659;
 }

@@ -15,12 +15,6 @@
       "categoryId": "b1",
       "title": "Руководство Siemens S-400",
       "pdf": "pdfs/blok-1/S7-400_instalation.pdf"
-    },
-    {
-      "id": "b2-1",
-      "categoryId": "b2",
-      "title": "Пример PDF для блока 2",
-      "pdf": "pdfs/blok-2/primer.pdf"
     }
   ]
 }

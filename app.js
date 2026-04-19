@@ -6,6 +6,12 @@
   const modalClose = document.getElementById("modalClose");
   const tabsEl = document.getElementById("tabs");
 
+  const pdfViewer = document.getElementById("pdfViewer");
+  const pdfFrame = document.getElementById("pdfFrame");
+  const pdfTitle = document.getElementById("pdfTitle");
+  const pdfClose = document.getElementById("pdfClose");
+  const pdfOpenSafari = document.getElementById("pdfOpenSafari");
+
   let data = null;
 
   function openModal() {
@@ -16,11 +22,30 @@
 
   function closeModal() {
     modal.hidden = true;
-    document.body.style.overflow = "";
+    if (pdfViewer.hidden) document.body.style.overflow = "";
+  }
+
+  function openPdfViewer(url, title) {
+    if (!pdfFrame || !pdfViewer) return;
+    const absolute = new URL(url, window.location.href).href;
+    pdfTitle.textContent = title || "Документ";
+    pdfFrame.src = absolute;
+    pdfOpenSafari.href = absolute;
+    pdfViewer.hidden = false;
+    document.body.style.overflow = "hidden";
+  }
+
+  function closePdfViewer() {
+    if (!pdfFrame || !pdfViewer) return;
+    pdfViewer.hidden = true;
+    pdfFrame.src = "about:blank";
+    if (modal.hidden) document.body.style.overflow = "";
   }
 
   function showBlock(category) {
-    const items = (data.items || []).filter((i) => i.categoryId === category.id);
+    const items = (data.items || []).filter(function (i) {
+      return i.categoryId === category.id;
+    });
 
     modalTitle.textContent = category.title;
     modalList.innerHTML = "";
@@ -32,13 +57,15 @@
         "В этом блоке пока нет PDF. Добавьте файлы в папку pdfs и записи в data/instructions.json.";
       modalList.appendChild(p);
     } else {
-      items.forEach((item) => {
+      items.forEach(function (item) {
         const li = document.createElement("li");
         const a = document.createElement("a");
         a.href = item.pdf;
         a.textContent = item.title;
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
+        a.addEventListener("click", function (e) {
+          e.preventDefault();
+          openPdfViewer(item.pdf, item.title);
+        });
         li.appendChild(a);
         modalList.appendChild(li);
       });
@@ -49,33 +76,49 @@
 
   function renderTabs() {
     tabsEl.innerHTML = "";
-    data.categories.forEach((cat) => {
+    data.categories.forEach(function (cat) {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.textContent = cat.title;
-      btn.addEventListener("click", () => showBlock(cat));
+      btn.addEventListener("click", function () {
+        showBlock(cat);
+      });
       tabsEl.appendChild(btn);
     });
   }
 
   modalBackdrop.addEventListener("click", closeModal);
   modalClose.addEventListener("click", closeModal);
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !modal.hidden) closeModal();
+  if (pdfClose) pdfClose.addEventListener("click", closePdfViewer);
+
+  if (pdfOpenSafari) {
+    pdfOpenSafari.addEventListener("click", function () {
+      setTimeout(closePdfViewer, 50);
+    });
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    if (pdfViewer && !pdfViewer.hidden) {
+      closePdfViewer();
+      e.preventDefault();
+      return;
+    }
+    if (modal && !modal.hidden) closeModal();
   });
 
   fetch("data/instructions.json")
-    .then((r) => {
+    .then(function (r) {
       if (!r.ok) throw new Error("Не удалось загрузить data/instructions.json");
       return r.json();
     })
-    .then((json) => {
+    .then(function (json) {
       data = json;
       renderTabs();
     })
-    .catch((err) => {
+    .catch(function (err) {
       console.error(err);
       tabsEl.innerHTML =
-        "<p style='padding:1rem;color:#b91c1c'>Ошибка загрузки данных. Проверьте путь к instructions.json и откройте сайт через Live Server.</p>";
+        "<p style='padding:1rem;color:#b91c1c'>Ошибка загрузки данных. Откройте сайт через сервер (Live Server) или проверьте путь.</p>";
     });
 })();
