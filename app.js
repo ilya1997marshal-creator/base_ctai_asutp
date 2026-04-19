@@ -14,7 +14,7 @@
 
   let data = null;
 
-  // Функция для открытия ссылки в новой вкладке (надежный метод для мобильных)
+  // Функция для открытия ссылки (надежный метод)
   function openInNewTab(href) {
     const a = document.createElement("a");
     a.href = href;
@@ -39,25 +39,29 @@
   function openPdfViewer(url, title) {
     if (!pdfFrame || !pdfViewer) return;
     
-    // Формируем абсолютные пути для корректной работы PDF.js
+    // Создаем ПОЛНЫЙ путь к PDF файлу
     const pdfAbsolute = new URL(url, window.location.href).href;
+    
+    // Создаем путь к вьюеру
     const viewerUrl = new URL("pdfjs/web/viewer.html", window.location.href);
+    
+    // Важно: кодируем путь к файлу, чтобы не было проблем со спецсимволами
     viewerUrl.searchParams.set("file", pdfAbsolute);
 
     pdfTitle.textContent = title || "Документ";
-    if (pdfOpenSafari) pdfOpenSafari.href = viewerUrl.href;
+    if (pdfOpenSafari) pdfOpenSafari.href = pdfAbsolute; // Прямая ссылка на файл как запасной вариант
 
-    // ОПРЕДЕЛЕНИЕ МОБИЛЬНОГО УСТРОЙСТВА (Android, iPhone, iPad и т.д.)
+    // Проверка на мобильное устройство
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
                      || (navigator.maxTouchPoints > 0 && window.matchMedia("(max-width: 900px)").matches);
 
     if (isMobile) {
-      // На Android и iOS открываем просмотрщик в новой вкладке браузера
+      // На Android пробуем открыть через вьюер в новой вкладке
       openInNewTab(viewerUrl.href);
       return;
     }
 
-    // На компьютерах открываем во встроенном фрейме поверх страницы
+    // На ПК
     pdfFrame.src = viewerUrl.href;
     pdfViewer.hidden = false;
     document.body.style.overflow = "hidden";
@@ -81,8 +85,7 @@
     if (items.length === 0) {
       const p = document.createElement("p");
       p.className = "empty-hint";
-      p.textContent =
-        "В этом блоке пока нет PDF. Добавьте файлы в папку pdfs и записи в data/instructions.json.";
+      p.textContent = "В этом блоке пока нет PDF.";
       modalList.appendChild(p);
     } else {
       items.forEach(function (item) {
@@ -116,33 +119,14 @@
     });
   }
 
-  // Обработчики событий
   if (modalBackdrop) modalBackdrop.addEventListener("click", closeModal);
   if (modalClose) modalClose.addEventListener("click", closeModal);
   if (pdfClose) pdfClose.addEventListener("click", closePdfViewer);
 
-  if (pdfOpenSafari) {
-    pdfOpenSafari.addEventListener("click", function () {
-      // Небольшая задержка перед закрытием вьюера, чтобы ссылка успела сработать
-      setTimeout(closePdfViewer, 100);
-    });
-  }
-
-  // Закрытие по кнопке Escape
-  document.addEventListener("keydown", function (e) {
-    if (e.key !== "Escape") return;
-    if (pdfViewer && !pdfViewer.hidden) {
-      closePdfViewer();
-      e.preventDefault();
-      return;
-    }
-    if (modal && !modal.hidden) closeModal();
-  });
-
   // Загрузка данных
   fetch("data/instructions.json")
     .then(function (r) {
-      if (!r.ok) throw new Error("Не удалось загрузить data/instructions.json");
+      if (!r.ok) throw new Error("Ошибка загрузки JSON");
       return r.json();
     })
     .then(function (json) {
@@ -151,9 +135,14 @@
     })
     .catch(function (err) {
       console.error(err);
-      if (tabsEl) {
-        tabsEl.innerHTML =
-          "<p style='padding:1rem;color:#b91c1c'>Ошибка загрузки данных. Убедитесь, что файл data/instructions.json существует и формат JSON корректен.</p>";
-      }
+      if (tabsEl) tabsEl.innerHTML = "<p style='color:red'>Ошибка загрузки данных</p>";
     });
+
+  // Закрытие по Escape
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      if (!pdfViewer.hidden) closePdfViewer();
+      else if (!modal.hidden) closeModal();
+    }
+  });
 })();
