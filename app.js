@@ -1,84 +1,100 @@
 let appData = null;
 
-async function startApp() {
+// Главная функция запуска
+async function initApp() {
     try {
+        // Загружаем основной JSON
         const response = await fetch('./data/instructions.json');
+        if (!response.ok) throw new Error('Не удалось загрузить инструкции');
         appData = await response.json();
         
         renderBlocks();
-        initNavigation();
-        initTheme();
-        initSchedule();
+        setupNavigation();
+        setupThemeToggle();
+        setupSchedule();
         
-        console.log("App initialized");
-    } catch (err) {
-        console.error("Data load failed", err);
+        console.log("Данные успешно загружены");
+    } catch (error) {
+        console.error("Ошибка приложения:", error);
+        document.getElementById('blocksContainer').innerHTML = 
+            `<p style="color:red; text-align:center;">Ошибка: ${error.message}</p>`;
     }
 }
 
+// Отрисовка кнопок Блок-1, Блок-2 и т.д.
 function renderBlocks() {
     const container = document.getElementById('blocksContainer');
     if (!container || !appData) return;
 
-    container.innerHTML = appData.blocks.map((block, idx) => `
-        <button class="action-main-btn" onclick="showModal(${idx})">
+    container.innerHTML = appData.blocks.map((block, index) => `
+        <button type="button" class="action-main-btn" onclick="openDetails(${index})">
             ${block.title}
         </button>
     `).join('');
 }
 
-window.showModal = (idx) => {
-    const block = appData.blocks[idx];
-    const modal = document.getElementById('modal');
+// Открытие модалки с ссылками
+window.openDetails = (index) => {
+    const block = appData.blocks[index];
     document.getElementById('modalTitle').innerText = block.title;
     document.getElementById('modalList').innerHTML = block.items.map(item => `
         <li><a href="${item.url}" target="_blank" rel="noopener">${item.name}</a></li>
     `).join('');
-    modal.hidden = false;
+    document.getElementById('modal').hidden = false;
 };
 
-function initNavigation() {
-    const navButtons = document.querySelectorAll('.nav-item');
+// Переключение вкладок (Главная, Графики...)
+function setupNavigation() {
+    const navItems = document.querySelectorAll('.nav-item');
     const sections = document.querySelectorAll('.tab-content');
 
-    navButtons.forEach(btn => {
-        btn.onclick = () => {
-            const target = btn.getAttribute('data-screen');
+    navItems.forEach(item => {
+        item.onclick = () => {
+            const screenId = item.getAttribute('data-screen');
             
-            navButtons.forEach(b => b.classList.remove('active'));
+            navItems.forEach(n => n.classList.remove('active'));
             sections.forEach(s => s.classList.remove('active'));
             
-            btn.classList.add('active');
-            document.getElementById(`screen-${target}`).classList.add('active');
+            item.classList.add('active');
+            document.getElementById(`screen-${screenId}`).classList.add('active');
+            
+            // Автоматически скрываем модалку при смене экрана
             document.getElementById('modal').hidden = true;
         };
     });
 }
 
-function initSchedule() {
-    const btn = document.getElementById('showScheduleBtn');
-    if (!btn) return;
+// Работа с графиком
+function setupSchedule() {
+    const showBtn = document.getElementById('showScheduleBtn');
+    if (!showBtn) return;
 
-    btn.onclick = async () => {
-        const res = await fetch('./data/schedule.json');
-        const data = await res.json();
-        
-        const table = document.getElementById('work-schedule');
-        document.getElementById('tableMonthTitle').innerText = data.month;
-        
-        let html = `<thead><tr><th style="position:sticky;left:0;background:var(--panel-color)">ФИО</th>`;
-        for(let i=1; i<=data.daysInMonth; i++) html += `<th>${i}</th>`;
-        html += `</tr></thead><tbody>`;
+    showBtn.onclick = async () => {
+        try {
+            const res = await fetch('./data/schedule.json');
+            const data = await res.json();
+            
+            const table = document.getElementById('work-schedule');
+            document.getElementById('tableMonthTitle').innerText = data.month;
+            
+            let html = `<thead><tr><th style="position:sticky;left:0;background:var(--panel-color)">ФИО</th>`;
+            for(let i=1; i<=data.daysInMonth; i++) html += `<th>${i}</th>`;
+            html += `</tr></thead><tbody>`;
 
-        data.employees.forEach(emp => {
-            html += `<tr><td style="position:sticky;left:0;background:var(--panel-color);font-weight:700">${emp.name}</td>`;
-            emp.days.forEach(d => html += `<td>${d || ''}</td>`);
-            html += `</tr>`;
-        });
-        table.innerHTML = html + `</tbody>`;
-        
-        document.getElementById('charts-init').hidden = true;
-        document.getElementById('schedule-container').hidden = false;
+            data.employees.forEach(emp => {
+                html += `<tr><td style="position:sticky;left:0;background:var(--panel-color);font-weight:700;text-align:left;">${emp.name}</td>`;
+                emp.days.forEach(dayValue => {
+                    html += `<td>${dayValue || ''}</td>`;
+                });
+                html += `</tr>`;
+            });
+            table.innerHTML = html + `</tbody>`;
+            
+            document.getElementById('charts-init').hidden = true;
+            document.getElementById('schedule-container').hidden = false;
+        } catch (e) {
+            alert("Ошибка загрузки данных графика");
+        }
     };
 
     document.getElementById('backToCharts').onclick = () => {
@@ -87,16 +103,19 @@ function initSchedule() {
     };
 }
 
-function initTheme() {
+// Переключатель темы
+function setupThemeToggle() {
     document.getElementById('themeToggle').onclick = () => {
         const root = document.documentElement;
-        const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        root.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
+        const newTheme = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        root.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
     };
 }
 
+// Закрытие модального окна
 document.getElementById('modalClose').onclick = () => document.getElementById('modal').hidden = true;
 document.getElementById('modalBackdrop').onclick = () => document.getElementById('modal').hidden = true;
 
-window.onload = startApp;
+// Запуск при полной загрузке страницы
+window.onload = initApp;

@@ -5,14 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="База ЦТАИ">
     <title>База данных ЦТАИ АСУ ТП</title>
-    
-    <link rel="stylesheet" href="styles.css?v=101">
-    
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="stylesheet" href="styles.css?v=201">
     <script>
-        // Установка темы сразу при загрузке
-        const savedTheme = localStorage.getItem('theme') || 'light';
+        const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
     </script>
 </head>
@@ -39,7 +36,7 @@
 
             <section id="screen-charts" class="tab-content">
                 <div class="panel">
-                    <div id="charts-init">
+                    <div id="charts-init" class="centered-box">
                         <button type="button" id="showScheduleBtn" class="action-main-btn">📅 График работы</button>
                     </div>
                     <div id="schedule-container" hidden>
@@ -55,22 +52,24 @@
             </section>
 
             <section id="screen-edu" class="tab-content">
-                <div class="panel">
-                    <div class="empty-state">
-                        <span class="empty-icon">🎓</span>
-                        <h3>Обучение</h3>
-                        <p>Раздел в разработке.</p>
+                <div class="panel centered-panel">
+                    <div class="status-card">
+                        <span class="status-icon">🎓</span>
+                        <h3 class="status-title">Обучение</h3>
+                        <p class="status-text">Раздел в разработке.</p>
                     </div>
                 </div>
             </section>
 
             <section id="screen-support" class="tab-content">
-                <div class="panel">
-                    <div class="support-page">
-                        <span class="support-large-icon">✉️</span>
-                        <h3>Поддержка</h3>
-                        <button type="button" class="action-main-btn" style="margin-top:20px;" onclick="window.location.href='mailto:i.rygih@mail.ru'">📧 Почта</button>
-                        <button type="button" class="action-main-btn" style="background: #0088cc; margin-top: 15px;" onclick="window.open('https://t.me/IlyaMar5hal', '_blank')">✈️ Telegram</button>
+                <div class="panel centered-panel">
+                    <div class="status-card">
+                        <span class="status-icon">✉️</span>
+                        <h3 class="status-title">Поддержка</h3>
+                        <div class="support-btns">
+                            <button type="button" class="action-main-btn" onclick="window.location.href='mailto:i.rygih@mail.ru'">📧 Почта</button>
+                            <button type="button" class="action-main-btn telegram-btn" onclick="window.open('https://t.me/IlyaMar5hal', '_blank')">✈️ Telegram</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -100,7 +99,7 @@
         <div class="modal-backdrop" id="modalBackdrop"></div>
         <div class="modal-content">
             <div class="modal-head">
-                <h2 id="modalTitle">Заголовок</h2>
+                <h2 id="modalTitle"></h2>
                 <button type="button" class="modal-close" id="modalClose">✕</button>
             </div>
             <div class="modal-body">
@@ -109,6 +108,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=101"></script>
+    <script src="app.js?v=201"></script>
 </body>
 </html>
