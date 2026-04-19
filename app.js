@@ -1,115 +1,102 @@
-/**
- * app.js - Full Fixed Version
- */
-
 let appData = null;
 
-async function startApp() {
+async function start() {
     try {
-        const res = await fetch('./data/instructions.json');
-        appData = await res.json();
+        const response = await fetch('./data/instructions.json');
+        appData = await response.json();
         
-        renderBlocks();
-        initNavigation();
-        initTheme();
-        initCharts();
+        renderMainBlocks();
+        initNav();
+        initThemeBtn();
+        initSchedule();
         
-        console.log("App Loaded Successfully");
+        console.log("App Started");
     } catch (e) {
-        console.error("Critical Load Error:", e);
+        console.error("Failed to load data", e);
     }
 }
 
-function renderBlocks() {
+function renderMainBlocks() {
     const container = document.getElementById('blocksContainer');
     if (!container || !appData) return;
 
     container.innerHTML = appData.blocks.map((block, idx) => `
-        <button class="action-main-btn" onclick="openModal(${idx})">
+        <button class="action-main-btn" onclick="openInfo(${idx})">
             ${block.title}
         </button>
     `).join('');
 }
 
-window.openModal = (idx) => {
+window.openInfo = (idx) => {
     const block = appData.blocks[idx];
-    const modal = document.getElementById('modal');
     document.getElementById('modalTitle').innerText = block.title;
     document.getElementById('modalList').innerHTML = block.items.map(item => `
         <li><a href="${item.url}" target="_blank" rel="noopener">${item.name}</a></li>
     `).join('');
-    modal.hidden = false;
+    document.getElementById('modal').hidden = false;
 };
 
-function initNavigation() {
-    const buttons = document.querySelectorAll('.nav-item');
-    const screens = document.querySelectorAll('.tab-content');
+function initNav() {
+    const btns = document.querySelectorAll('.nav-item');
+    const tabs = document.querySelectorAll('.tab-content');
 
-    buttons.forEach(btn => {
+    btns.forEach(btn => {
         btn.addEventListener('click', () => {
-            const screenId = btn.getAttribute('data-screen');
+            const target = btn.getAttribute('data-screen');
             
-            buttons.forEach(b => b.classList.remove('active'));
-            screens.forEach(s => s.classList.remove('active'));
+            btns.forEach(b => b.classList.remove('active'));
+            tabs.forEach(t => t.classList.remove('active'));
             
             btn.classList.add('active');
-            const target = document.getElementById(`screen-${screenId}`);
-            if (target) target.classList.add('active');
-            
+            document.getElementById(`screen-${target}`).classList.add('active');
             document.getElementById('modal').hidden = true;
         });
     });
 }
 
-function initCharts() {
+function initSchedule() {
     const showBtn = document.getElementById('showScheduleBtn');
-    const container = document.getElementById('schedule-container');
-    const initBox = document.getElementById('charts-init');
+    if (!showBtn) return;
 
-    if (showBtn) {
-        showBtn.onclick = async () => {
-            try {
-                const res = await fetch('./data/schedule.json');
-                const data = await res.json();
-                
-                const table = document.getElementById('work-schedule');
-                document.getElementById('tableMonthTitle').innerText = data.month;
-                
-                let html = `<thead><tr><th style="position:sticky;left:0;background:var(--panel-color)">ФИО</th>`;
-                for(let i=1; i<=data.daysInMonth; i++) html += `<th>${i}</th>`;
-                html += `</tr></thead><tbody>`;
+    showBtn.onclick = async () => {
+        const res = await fetch('./data/schedule.json');
+        const data = await res.json();
+        
+        const table = document.getElementById('work-schedule');
+        document.getElementById('tableMonthTitle').innerText = data.month;
+        
+        let html = `<thead><tr><th style="position:sticky;left:0;background:var(--panel-color)">ФИО</th>`;
+        for(let i=1; i<=data.daysInMonth; i++) html += `<th>${i}</th>`;
+        html += `</tr></thead><tbody>`;
 
-                data.employees.forEach(emp => {
-                    html += `<tr><td style="position:sticky;left:0;background:var(--panel-color);font-weight:700;text-align:left;padding-left:10px;">${emp.name}</td>`;
-                    emp.days.forEach(d => html += `<td>${d || ''}</td>`);
-                    html += `</tr>`;
-                });
-                table.innerHTML = html + `</tbody>`;
-                
-                initBox.hidden = true;
-                container.hidden = false;
-            } catch (err) { alert("Ошибка загрузки графика"); }
-        };
-    }
+        data.employees.forEach(emp => {
+            html += `<tr><td style="position:sticky;left:0;background:var(--panel-color);font-weight:700;text-align:left;padding-left:8px;">${emp.name}</td>`;
+            emp.days.forEach(d => html += `<td>${d || ''}</td>`);
+            html += `</tr>`;
+        });
+        table.innerHTML = html + `</tbody>`;
+        
+        document.getElementById('charts-init').hidden = true;
+        document.getElementById('schedule-container').hidden = false;
+    };
 
     document.getElementById('backToCharts').onclick = () => {
-        container.hidden = true;
-        initBox.hidden = false;
+        document.getElementById('schedule-container').hidden = true;
+        document.getElementById('charts-init').hidden = false;
     };
 }
 
-function initTheme() {
-    const toggle = document.getElementById('themeToggle');
-    toggle.onclick = () => {
+function initThemeBtn() {
+    document.getElementById('themeToggle').onclick = () => {
         const html = document.documentElement;
-        const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        const current = html.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
         html.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
     };
 }
 
-// Закрытие модалки
 document.getElementById('modalClose').onclick = () => document.getElementById('modal').hidden = true;
 document.getElementById('modalBackdrop').onclick = () => document.getElementById('modal').hidden = true;
 
-window.onload = startApp;
+window.onload = start;
