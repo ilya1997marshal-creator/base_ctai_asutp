@@ -9,6 +9,7 @@
 
   let data = null;
 
+  // Переключение темы
   function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -28,6 +29,7 @@
     document.body.style.overflow = "";
   }
 
+  // Логика открытия PDF
   function openPdf(url) {
     const pdfAbsolute = new URL(url, window.location.href).href;
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || 
@@ -41,6 +43,7 @@
     }
   }
 
+  // Отображение контента выбранного блока
   function showBlock(category) {
     const items = (data.items || []).filter(i => i.categoryId === category.id);
     modalTitle.textContent = category.title;
@@ -65,6 +68,7 @@
     openModal();
   }
 
+  // Генерация кнопок на главной
   function renderTabs() {
     if (!tabsEl || !data) return;
     tabsEl.innerHTML = "";
@@ -77,9 +81,11 @@
     });
   }
 
+  // Слушатели закрытия модалки
   if (modalBackdrop) modalBackdrop.onclick = closeModal;
   if (modalClose) modalClose.onclick = closeModal;
 
+  // Загрузка данных из JSON
   fetch("data/instructions.json")
     .then(r => r.json())
     .then(json => {

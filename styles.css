@@ -6,8 +6,9 @@
   --text-muted: #707579;
   --link-color: #24a1de;
   --modal-title-color: #1a1a1a;
-  /* Мягкий цвет для заголовка на главном экране (светлая тема) */
   --header-text: #f0f7ff; 
+  --support-bg: #f8f9fa;
+  --support-text: #505050;
   --shadow-main: 0 10px 25px rgba(0,0,0,0.1);
   --radius-main: 28px;
   --radius-sm: 18px;
@@ -23,8 +24,9 @@
   --text-muted: #7f91a4;
   --link-color: #6fb6f6;
   --modal-title-color: #e4ecf2;
-  /* Мягкий цвет для заголовка на главном экране (темная тема) */
   --header-text: #d4e3f0;
+  --support-bg: #242f3d;
+  --support-text: #a8b6c4;
   --shadow-main: 0 10px 30px rgba(0,0,0,0.5);
   --radius-main: 28px;
   --radius-sm: 18px;
@@ -39,7 +41,6 @@
 
 body {
   margin: 0;
-  /* Шрифт Rounded выглядит менее резким и более дружелюбным */
   font-family: "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: var(--bg-color);
   background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10-10-4.477-10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10-10-4.477-10-10zM30 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10-10-4.477-10-10zM70 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10-10-4.477-10-10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
@@ -87,10 +88,9 @@ body {
 .title { 
   margin: 0; 
   font-size: 32px; 
-  font-weight: 800; /* Жирный, но не экстремальный */
+  font-weight: 800; 
   color: var(--header-text);
   letter-spacing: -0.5px;
-  /* Мягкая тень для объема */
   text-shadow: 0 2px 10px rgba(0,0,0,0.15);
 }
 
@@ -131,6 +131,41 @@ button[type="button"]:not(.theme-toggle, .modal-close) {
 
 button[type="button"]:active { transform: scale(0.95); opacity: 0.9; }
 
+/* Секция обратной связи */
+.support-area {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--item-border);
+  text-align: center;
+}
+
+.support-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 280px;
+  padding: 14px 20px;
+  background: var(--support-bg);
+  color: var(--support-text);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.support-btn:active {
+  transform: scale(0.97);
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.support-icon { font-size: 20px; }
+
+/* Модальное окно */
 .modal {
   position: fixed;
   inset: 0;
@@ -212,3 +247,5 @@ button[type="button"]:active { transform: scale(0.95); opacity: 0.9; }
   font-size: 17px;
   display: block;
 }
+
+.modal-list a:active { opacity: 0.5; }
