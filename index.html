@@ -5,26 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="База ЦТАИ">
   <link rel="manifest" href="manifest.json">
-  <title>База ЦТАИ</title>
+  <title>База данных ЦТАИ АСУ ТП</title>
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="stylesheet" href="styles.css?v=40">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css?v=41">
   <script>
+    // Мгновенная установка сохраненной темы
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
+    
+    // Регистрация Service Worker для работы офлайн и кэширования паттерна
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+          console.log('ServiceWorker зарегистрирован успешно');
+        }).catch(err => {
+          console.log('Ошибка при регистрации ServiceWorker', err);
+        });
+      });
+    }
   </script>
 </head>
 <body>
   <div class="app">
     <header class="header">
       <div class="header-top">
-        <button type="button" id="themeToggle" class="theme-toggle">
+        <button type="button" id="themeToggle" class="theme-toggle" aria-label="Сменить тему">
           <span class="sun-icon">☀️</span>
           <span class="moon-icon">🌙</span>
         </button>
       </div>
-      <h1 class="title">База данных</h1>
-      <p class="subtitle">ЦТАИ АСУ ТП</p>
+      <div class="header-inner">
+        <h1 id="pageTitle" class="title">База данных</h1>
+        <p id="pageSubtitle" class="subtitle">ЦТАИ АСУ ТП</p>
+      </div>
     </header>
 
     <main class="main">
@@ -40,13 +56,21 @@
             <button type="button" id="showScheduleBtn" class="action-main-btn">📅 График работы</button>
             <button type="button" id="showEduScheduleBtn" class="action-main-btn" style="margin-top: 15px; background: #34c759;">🎓 График обучений</button>
           </div>
+          
           <div id="schedule-container" hidden>
             <div class="table-header-row">
               <button type="button" id="backToCharts" class="back-btn">← Назад</button>
               <span id="tableMonthTitle" class="table-month-title"></span>
             </div>
-            <div class="table-wrapper"><table id="work-schedule"></table></div>
-            <div id="schedule-legend" class="table-legend"></div>
+            <div class="table-wrapper">
+              <table id="work-schedule"></table>
+            </div>
+            <div id="schedule-legend" class="table-legend">
+              <div class="legend-item"><div class="dot d1219"></div><span>12/19</span></div>
+              <div class="legend-item"><div class="dot d1202"></div><span>12/02</span></div>
+              <div class="legend-item"><div class="dot dotp"></div><span>ОТП</span></div>
+              <div class="legend-item"><div class="dot dedu"></div><span>УЧ</span></div>
+            </div>
           </div>
         </div>
       </section>
@@ -56,7 +80,7 @@
           <div class="empty-state">
             <span class="empty-icon">🎓</span>
             <h3>Обучение</h3>
-            <p>Раздел в разработке.</p>
+            <p>Раздел находится в разработке.</p>
           </div>
         </div>
       </section>
@@ -66,19 +90,33 @@
           <div class="support-page">
             <span class="support-large-icon">✉️</span>
             <h3>Поддержка</h3>
-            <p class="support-text">Выберите удобный способ связи:</p>
-            <button type="button" class="action-main-btn" onclick="window.location.href='mailto:i.rygih@mail.ru'">📧 Почта</button>
-            <button type="button" class="action-main-btn" style="background: #0088cc; margin-top: 15px;" onclick="window.open('https://t.me/IlyaMar5hal', '_blank')">✈️ Telegram</button>
+            <p class="support-text">Если у вас возникли вопросы или предложения, выберите способ связи:</p>
+            <div class="support-buttons">
+               <button type="button" class="action-main-btn" onclick="window.location.href='mailto:i.rygih@mail.ru'">📧 Написать на почту</button>
+               <button type="button" class="action-main-btn" style="background: #0088cc; margin-top: 15px;" onclick="window.open('https://t.me/IlyaMar5hal', '_blank')">✈️ Связаться в Telegram</button>
+            </div>
           </div>
         </div>
       </section>
     </main>
 
     <nav class="bottom-nav">
-      <button class="nav-item active" data-screen="main"><span class="nav-icon">🏠</span><span class="nav-label">ГЛАВНАЯ</span></button>
-      <button class="nav-item" data-screen="charts"><span class="nav-icon">📈</span><span class="nav-label">ГРАФИКИ</span></button>
-      <button class="nav-item" data-screen="edu"><span class="nav-icon">🎓</span><span class="nav-label">ТЕСТЫ</span></button>
-      <button class="nav-item" data-screen="support"><span class="nav-icon">💬</span><span class="nav-label">ПОМОЩЬ</span></button>
+      <button class="nav-item active" data-screen="main">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Главная</span>
+      </button>
+      <button class="nav-item" data-screen="charts">
+        <span class="nav-icon">📈</span>
+        <span class="nav-label">Графики</span>
+      </button>
+      <button class="nav-item" data-screen="edu">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-label">Тесты</span>
+      </button>
+      <button class="nav-item" data-screen="support">
+        <span class="nav-icon">💬</span>
+        <span class="nav-label">Помощь</span>
+      </button>
     </nav>
   </div>
 
@@ -90,9 +128,12 @@
         <h2 id="modalTitle" class="modal-title"></h2>
         <button type="button" class="modal-close" id="modalClose">✕</button>
       </div>
-      <div class="modal-body"><ul id="modalList" class="modal-list"></ul></div>
+      <div class="modal-body">
+        <ul id="modalList" class="modal-list"></ul>
+      </div>
     </div>
   </div>
-  <script src="app.js?v=40"></script>
+
+  <script src="app.js?v=41"></script>
 </body>
 </html>

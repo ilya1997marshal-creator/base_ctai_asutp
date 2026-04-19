@@ -1,15 +1,50 @@
-const CACHE_NAME = 'ctai-base-v39';
-const assets = ['./', './index.html', './styles.css', './app.js', './manifest.json', './pattern.png'];
+/**
+ * sw.js - Service Worker для оффлайн работы
+ * Версия: 41
+ */
 
-self.addEventListener('install', (e) => {
+const CACHE_NAME = 'ctai-base-cache-v41';
+const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
+  './styles.css',
+  './app.js',
+  './manifest.json',
+  './pattern.png',
+  './apple-touch-icon.png',
+  './data/instructions.json'
+];
+
+// Установка: кэшируем все ресурсы
+self.addEventListener('install', (event) => {
   self.skipWaiting();
-  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(assets)));
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('Кэширование ресурсов начато');
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
+  );
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))));
+// Активация: чистим старый кэш
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name))
+      );
+    })
+  );
 });
 
-self.addEventListener('fetch', (e) => {
-  e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+// Запросы: сначала кэш, потом сеть
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(event.request);
+    })
+  );
 });
