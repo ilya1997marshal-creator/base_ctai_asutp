@@ -7,6 +7,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="data.js"></script>
+    <script src="library.js"></script>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#111827">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -24,7 +25,6 @@
         .tab-content.active { display: flex; flex-direction: column; }
         .card-bg { background-color: #111827; border-color: #334155; }
 
-        /* График */
         .schedule-container {
             overflow-x: auto;
             border-radius: 12px;
@@ -44,7 +44,6 @@
         thead th { background-color: #334155; color: #f8fafc; font-weight: 600; text-transform: uppercase; font-size: 9px; }
         thead th.col-name { z-index: 20; background-color: #2563eb; }
 
-        /* Статусы смен */
         .shift-D { background-color: #059669 !important; color: transparent !important; } 
         .shift-N { background-color: #4f46e5 !important; color: transparent !important; } 
         .shift-S { background-color: #d97706 !important; color: transparent !important; } 
@@ -53,7 +52,6 @@
         .weekend-cell { background-color: rgba(255, 255, 255, 0.03); }
         thead th.weekend-cell { background-color: #1e293b !important; color: #ef4444 !important; }
 
-        /* Эффект выделения */
         tr.highlighted-row td:not([class*="shift-D"]):not([class*="shift-N"]):not([class*="shift-S"]) { 
             background-color: #1e293b !important; 
         }
@@ -130,7 +128,7 @@
                         <span class="font-bold text-zinc-100 uppercase tracking-widest text-[10px]">Почта</span>
                     </a>
                 </div>
-                <p class="text-center text-[10px] text-zinc-700 mt-12 uppercase tracking-widest font-black">Версия 1.2.7</p>
+                <p class="text-center text-[10px] text-zinc-700 mt-12 uppercase tracking-widest font-black">Версия 1.3.0</p>
             </div>
         </div>
     </div>
@@ -170,13 +168,8 @@
                 currentlyHighlighted = null;
             } else {
                 rows.forEach(r => {
-                    if (r === row) {
-                        r.classList.add('highlighted-row');
-                        r.classList.remove('blurred-row');
-                    } else {
-                        r.classList.add('blurred-row');
-                        r.classList.remove('highlighted-row');
-                    }
+                    if (r === row) { r.classList.add('highlighted-row'); r.classList.remove('blurred-row'); } 
+                    else { r.classList.add('blurred-row'); r.classList.remove('highlighted-row'); }
                 });
                 currentlyHighlighted = row;
             }
@@ -222,26 +215,23 @@
             currentlyHighlighted = null;
         }
 
-        /* Обновленные данные блоков: переименован файл в Блоке 1 */
-        const blocksData = { 
-            1: [{ name: "Руководство S7-400", file: "pdfs/blok-1/S7-400_instalation.pdf" }], 
-            2: [], 3: [], 4: [], 5: [], 6: [], 
-            other: [], zip: [] 
-        };
-
+        /* Генерация кнопок Блоков 1-6 */
         const blocksCont = document.getElementById('blocks-container');
         for(let i=1; i<=6; i++) {
             blocksCont.innerHTML += `<button onclick="openBlockModal(${i})" class="w-full card-bg border border-zinc-800 rounded-2xl p-4 flex items-center justify-between mb-2 text-zinc-200 font-medium active:scale-95 transition-transform"><div class="flex items-center gap-4"><span class="text-blue-500 font-bold text-lg">0${i}</span>Блок ${i}</div><span>›</span></button>`;
         }
 
         function openBlockModal(key) {
-            const data = blocksData[key] || [];
+            // blocksData теперь берется из library.js
+            const data = (typeof blocksData !== 'undefined') ? blocksData[key] : [];
             document.getElementById('modal-block-title').textContent = key === 'other' ? 'Инструкции' : key === 'zip' ? 'ЗИП АСУ ТП' : `Блок ${key}`;
             const container = document.getElementById('instructions-list');
-            container.innerHTML = data.length ? '' : '<div class="text-center py-10 text-zinc-500 text-sm">Раздел пуст</div>';
-            data.forEach(item => {
-                container.innerHTML += `<div onclick="window.open('${item.file}', '_blank')" class="p-4 rounded-xl card-bg border border-zinc-800 flex items-center gap-4 cursor-pointer active:bg-zinc-800"><span class="text-xl">📄</span><span class="font-medium text-xs text-zinc-100">${item.name}</span></div>`;
-            });
+            container.innerHTML = data && data.length ? '' : '<div class="text-center py-10 text-zinc-500 text-sm">Раздел пуст</div>';
+            if (data) {
+                data.forEach(item => {
+                    container.innerHTML += `<div onclick="window.open('${item.file}', '_blank')" class="p-4 rounded-xl card-bg border border-zinc-800 flex items-center gap-4 cursor-pointer active:bg-zinc-800"><span class="text-xl">📄</span><span class="font-medium text-xs text-zinc-100">${item.name}</span></div>`;
+                });
+            }
             document.getElementById('block-modal').classList.remove('hidden');
         }
         function closeBlockModal() { document.getElementById('block-modal').classList.add('hidden'); }
