@@ -28,16 +28,17 @@
         .instruction-item:active { background-color: #1f2937; transform: scale(0.985); }
 
         .schedule-table td, .schedule-table th {
-            font-size: 13px;
-            padding: 9px 5px;
+            font-size: 12px;
+            padding: 8px 4px;
             text-align: center;
             border: 1px solid #27272a;
             white-space: nowrap;
             transition: all 0.3s ease;
+            vertical-align: middle;
         }
         .day-shift   { background-color: #166534; color: #fff; }
         .night-shift { background-color: #4338ca; color: #fff; }
-        .sp-shift    { background-color: #b45309; color: #fff; }
+        .sp-shift    { background-color: #b45309; color: #fff; } /* 0828 и 0804 */
         .off         { background-color: #3f3f46; color: #a1a1aa; }
         .weekend     { background-color: #1f2937 !important; color: #e4e4e7; }
 
@@ -46,7 +47,6 @@
             background-color: #1e2937 !important;
             color: #f1f5f9;
             font-weight: 600;
-            transform: scale(1.02);
         }
         .blurred-row td {
             opacity: 0.25;
@@ -54,6 +54,13 @@
         }
 
         .card-bg { background-color: #111827; border-color: #334155; }
+        
+        /* Центрирование контейнера таблицы */
+        .table-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
     </style>
 </head>
 <body class="bg-[#0a0a0a] text-zinc-100 min-h-screen pb-16">
@@ -61,11 +68,11 @@
     <div class="max-w-xl mx-auto">
 
         <div id="tab-home" class="tab-content active px-4 pt-6">
-            <div class="flex items-center gap-3 mb-6 px-1">
-                <div class="w-8 h-8 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-semibold text-2xl leading-none pt-0.5">Ц</div>
-                <h1 class="text-2xl font-semibold tracking-tighter">ЦТАИ АСУ ТП</h1>
+            <div class="flex flex-col items-center mb-8">
+                <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-semibold text-3xl mb-3">Ц</div>
+                <h1 class="text-2xl font-semibold tracking-tighter text-center">ЦТАИ АСУ ТП</h1>
             </div>
-            <p class="text-zinc-400 text-[15px] mb-5 px-1">Выберите раздел</p>
+            <p class="text-zinc-400 text-[15px] mb-5 px-1 text-center">Выберите раздел</p>
 
             <div class="space-y-1.5 px-1">
                 <button onclick="openBlockModal(1)" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
@@ -97,15 +104,17 @@
         </div>
 
         <div id="tab-schedule" class="tab-content px-4 pt-6">
-            <div class="px-1">
+            <div class="text-center mb-6">
                 <h2 class="text-2xl font-semibold mb-1">График работы</h2>
-                <p class="text-zinc-400 text-sm mb-6">Апрель 2026 • Оперативный персонал</p>
-                
-                <div class="overflow-x-auto rounded-3xl border border-slate-700 bg-[#111827]">
-                    <table id="schedule-table" class="schedule-table w-full min-w-[1180px] text-xs">
+                <p class="text-zinc-400 text-sm">Апрель 2026 • Оперативный персонал</p>
+            </div>
+            
+            <div class="table-container">
+                <div class="overflow-x-auto rounded-2xl border border-slate-700 bg-[#111827]">
+                    <table id="schedule-table" class="schedule-table w-full min-w-[1100px]">
                         <thead>
                             <tr class="bg-slate-800 text-slate-300">
-                                <th class="text-left pl-4 w-52">Фамилия</th>
+                                <th class="text-left pl-4 w-48">Фамилия</th>
                                 <th>1</th><th>2</th><th>3</th><th class="weekend">4</th><th class="weekend">5</th>
                                 <th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
                                 <th class="weekend">11</th><th class="weekend">12</th>
@@ -118,87 +127,111 @@
                                 <th class="bg-slate-800 font-medium">Часы</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-700">
+                        <tbody class="divide-y divide-slate-700 text-center">
                             <tr onclick="highlightRow(this)">
-                                <td class="pl-4 font-medium">Лагутенков Р.С.</td>
-                                <td></td><td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td class="off"></td>
-                                <td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td></td><td></td>
-                                <td class="day-shift">1219</td><td class="off"></td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td>
-                                <td class="day-shift">1219</td><td class="night-shift">1202</td><td class="day-shift">1219</td><td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td class="day-shift">1219</td>
-                                <td class="day-shift">1219</td><td class="night-shift">1202</td><td class="day-shift">1219</td><td class="day-shift">1219</td><td></td><td></td>
-                                <td class="font-medium">17</td><td class="font-medium">204</td>
+                                <td class="pl-4 text-left font-medium">Лагутенков Р.С.</td>
+                                <td class="off">ПХ</td><td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td class="weekend"></td>
+                                <td></td><td class="sp-shift">0828</td><td class="night-shift">1202</td><td></td><td></td>
+                                <td class="day-shift">1219</td><td class="weekend"></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td class="night-shift">1202</td>
+                                <td class="weekend"></td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td class="night-shift">1202</td>
+                                <td class="weekend"></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td></td><td></td>
+                                <td class="font-medium">14</td><td class="font-medium">164,0</td>
                             </tr>
                             <tr onclick="highlightRow(this)">
-                                <td class="pl-4 font-medium">Миронов С.А.</td>
-                                <td></td><td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td class="off"></td>
-                                <td></td><td></td><td class="day-shift">1219</td><td></td><td class="day-shift">1219</td>
-                                <td class="day-shift">1219</td><td class="off"></td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td>
-                                <td class="day-shift">1219</td><td class="night-shift">1202</td><td class="day-shift">1219</td><td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td class="day-shift">1219</td>
-                                <td class="day-shift">1219</td><td class="night-shift">1202</td><td class="day-shift">1219</td><td class="day-shift">1219</td><td></td><td></td>
-                                <td class="font-medium">16</td><td class="font-medium">192</td>
+                                <td class="pl-4 text-left font-medium">Миронов С.А.</td>
+                                <td class="off">ПХ</td><td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td class="weekend"></td>
+                                <td></td><td></td><td class="night-shift">1202</td><td></td><td class="sp-shift">0804</td>
+                                <td class="day-shift">1219</td><td class="weekend"></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td class="night-shift">1202</td>
+                                <td class="weekend"></td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td class="night-shift">1202</td>
+                                <td class="weekend"></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td></td><td></td>
+                                <td class="font-medium">14</td><td class="font-medium">164,0</td>
+                            </tr>
+                            <tr onclick="highlightRow(this)">
+                                <td class="pl-4 text-left font-medium">Куштанов А.А.</td>
+                                <td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td class="night-shift">1202</td><td class="weekend"></td>
+                                <td class="sp-shift">0828</td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td>
+                                <td class="night-shift">1202</td><td class="weekend"></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td class="day-shift">1219</td>
+                                <td class="weekend"></td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td></td>
+                                <td class="weekend"></td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td></td>
+                                <td class="font-medium">14</td><td class="font-medium">164,0</td>
+                            </tr>
+                            <tr onclick="highlightRow(this)">
+                                <td class="pl-4 text-left font-medium">Рыжих И.Н.</td>
+                                <td></td><td></td><td></td><td class="weekend"></td><td class="weekend"></td>
+                                <td></td><td></td><td></td><td></td><td></td>
+                                <td class="weekend"></td><td class="weekend"></td><td></td><td></td><td></td><td></td><td class="day-shift">1219</td>
+                                <td class="weekend"></td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td></td>
+                                <td class="weekend"></td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td></td>
+                                <td class="font-medium">5</td><td class="font-medium">60,0</td>
+                            </tr>
+                            <tr onclick="highlightRow(this)">
+                                <td class="pl-4 text-left font-medium">Бондаренко Т.А.</td>
+                                <td class="off">О</td><td class="off">О</td><td></td><td class="weekend"></td><td class="weekend"></td>
+                                <td class="off">О</td><td class="off">О</td><td></td><td></td><td class="off">О</td>
+                                <td class="weekend"></td><td class="weekend"></td><td></td><td class="off">О</td><td></td><td></td><td class="off">О</td>
+                                <td class="weekend"></td><td></td><td class="off">О</td><td class="off">О</td><td></td><td></td><td class="off">О</td>
+                                <td class="weekend"></td><td class="off">О</td><td class="off">О</td><td></td><td></td><td></td>
+                                <td class="font-medium">0</td><td class="font-medium">ОТП</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+            </div>
 
-                <div class="mt-6 px-1 text-sm">
-                    <p class="font-medium mb-3">Обозначения:</p>
-                    <div class="flex flex-wrap gap-x-6 gap-y-3 text-xs">
-                        <div class="flex items-center gap-2"><div class="w-5 h-5 bg-emerald-700 rounded"></div><span>1219 — Дневная (08:00–20:00)</span></div>
-                        <div class="flex items-center gap-2"><div class="w-5 h-5 bg-indigo-700 rounded"></div><span>1202 — Ночная (20:00–08:00)</span></div>
-                        <div class="flex items-center gap-2"><div class="w-5 h-5 bg-amber-700 rounded"></div><span>СП — Спецподготовка (8 ч)</span></div>
-                        <div class="flex items-center gap-2"><div class="w-5 h-5 bg-zinc-600 rounded"></div><span>ОТП — Отпуск / выходной</span></div>
-                    </div>
+            <div class="mt-6 px-1 text-sm max-w-md mx-auto">
+                <p class="font-medium mb-3 text-center">Обозначения:</p>
+                <div class="grid grid-cols-1 gap-y-2 text-[11px]">
+                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-emerald-700 rounded"></div><span>1219 — Дневная (08:00–20:00) 12ч</span></div>
+                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-indigo-700 rounded"></div><span>1202 — Ночная (20:00–08:00) 12ч</span></div>
+                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-amber-700 rounded"></div><span>0828/0804 — Спецподготовка (8ч)</span></div>
+                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-zinc-600 rounded"></div><span>О / ПХ / ОТП — Отпуск / Выходной</span></div>
                 </div>
             </div>
         </div>
 
-        <div id="tab-tests" class="tab-content px-4 pt-6">
-            <div class="text-center py-12">
-                <div class="mx-auto w-16 h-16 bg-violet-600 rounded-3xl flex items-center justify-center text-4xl mb-6">📝</div>
-                <h2 class="text-2xl font-semibold mb-2">Тесты по охране труда</h2>
-                <p class="text-zinc-400">Раздел в разработке</p>
-                <div class="mt-10 card-bg border rounded-3xl p-8">
-                    <button onclick="alert('Тесты скоро будут доступны!')" class="w-full py-4 bg-violet-600 hover:bg-violet-500 rounded-3xl font-medium text-base">Начать тренировку</button>
-                </div>
+        <div id="tab-tests" class="tab-content px-4 pt-6 text-center">
+            <div class="mx-auto w-16 h-16 bg-violet-600 rounded-3xl flex items-center justify-center text-4xl mb-6">📝</div>
+            <h2 class="text-2xl font-semibold mb-2">Тесты</h2>
+            <p class="text-zinc-400">Раздел в разработке</p>
+            <div class="mt-10 card-bg border rounded-3xl p-8">
+                <button onclick="alert('Тесты скоро будут доступны!')" class="w-full py-4 bg-violet-600 hover:bg-violet-500 rounded-3xl font-medium">Начать</button>
             </div>
         </div>
 
         <div id="tab-help" class="tab-content px-4 pt-6">
-            <h2 class="text-2xl font-semibold mb-5 px-1">Обратная связь</h2>
-            <p class="text-zinc-400 text-[15px] mb-5 px-1">Напишите про ошибки или идеи по улучшению приложения</p>
-            <textarea id="feedback-text" rows="7" class="w-full card-bg border border-slate-700 rounded-3xl p-5 text-base placeholder-zinc-400 focus:border-blue-500" placeholder="Ваше сообщение..."></textarea>
-            <button onclick="sendFeedback()" class="w-full mt-6 bg-blue-600 hover:bg-blue-500 py-4 rounded-3xl font-medium text-base">Отправить</button>
+            <h2 class="text-2xl font-semibold mb-5 text-center">Обратная связь</h2>
+            <textarea id="feedback-text" rows="7" class="w-full card-bg border border-slate-700 rounded-3xl p-5 text-base outline-none focus:border-blue-500" placeholder="Ваше сообщение..."></textarea>
+            <button onclick="sendFeedback()" class="w-full mt-6 bg-blue-600 hover:bg-blue-500 py-4 rounded-3xl font-medium">Отправить</button>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-[#111827] border-t border-slate-700 max-w-xl mx-auto">
-        <div class="flex text-zinc-400 text-xs">
-            <button onclick="switchTab(0)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-2xl mb-0.5">🏠</span><span>Главная</span></button>
-            <button onclick="switchTab(1)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-2xl mb-0.5">📅</span><span>График</span></button>
-            <button onclick="switchTab(2)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-2xl mb-0.5">📝</span><span>Тесты</span></button>
-            <button onclick="switchTab(3)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-2xl mb-0.5">❓</span><span>Помощь</span></button>
+    <nav class="fixed bottom-0 left-0 right-0 bg-[#111827] border-t border-slate-700 max-w-xl mx-auto z-50">
+        <div class="flex text-zinc-400 text-[10px] uppercase font-bold">
+            <button onclick="switchTab(0)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-xl mb-0.5">🏠</span>Главная</button>
+            <button onclick="switchTab(1)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-xl mb-0.5">📅</span>График</button>
+            <button onclick="switchTab(2)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-xl mb-0.5">📝</span>Тесты</button>
+            <button onclick="switchTab(3)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-xl mb-0.5">❓</span>Помощь</button>
         </div>
     </nav>
 
-    <div id="block-modal" onclick="if(event.target===this) closeBlockModal()" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+    <div id="block-modal" onclick="if(event.target===this) closeBlockModal()" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100] p-4">
         <div class="modal card-bg border rounded-3xl w-full max-w-md max-h-[78vh] flex flex-col overflow-hidden">
             <div class="px-5 py-4 border-b border-slate-700 flex items-center justify-between">
                 <h3 id="modal-block-title" class="font-semibold text-xl"></h3>
-                <button onclick="closeBlockModal()" class="text-3xl text-zinc-400 leading-none">✕</button>
+                <button onclick="closeBlockModal()" class="text-3xl text-zinc-400">✕</button>
             </div>
             <div id="instructions-list" class="flex-1 overflow-auto p-2"></div>
         </div>
     </div>
 
-    <div id="pdf-modal" onclick="if(event.target===this) closePdfModal()" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[60] p-4">
+    <div id="pdf-modal" onclick="if(event.target===this) closePdfModal()" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[110] p-4">
         <div class="card-bg border rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
             <div class="px-5 py-4 border-b border-slate-700 flex items-center justify-between">
-                <h3 id="pdf-modal-title" class="font-semibold text-base"></h3>
-                <button onclick="closePdfModal()" class="text-3xl text-zinc-400 leading-none">✕</button>
+                <h3 id="pdf-modal-title" class="font-semibold text-base truncate"></h3>
+                <button onclick="closePdfModal()" class="text-3xl text-zinc-400">✕</button>
             </div>
-            <div class="flex-1 p-3 overflow-auto bg-[#0a0a0a]">
-                <iframe id="pdf-frame" class="w-full h-full min-h-[55vh] rounded-2xl" frameborder="0"></iframe>
+            <div class="flex-1 bg-white">
+                <iframe id="pdf-frame" class="w-full h-full" frameborder="0"></iframe>
             </div>
         </div>
     </div>
@@ -207,9 +240,7 @@
         let currentlyHighlighted = null;
 
         function highlightRow(row) {
-            const table = document.getElementById('schedule-table');
-            const rows = table.querySelectorAll('tbody tr');
-
+            const rows = document.querySelectorAll('#schedule-table tbody tr');
             if (currentlyHighlighted === row) {
                 rows.forEach(r => r.classList.remove('highlighted-row', 'blurred-row'));
                 currentlyHighlighted = null;
@@ -236,6 +267,7 @@
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             const tabIds = ['tab-home', 'tab-schedule', 'tab-tests', 'tab-help'];
             document.getElementById(tabIds[tabIndex]).classList.add('active');
+            window.scrollTo(0, 0);
         }
 
         function openBlockModal(blockKey) {
@@ -243,63 +275,48 @@
             let title = blockKey === 'other' ? 'Остальная информация' : 
                         blockKey === 'zip' ? 'ЗИП АСУТП' : `Блок ${blockKey}`;
             document.getElementById('modal-block-title').textContent = title;
-
             const container = document.getElementById('instructions-list');
             container.innerHTML = '';
-
             if (data.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 text-zinc-400 px-4">В этом разделе пока нет инструкций</div>`;
+                container.innerHTML = `<div class="text-center py-12 text-zinc-400">Раздел пуст</div>`;
             } else {
                 data.forEach(item => {
                     const div = document.createElement('div');
                     div.className = "instruction-item mx-2 my-1 px-5 py-5 rounded-2xl flex items-center gap-3 cursor-pointer card-bg border";
-                    div.innerHTML = `<span class="text-2xl text-zinc-400 flex-shrink-0">📘</span><span class="font-medium text-[15.5px] leading-tight">${item.name}</span>`;
+                    div.innerHTML = `<span class="text-2xl text-zinc-400">📘</span><span class="font-medium text-[15.5px]">${item.name}</span>`;
                     div.onclick = () => openPdf(item.file, item.name);
                     container.appendChild(div);
                 });
             }
-
-            const modal = document.getElementById('block-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            document.getElementById('block-modal').classList.remove('hidden');
         }
 
         function closeBlockModal() {
-            const modal = document.getElementById('block-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            document.getElementById('block-modal').classList.add('hidden');
         }
 
         function openPdf(filePath, title) {
             closeBlockModal();
             document.getElementById('pdf-modal-title').textContent = title;
             document.getElementById('pdf-frame').src = filePath;
-            const pdfModal = document.getElementById('pdf-modal');
-            pdfModal.classList.remove('hidden');
-            pdfModal.classList.add('flex');
+            document.getElementById('pdf-modal').classList.remove('hidden');
         }
 
         function closePdfModal() {
-            const modal = document.getElementById('pdf-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            document.getElementById('pdf-modal').classList.add('hidden');
             document.getElementById('pdf-frame').src = '';
         }
 
         function sendFeedback() {
             const text = document.getElementById('feedback-text').value.trim();
-            if (!text) return alert('Напишите сообщение');
-            alert('✅ Сообщение отправлено. Спасибо!');
+            if (!text) return alert('Введите текст');
+            alert('✅ Отправлено!');
             document.getElementById('feedback-text').value = '';
         }
 
         window.onload = function() {
-            // Проверка на существование объекта tailwind перед настройкой
             if (typeof tailwind !== 'undefined') {
                 tailwind.config = { content: [], darkMode: 'class' };
-            }
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(() => {});
             }
         };
     </script>
