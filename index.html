@@ -38,38 +38,51 @@
             font-size: 10px; height: 42px; text-align: center; border-right: 1px solid #1e293b; border-bottom: 1px solid #1e293b; color: #cbd5e1;
             transition: all 0.1s ease;
         }
-        .col-name { position: sticky; left: 0; z-index: 10; width: 130px; text-align: left !important; padding-left: 12px !important; background-color: #1e293b; color: #f8fafc !important; font-weight: 600; }
-        thead th { background-color: #334155; color: #f8fafc; font-weight: 700; text-transform: uppercase; font-size: 9px; letter-spacing: 0.05em; }
+
+        /* ИЗМЕНЕННЫЙ ЦВЕТ КОЛОНКИ Ф.И.О. */
+        .col-name { 
+            position: sticky; 
+            left: 0; 
+            z-index: 10; 
+            width: 130px; 
+            text-align: left !important; 
+            padding-left: 12px !important; 
+            background-color: #111827 !important; /* Более темный фон для контраста */
+            color: #94a3b8 !important; 
+            font-weight: 700;
+            border-right: 2px solid #3b82f6 !important; /* Синяя разделительная линия */
+        }
         
-        /* Цвета смен - КРИТИЧЕСКИ ВАЖНО */
+        thead th { background-color: #1e293b; color: #f8fafc; font-weight: 700; text-transform: uppercase; font-size: 9px; letter-spacing: 0.05em; }
+        thead th.col-name { background-color: #0f172a !important; color: #3b82f6 !important; }
+
+        /* Цвета смен */
         .shift-D { background-color: #059669 !important; color: white !important; } 
         .shift-N { background-color: #4f46e5 !important; color: white !important; } 
         .shift-S { background-color: #d97706 !important; color: white !important; } 
         .shift-O, .shift-ПХ { background-color: #1e293b !important; color: #64748b; font-size: 9px; } 
 
-        /* ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ ПОДСВЕТКИ */
-        /* Делаем саму строку прозрачной, чтобы просвечивали цвета ячеек */
+        /* Подсветка */
         .highlighted-row {
             outline: 2px solid #ffffff !important;
             outline-offset: -2px;
             z-index: 50;
             position: relative;
         }
-
         .highlighted-row td {
-            background-color: transparent !important; /* Прозрачность для обычных ячеек */
+            background-color: transparent !important;
             color: #ffffff !important;
             opacity: 1 !important;
             filter: none !important;
         }
-
-        /* Исключаем перекрашивание ячеек со сменами внутри выделенной строки */
         .highlighted-row td.shift-D { background-color: #059669 !important; }
         .highlighted-row td.shift-N { background-color: #4f46e5 !important; }
         .highlighted-row td.shift-S { background-color: #d97706 !important; }
 
+        /* При выделении Ф.И.О. становится ярче */
         .highlighted-row .col-name { 
-            background-color: #3b82f6 !important; 
+            background-color: #1e40af !important; 
+            color: white !important;
         }
         
         .blurred-row { 
@@ -291,7 +304,6 @@
                 for(let d=1; d<=daysInMonth; d++) {
                     const val = person.shifts[d-1] || '';
                     const isVisual = ['D','N','S','O','ПХ'].includes(val);
-                    // Добавляем класс shift-VAL напрямую ячейке
                     html += `<td class="shift-${val} ${weekends.includes(d) ? 'bg-white/5' : ''}">${(isVisual && !['O','ПХ'].includes(val)) ? '' : (val === 'W' ? '' : val)}</td>`;
                 }
                 html += `<td class="font-bold">${person.s}</td><td class="font-bold">${person.h}</td></tr>`;
