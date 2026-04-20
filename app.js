@@ -16,54 +16,43 @@ function switchTab(index) {
 }
 
 function renderSchedule(monthName) {
-    document.getElementById('current-month-display').textContent = monthName + " 2026";
+    const display = document.getElementById('current-month-display');
+    if(display) display.textContent = monthName + " 2026";
     const viewport = document.getElementById('schedule-viewport');
     const monthIndex = monthsList.indexOf(monthName);
-    const year = 2026;
     
     if (monthIndex !== 3) { 
-        viewport.innerHTML = `<div class="py-24 flex flex-col items-center justify-center opacity-30 text-center px-6"><span class="text-4xl mb-3">📁</span><span class="text-[10px] font-black uppercase tracking-[0.2em]">Данные для этого месяца в режиме наполнения</span></div>`;
+        viewport.innerHTML = `<div class="py-24 flex flex-col items-center justify-center opacity-30 text-center"><span class="text-4xl mb-3">📁</span><span class="text-[10px] font-black uppercase tracking-[0.2em]">Нет данных</span></div>`;
         return;
     }
 
-    const data = JSON.parse(JSON.stringify(scheduleData["Апрель"]));
-    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-    
-    data.forEach(p => {
-        if (p.name.includes('Бондаренко')) p.shifts = new Array(daysInMonth).fill('O');
-    });
+    const data = scheduleData["Апрель"];
+    const daysInMonth = 30;
 
-    let html = `<table class="schedule-table"><thead><tr><th class="col-name head-fio" style="text-align: center !important; padding-left: 0 !important;">Ф.И.О.</th>`;
-    
-    for(let d=1; d<=daysInMonth; d++) {
-        const date = new Date(year, monthIndex, d);
-        const dayOfWeek = date.getDay();
-        const weekendClass = (dayOfWeek === 0 || dayOfWeek === 6) ? 'is-weekend-head' : '';
-        html += `<th class="${weekendClass}">${d}</th>`;
-    }
-    html += `<th class="col-stats">СМ</th><th class="col-stats">ЧАС</th></tr></thead><tbody>`;
+    let html = `<table class="schedule-table"><thead><tr><th class="col-name head-fio">Ф.И.О.</th>`;
+    for(let d=1; d<=daysInMonth; d++) html += `<th>${d}</th>`;
+    html += `<th class="col-stat">СМ.</th><th class="col-stat">ЧАС.</th></tr></thead><tbody>`;
     
     data.forEach(p => {
-        let totalShifts = 0;
-        let totalHours = 0;
+        let shiftsCount = 0;
+        let hoursCount = 0;
         
         html += `<tr onclick="highlightRow(this)"><td class="col-name">${p.name}</td>`;
-        
         for(let d=1; d<=daysInMonth; d++) {
-            const val = p.shifts[d-1] || '';
-            let cellClass = '';
-            if (val === 'D') { cellClass = 'shift-D'; totalShifts++; totalHours += 11; }
-            else if (val === 'N') { cellClass = 'shift-N'; totalShifts++; totalHours += 11; }
-            else if (val === 'S') { cellClass = 'shift-S'; totalShifts++; totalHours += 8; }
-            else if (val === 'O') { cellClass = 'shift-O'; }
-            else {
-                const date = new Date(year, monthIndex, d);
-                const dayOfWeek = date.getDay();
-                if (dayOfWeek === 0 || dayOfWeek === 6) cellClass = 'is-weekend-cell';
-            }
+            let val = p.shifts[d-1] || '';
+            
+            // ПРАВКА: Отпуск для Бондаренко Т.А.
+            if (p.name === "Бондаренко Т.А.") val = 'O';
+
+            let cellClass = val ? `shift-${val}` : '';
             html += `<td class="${cellClass}"></td>`;
+            
+            if(val === 'D' || val === 'N' || val === 'S') {
+                shiftsCount++;
+                hoursCount += (val === 'S' ? 8 : 12);
+            }
         }
-        html += `<td class="col-stats">${totalShifts}</td><td class="col-stats">${totalHours}</td></tr>`;
+        html += `<td class="col-stat">${shiftsCount}</td><td class="col-stat">${hoursCount}</td></tr>`;
     });
     
     viewport.innerHTML = html + `</tbody></table>`;
@@ -82,8 +71,17 @@ function highlightRow(row) {
 function openBlockModal(key) {
     const title = document.getElementById('modal-block-title');
     const list = document.getElementById('instructions-list');
-    title.textContent = key === 'other' ? 'Инструкции' : key === 'zip' ? 'ЗИП АСУ ТП' : `Блок ${key}`;
-    list.innerHTML = '<div class="text-center py-20 opacity-20 text-[9px] font-black uppercase">Нет данных</div>';
+    list.innerHTML = ''; 
+    if (key === 'other') {
+        title.textContent = 'Инструкции';
+        list.innerHTML = `<a href="docs/S7-400_instalation.pdf" target="_blank" class="doc-item"><span class="doc-name">Руководство S7-400</span><span class="opacity-20 text-xl">›</span></a>`;
+    } else if (key === 'zip') {
+        title.textContent = 'ЗИП АСУ ТП';
+        list.innerHTML = '<div class="text-center py-20 opacity-20 text-[9px] font-black uppercase">Нет данных</div>';
+    } else {
+        title.textContent = `Блок ${key}`;
+        list.innerHTML = '<div class="text-center py-20 opacity-20 text-[9px] font-black uppercase">Раздел наполняется</div>';
+    }
     document.getElementById('block-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }

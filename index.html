@@ -80,22 +80,10 @@
             <div id="schedule-viewport" class="schedule-container shadow-2xl relative z-[10]"></div>
             
             <div class="mt-8 flex items-center justify-center gap-4 px-2 mb-24 overflow-x-auto whitespace-nowrap no-scrollbar">
-                <div class="legend-badge">
-                    <div class="w-2.5 h-2.5 rounded-full bg-[#10b981]"></div>
-                    <span>День</span>
-                </div>
-                <div class="legend-badge">
-                    <div class="w-2.5 h-2.5 rounded-full bg-[#6366f1]"></div>
-                    <span>Ночь</span>
-                </div>
-                <div class="legend-badge">
-                    <div class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></div>
-                    <span>Спец</span>
-                </div>
-                <div class="legend-badge">
-                    <div class="w-2.5 h-2.5 rounded-full bg-[#64748b] opacity-30"></div>
-                    <span>Отпуск</span>
-                </div>
+                <div class="legend-badge"><div class="w-2.5 h-2.5 rounded-full bg-[#10b981]"></div><span>День</span></div>
+                <div class="legend-badge"><div class="w-2.5 h-2.5 rounded-full bg-[#6366f1]"></div><span>Ночь</span></div>
+                <div class="legend-badge"><div class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></div><span>Спец</span></div>
+                <div class="legend-badge"><div class="w-2.5 h-2.5 rounded-full bg-[#64748b] opacity-30"></div><span>Отпуск</span></div>
             </div>
         </section>
 
@@ -117,12 +105,11 @@
             </div>
             
             <div class="flex-1 flex flex-col justify-center items-center gap-6 w-full max-w-md mx-auto px-6 mb-20">
-                <a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full help-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] transition-transform">
+                <a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] transition-transform">
                     <div class="help-icon text-3xl">✈️</div>
                     <span class="font-black text-sm uppercase tracking-widest">Telegram</span>
                 </a>
-
-                <a href="mailto:support@ctai.ru" class="w-full help-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] transition-transform">
+                <a href="mailto:support@ctai.ru" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] transition-transform">
                     <div class="help-icon text-3xl">📧</div>
                     <span class="font-black text-sm uppercase tracking-widest">Почта</span>
                 </a>
@@ -141,11 +128,11 @@
 
     <div id="block-modal" onclick="if(event.target===this) closeBlockModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center z-[200]">
         <div class="card-bg border-t sm:border rounded-t-[3rem] sm:rounded-[3rem] w-full max-w-md max-h-[85vh] flex flex-col">
-            <div class="px-8 py-8 border-b flex items-center justify-between">
-                <h3 id="modal-block-title" class="font-black text-xl uppercase tracking-tighter"></h3>
-                <button onclick="closeBlockModal()" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-zinc-500/10 font-bold text-xl">✕</button>
+            <div class="px-8 py-6 border-b flex items-center justify-between">
+                <h3 id="modal-block-title" class="font-black text-xl uppercase tracking-tighter text-main"></h3>
+                <button onclick="closeBlockModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-500/10 font-bold text-lg">✕</button>
             </div>
-            <div id="instructions-list" class="flex-1 overflow-auto p-6 space-y-3 pb-12"></div>
+            <div id="instructions-list" class="flex-1 overflow-auto p-0 space-y-0"></div>
         </div>
     </div>
 
