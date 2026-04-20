@@ -19,220 +19,207 @@
         }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .modal { animation: modalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-        @keyframes modalPop {
-            from { opacity: 0; transform: translateY(30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .instruction-item { transition: all 0.2s ease; }
-        .instruction-item:active { background-color: #1f2937; transform: scale(0.985); }
+        
+        .card-bg { background-color: #111827; border-color: #334155; }
 
-        .schedule-table td, .schedule-table th {
-            font-size: 12px;
-            padding: 8px 4px;
-            text-align: center;
-            border: 1px solid #27272a;
-            white-space: nowrap;
-            transition: all 0.3s ease;
-            vertical-align: middle;
+        /* Настройки таблицы */
+        .schedule-table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
         }
+        .schedule-table th, .schedule-table td {
+            font-size: 12px;
+            height: 44px;
+            text-align: center;
+            vertical-align: middle;
+            border: 0.5px solid #27272a;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        
+        /* Фиксированная ширина колонок с датами */
+        .col-date { width: 32px; min-width: 32px; max-width: 32px; }
+        .col-name { width: 180px; min-width: 180px; text-align: left !important; padding-left: 16px !important; }
+        .col-stat { width: 50px; min-width: 50px; font-weight: 600; }
+
+        /* Цвета смен */
         .day-shift   { background-color: #166534; color: #fff; }
         .night-shift { background-color: #4338ca; color: #fff; }
-        .sp-shift    { background-color: #b45309; color: #fff; } /* 0828 и 0804 */
+        .sp-shift    { background-color: #b45309; color: #fff; }
         .off         { background-color: #3f3f46; color: #a1a1aa; }
-        .weekend     { background-color: #1f2937 !important; color: #e4e4e7; }
+        .weekend     { background-color: #1f2937 !important; color: #94a3b8; }
 
-        /* Выделение строки */
+        /* Эффекты выделения */
         .highlighted-row td {
             background-color: #1e2937 !important;
-            color: #f1f5f9;
-            font-weight: 600;
+            color: #ffffff;
+            border-top: 1px solid #3b82f6;
+            border-bottom: 1px solid #3b82f6;
         }
         .blurred-row td {
-            opacity: 0.25;
-            filter: blur(0.5px);
+            opacity: 0.3;
+            filter: grayscale(0.5);
         }
 
-        .card-bg { background-color: #111827; border-color: #334155; }
-        
-        /* Центрирование контейнера таблицы */
-        .table-container {
+        /* Легенда */
+        .legend-item {
             display: flex;
-            justify-content: center;
-            width: 100%;
+            items-center: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #a1a1aa;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
         }
     </style>
 </head>
-<body class="bg-[#0a0a0a] text-zinc-100 min-h-screen pb-16">
+<body class="bg-[#0a0a0a] text-zinc-100 min-h-screen pb-20">
 
     <div class="max-w-xl mx-auto">
 
-        <div id="tab-home" class="tab-content active px-4 pt-6">
-            <div class="flex flex-col items-center mb-8">
-                <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-semibold text-3xl mb-3">Ц</div>
-                <h1 class="text-2xl font-semibold tracking-tighter text-center">ЦТАИ АСУ ТП</h1>
+        <div id="tab-home" class="tab-content active px-4 pt-8">
+            <div class="flex flex-col items-center mb-10">
+                <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-3xl shadow-lg shadow-blue-900/20 mb-4">Ц</div>
+                <h1 class="text-2xl font-bold tracking-tight text-center">ЦТАИ АСУ ТП</h1>
             </div>
-            <p class="text-zinc-400 text-[15px] mb-5 px-1 text-center">Выберите раздел</p>
 
-            <div class="space-y-1.5 px-1">
-                <button onclick="openBlockModal(1)" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
-                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg tracking-tight">01</span><span class="font-medium text-[17px]">Блок 1</span></div><span class="text-zinc-500 text-xl">›</span>
+            <div class="space-y-2">
+                <button onclick="openBlockModal(1)" class="w-full card-bg border rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform">
+                    <div class="flex items-center gap-4"><span class="text-blue-500 font-bold text-lg">01</span><span class="font-medium">Блок 1</span></div><span class="text-zinc-600">›</span>
                 </button>
-                <button onclick="openBlockModal(2)" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
-                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg tracking-tight">02</span><span class="font-medium text-[17px]">Блок 2</span></div><span class="text-zinc-500 text-xl">›</span>
+                <button onclick="openBlockModal(2)" class="w-full card-bg border rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform">
+                    <div class="flex items-center gap-4"><span class="text-blue-500 font-bold text-lg">02</span><span class="font-medium">Блок 2</span></div><span class="text-zinc-600">›</span>
                 </button>
-                <button onclick="openBlockModal(3)" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
-                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg tracking-tight">03</span><span class="font-medium text-[17px]">Блок 3</span></div><span class="text-zinc-500 text-xl">›</span>
+                <button onclick="openBlockModal(3)" class="w-full card-bg border rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform">
+                    <div class="flex items-center gap-4"><span class="text-blue-500 font-bold text-lg">03</span><span class="font-medium">Блок 3</span></div><span class="text-zinc-600">›</span>
                 </button>
-                <button onclick="openBlockModal(4)" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
-                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg tracking-tight">04</span><span class="font-medium text-[17px]">Блок 4</span></div><span class="text-zinc-500 text-xl">›</span>
-                </button>
-                <button onclick="openBlockModal(5)" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
-                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg tracking-tight">05</span><span class="font-medium text-[17px]">Блок 5</span></div><span class="text-zinc-500 text-xl">›</span>
-                </button>
-                <button onclick="openBlockModal(6)" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
-                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg tracking-tight">06</span><span class="font-medium text-[17px]">Блок 6</span></div><span class="text-zinc-500 text-xl">›</span>
-                </button>
-
-                <button onclick="openBlockModal('other')" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
-                    <div class="flex items-center gap-4"><span class="text-zinc-400 text-xl">📌</span><span class="font-medium text-[17px]">Остальная информация</span></div><span class="text-zinc-500 text-xl">›</span>
-                </button>
-                <button onclick="openBlockModal('zip')" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
-                    <div class="flex items-center gap-4"><span class="text-zinc-400 text-xl">🔧</span><span class="font-medium text-[17px]">ЗИП АСУТП</span></div><span class="text-zinc-500 text-xl">›</span>
+                <button onclick="openBlockModal('other')" class="w-full card-bg border rounded-2xl p-4 flex items-center justify-between mt-4">
+                    <div class="flex items-center gap-4"><span>📌</span><span class="font-medium">Инструкции</span></div><span class="text-zinc-600">›</span>
                 </button>
             </div>
         </div>
 
-        <div id="tab-schedule" class="tab-content px-4 pt-6">
+        <div id="tab-schedule" class="tab-content px-4 pt-8">
             <div class="text-center mb-6">
-                <h2 class="text-2xl font-semibold mb-1">График работы</h2>
-                <p class="text-zinc-400 text-sm">Апрель 2026 • Оперативный персонал</p>
+                <h2 class="text-2xl font-bold mb-1">График работы</h2>
+                <p class="text-zinc-500 text-sm">Апрель 2026</p>
             </div>
             
-            <div class="table-container">
-                <div class="overflow-x-auto rounded-2xl border border-slate-700 bg-[#111827]">
-                    <table id="schedule-table" class="schedule-table w-full min-w-[1100px]">
-                        <thead>
-                            <tr class="bg-slate-800 text-slate-300">
-                                <th class="text-left pl-4 w-48">Фамилия</th>
-                                <th>1</th><th>2</th><th>3</th><th class="weekend">4</th><th class="weekend">5</th>
-                                <th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
-                                <th class="weekend">11</th><th class="weekend">12</th>
-                                <th>13</th><th>14</th><th>15</th><th>16</th><th>17</th>
-                                <th class="weekend">18</th><th class="weekend">19</th>
-                                <th>20</th><th>21</th><th>22</th><th>23</th><th>24</th>
-                                <th class="weekend">25</th><th class="weekend">26</th>
-                                <th>27</th><th>28</th><th>29</th><th>30</th>
-                                <th class="bg-slate-800 font-medium">Смен</th>
-                                <th class="bg-slate-800 font-medium">Часы</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-700 text-center">
-                            <tr onclick="highlightRow(this)">
-                                <td class="pl-4 text-left font-medium">Лагутенков Р.С.</td>
-                                <td class="off">ПХ</td><td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td class="weekend"></td>
-                                <td></td><td class="sp-shift">0828</td><td class="night-shift">1202</td><td></td><td></td>
-                                <td class="day-shift">1219</td><td class="weekend"></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td class="night-shift">1202</td>
-                                <td class="weekend"></td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td class="night-shift">1202</td>
-                                <td class="weekend"></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td></td><td></td>
-                                <td class="font-medium">14</td><td class="font-medium">164,0</td>
-                            </tr>
-                            <tr onclick="highlightRow(this)">
-                                <td class="pl-4 text-left font-medium">Миронов С.А.</td>
-                                <td class="off">ПХ</td><td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td class="weekend"></td>
-                                <td></td><td></td><td class="night-shift">1202</td><td></td><td class="sp-shift">0804</td>
-                                <td class="day-shift">1219</td><td class="weekend"></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td class="night-shift">1202</td>
-                                <td class="weekend"></td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td class="night-shift">1202</td>
-                                <td class="weekend"></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td></td><td></td>
-                                <td class="font-medium">14</td><td class="font-medium">164,0</td>
-                            </tr>
-                            <tr onclick="highlightRow(this)">
-                                <td class="pl-4 text-left font-medium">Куштанов А.А.</td>
-                                <td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td class="night-shift">1202</td><td class="weekend"></td>
-                                <td class="sp-shift">0828</td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td>
-                                <td class="night-shift">1202</td><td class="weekend"></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td class="day-shift">1219</td>
-                                <td class="weekend"></td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td></td>
-                                <td class="weekend"></td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td></td>
-                                <td class="font-medium">14</td><td class="font-medium">164,0</td>
-                            </tr>
-                            <tr onclick="highlightRow(this)">
-                                <td class="pl-4 text-left font-medium">Рыжих И.Н.</td>
-                                <td></td><td></td><td></td><td class="weekend"></td><td class="weekend"></td>
-                                <td></td><td></td><td></td><td></td><td></td>
-                                <td class="weekend"></td><td class="weekend"></td><td></td><td></td><td></td><td></td><td class="day-shift">1219</td>
-                                <td class="weekend"></td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td></td>
-                                <td class="weekend"></td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td></td>
-                                <td class="font-medium">5</td><td class="font-medium">60,0</td>
-                            </tr>
-                            <tr onclick="highlightRow(this)">
-                                <td class="pl-4 text-left font-medium">Бондаренко Т.А.</td>
-                                <td class="off">О</td><td class="off">О</td><td></td><td class="weekend"></td><td class="weekend"></td>
-                                <td class="off">О</td><td class="off">О</td><td></td><td></td><td class="off">О</td>
-                                <td class="weekend"></td><td class="weekend"></td><td></td><td class="off">О</td><td></td><td></td><td class="off">О</td>
-                                <td class="weekend"></td><td></td><td class="off">О</td><td class="off">О</td><td></td><td></td><td class="off">О</td>
-                                <td class="weekend"></td><td class="off">О</td><td class="off">О</td><td></td><td></td><td></td>
-                                <td class="font-medium">0</td><td class="font-medium">ОТП</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="overflow-x-auto rounded-2xl border border-zinc-800 bg-[#111827]">
+                <table id="schedule-table" class="schedule-table">
+                    <thead>
+                        <tr class="bg-zinc-800/50 text-zinc-400">
+                            <th class="col-name">Фамилия</th>
+                            <script>
+                                for(let i=1; i<=30; i++) {
+                                    let isW = (i==4||i==5||i==11||i==12||i==18||i==19||i==25||i==26);
+                                    document.write(`<th class="col-date ${isW?'weekend':''}">${i}</th>`);
+                                }
+                            </script>
+                            <th class="col-stat text-zinc-300">С</th>
+                            <th class="col-stat text-zinc-300">Ч</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-800">
+                        <tr onclick="highlightRow(this)">
+                            <td class="col-name font-medium">Лагутенков Р.С.</td>
+                            <td class="off">ПХ</td><td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td class="weekend"></td><td></td><td class="sp-shift">0828</td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td class="weekend"></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td class="night-shift">1202</td><td class="weekend"></td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td class="night-shift">1202</td><td class="weekend"></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td></td><td></td>
+                            <td class="col-stat">14</td><td class="col-stat">164</td>
+                        </tr>
+                        <tr onclick="highlightRow(this)">
+                            <td class="col-name font-medium">Миронов С.А.</td>
+                            <td class="off">ПХ</td><td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td class="weekend"></td><td></td><td></td><td class="night-shift">1202</td><td></td><td class="sp-shift">0804</td><td class="day-shift">1219</td><td class="weekend"></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td class="night-shift">1202</td><td class="weekend"></td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td class="night-shift">1202</td><td class="weekend"></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td></td><td></td>
+                            <td class="col-stat">14</td><td class="col-stat">164</td>
+                        </tr>
+                        <tr onclick="highlightRow(this)">
+                            <td class="col-name font-medium">Куштанов А.А.</td>
+                            <td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td class="night-shift">1202</td><td class="weekend"></td><td class="sp-shift">0828</td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td class="weekend"></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td class="day-shift">1219</td><td class="weekend"></td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td></td><td class="weekend"></td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td></td>
+                            <td class="col-stat">14</td><td class="col-stat">164</td>
+                        </tr>
+                        <tr onclick="highlightRow(this)">
+                            <td class="col-name font-medium">Рыжих И.Н.</td>
+                            <td></td><td></td><td></td><td class="weekend"></td><td class="weekend"></td><td></td><td></td><td></td><td></td><td></td><td class="weekend"></td><td class="weekend"></td><td></td><td></td><td></td><td></td><td class="day-shift">1219</td><td class="weekend"></td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td><td></td><td class="weekend"></td><td class="night-shift">1202</td><td></td><td></td><td class="day-shift">1219</td><td></td>
+                            <td class="col-stat">5</td><td class="col-stat">60</td>
+                        </tr>
+                        <tr onclick="highlightRow(this)">
+                            <td class="col-name font-medium text-zinc-500">Бондаренко Т.А.</td>
+                            <td class="off">О</td><td class="off">О</td><td></td><td class="weekend"></td><td class="weekend"></td><td class="off">О</td><td class="off">О</td><td></td><td></td><td class="off">О</td><td class="weekend"></td><td class="weekend"></td><td></td><td class="off">О</td><td></td><td></td><td class="off">О</td><td class="weekend"></td><td></td><td class="off">О</td><td class="off">О</td><td></td><td></td><td class="off">О</td><td class="weekend"></td><td class="off">О</td><td class="off">О</td><td></td><td></td><td></td>
+                            <td class="col-stat">0</td><td class="col-stat">ОТП</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <div class="mt-6 px-1 text-sm max-w-md mx-auto">
-                <p class="font-medium mb-3 text-center">Обозначения:</p>
-                <div class="grid grid-cols-1 gap-y-2 text-[11px]">
-                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-emerald-700 rounded"></div><span>1219 — Дневная (08:00–20:00) 12ч</span></div>
-                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-indigo-700 rounded"></div><span>1202 — Ночная (20:00–08:00) 12ч</span></div>
-                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-amber-700 rounded"></div><span>0828/0804 — Спецподготовка (8ч)</span></div>
-                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-zinc-600 rounded"></div><span>О / ПХ / ОТП — Отпуск / Выходной</span></div>
+            <div class="mt-8 grid grid-cols-2 gap-4 px-2">
+                <div class="legend-item">
+                    <div class="dot bg-emerald-600"></div>
+                    <span>День (08:00–20:00)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="dot bg-indigo-600"></div>
+                    <span>Ночь (20:00–08:00)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="dot bg-amber-600"></div>
+                    <span>Спецподготовка</span>
+                </div>
+                <div class="legend-item">
+                    <div class="dot bg-zinc-600"></div>
+                    <span>Выходной / Отпуск</span>
                 </div>
             </div>
         </div>
 
-        <div id="tab-tests" class="tab-content px-4 pt-6 text-center">
-            <div class="mx-auto w-16 h-16 bg-violet-600 rounded-3xl flex items-center justify-center text-4xl mb-6">📝</div>
-            <h2 class="text-2xl font-semibold mb-2">Тесты</h2>
-            <p class="text-zinc-400">Раздел в разработке</p>
-            <div class="mt-10 card-bg border rounded-3xl p-8">
-                <button onclick="alert('Тесты скоро будут доступны!')" class="w-full py-4 bg-violet-600 hover:bg-violet-500 rounded-3xl font-medium">Начать</button>
+        <div id="tab-tests" class="tab-content px-4 pt-8 text-center">
+            <h2 class="text-2xl font-bold mb-8">Экзаменация</h2>
+            <div class="card-bg border border-zinc-800 rounded-3xl p-10 flex flex-col items-center">
+                <span class="text-5xl mb-4">🎓</span>
+                <p class="text-zinc-400 mb-6">Тесты ПТЭ и ПТБ появятся в следующем обновлении</p>
+                <button class="w-full py-4 bg-zinc-800 rounded-2xl font-bold opacity-50 cursor-not-allowed">Доступ ограничен</button>
             </div>
         </div>
 
-        <div id="tab-help" class="tab-content px-4 pt-6">
-            <h2 class="text-2xl font-semibold mb-5 text-center">Обратная связь</h2>
-            <textarea id="feedback-text" rows="7" class="w-full card-bg border border-slate-700 rounded-3xl p-5 text-base outline-none focus:border-blue-500" placeholder="Ваше сообщение..."></textarea>
-            <button onclick="sendFeedback()" class="w-full mt-6 bg-blue-600 hover:bg-blue-500 py-4 rounded-3xl font-medium">Отправить</button>
+        <div id="tab-help" class="tab-content px-4 pt-8">
+            <h2 class="text-2xl font-bold mb-6 text-center">Разработка</h2>
+            <div class="card-bg border border-zinc-800 rounded-3xl p-6">
+                <textarea id="feedback-text" rows="5" class="w-full bg-zinc-900/50 border border-zinc-700 rounded-2xl p-4 text-sm outline-none focus:border-blue-500 transition-colors" placeholder="Опишите баг или предложение..."></textarea>
+                <button onclick="sendFeedback()" class="w-full mt-4 bg-blue-600 py-4 rounded-2xl font-bold active:bg-blue-700 transition-colors">Отправить отзыв</button>
+            </div>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-[#111827] border-t border-slate-700 max-w-xl mx-auto z-50">
-        <div class="flex text-zinc-400 text-[10px] uppercase font-bold">
-            <button onclick="switchTab(0)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-xl mb-0.5">🏠</span>Главная</button>
-            <button onclick="switchTab(1)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-xl mb-0.5">📅</span>График</button>
-            <button onclick="switchTab(2)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-xl mb-0.5">📝</span>Тесты</button>
-            <button onclick="switchTab(3)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-xl mb-0.5">❓</span>Помощь</button>
+    <nav class="fixed bottom-0 left-0 right-0 bg-[#0a0a0a]/80 backdrop-blur-lg border-t border-zinc-800 max-w-xl mx-auto z-50">
+        <div class="flex">
+            <button onclick="switchTab(0)" class="flex-1 py-4 flex flex-col items-center text-zinc-500 active:text-blue-500">
+                <span class="text-xl mb-1">🏠</span>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Главная</span>
+            </button>
+            <button onclick="switchTab(1)" class="flex-1 py-4 flex flex-col items-center text-zinc-500 active:text-blue-500">
+                <span class="text-xl mb-1">📅</span>
+                <span class="text-[10px] font-bold uppercase tracking-widest">График</span>
+            </button>
+            <button onclick="switchTab(2)" class="flex-1 py-4 flex flex-col items-center text-zinc-500 active:text-blue-500">
+                <span class="text-xl mb-1">📝</span>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Тесты</span>
+            </button>
+            <button onclick="switchTab(3)" class="flex-1 py-4 flex flex-col items-center text-zinc-500 active:text-blue-500">
+                <span class="text-xl mb-1">⚙️</span>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Инфо</span>
+            </button>
         </div>
     </nav>
 
-    <div id="block-modal" onclick="if(event.target===this) closeBlockModal()" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100] p-4">
-        <div class="modal card-bg border rounded-3xl w-full max-w-md max-h-[78vh] flex flex-col overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-700 flex items-center justify-between">
-                <h3 id="modal-block-title" class="font-semibold text-xl"></h3>
-                <button onclick="closeBlockModal()" class="text-3xl text-zinc-400">✕</button>
+    <div id="block-modal" onclick="if(event.target===this) closeBlockModal()" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+        <div class="card-bg border rounded-[2.5rem] w-full max-w-md max-h-[70vh] flex flex-col overflow-hidden shadow-2xl">
+            <div class="px-6 py-5 border-b border-zinc-800 flex items-center justify-between">
+                <h3 id="modal-block-title" class="font-bold text-xl"></h3>
+                <button onclick="closeBlockModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 text-sm">✕</button>
             </div>
-            <div id="instructions-list" class="flex-1 overflow-auto p-2"></div>
-        </div>
-    </div>
-
-    <div id="pdf-modal" onclick="if(event.target===this) closePdfModal()" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[110] p-4">
-        <div class="card-bg border rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-700 flex items-center justify-between">
-                <h3 id="pdf-modal-title" class="font-semibold text-base truncate"></h3>
-                <button onclick="closePdfModal()" class="text-3xl text-zinc-400">✕</button>
-            </div>
-            <div class="flex-1 bg-white">
-                <iframe id="pdf-frame" class="w-full h-full" frameborder="0"></iframe>
-            </div>
+            <div id="instructions-list" class="flex-1 overflow-auto p-4 space-y-2"></div>
         </div>
     </div>
 
@@ -242,7 +229,9 @@
         function highlightRow(row) {
             const rows = document.querySelectorAll('#schedule-table tbody tr');
             if (currentlyHighlighted === row) {
-                rows.forEach(r => r.classList.remove('highlighted-row', 'blurred-row'));
+                rows.forEach(r => {
+                    r.classList.remove('highlighted-row', 'blurred-row');
+                });
                 currentlyHighlighted = null;
             } else {
                 rows.forEach(r => {
@@ -258,36 +247,16 @@
             }
         }
 
-        const blocksData = {
-            1: [{ name: "Руководство S7-400", file: "pdfs/blok-1/S7-400_instalation.pdf" }],
-            2: [], 3: [], 4: [], 5: [], 6: [], other: [], zip: []
-        };
-
-        function switchTab(tabIndex) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            const tabIds = ['tab-home', 'tab-schedule', 'tab-tests', 'tab-help'];
-            document.getElementById(tabIds[tabIndex]).classList.add('active');
+        function switchTab(index) {
+            const tabs = ['tab-home', 'tab-schedule', 'tab-tests', 'tab-help'];
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabs[index]).classList.add('active');
             window.scrollTo(0, 0);
         }
 
-        function openBlockModal(blockKey) {
-            const data = blocksData[blockKey] || [];
-            let title = blockKey === 'other' ? 'Остальная информация' : 
-                        blockKey === 'zip' ? 'ЗИП АСУТП' : `Блок ${blockKey}`;
+        function openBlockModal(key) {
+            const title = key === 'other' ? 'Инструкции' : `Блок ${key}`;
             document.getElementById('modal-block-title').textContent = title;
-            const container = document.getElementById('instructions-list');
-            container.innerHTML = '';
-            if (data.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 text-zinc-400">Раздел пуст</div>`;
-            } else {
-                data.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = "instruction-item mx-2 my-1 px-5 py-5 rounded-2xl flex items-center gap-3 cursor-pointer card-bg border";
-                    div.innerHTML = `<span class="text-2xl text-zinc-400">📘</span><span class="font-medium text-[15.5px]">${item.name}</span>`;
-                    div.onclick = () => openPdf(item.file, item.name);
-                    container.appendChild(div);
-                });
-            }
             document.getElementById('block-modal').classList.remove('hidden');
         }
 
@@ -295,30 +264,12 @@
             document.getElementById('block-modal').classList.add('hidden');
         }
 
-        function openPdf(filePath, title) {
-            closeBlockModal();
-            document.getElementById('pdf-modal-title').textContent = title;
-            document.getElementById('pdf-frame').src = filePath;
-            document.getElementById('pdf-modal').classList.remove('hidden');
-        }
-
-        function closePdfModal() {
-            document.getElementById('pdf-modal').classList.add('hidden');
-            document.getElementById('pdf-frame').src = '';
-        }
-
         function sendFeedback() {
-            const text = document.getElementById('feedback-text').value.trim();
-            if (!text) return alert('Введите текст');
-            alert('✅ Отправлено!');
+            const val = document.getElementById('feedback-text').value;
+            if(!val) return alert('Введите текст');
+            alert('Спасибо за отзыв!');
             document.getElementById('feedback-text').value = '';
         }
-
-        window.onload = function() {
-            if (typeof tailwind !== 'undefined') {
-                tailwind.config = { content: [], darkMode: 'class' };
-            }
-        };
     </script>
 </body>
 </html>
