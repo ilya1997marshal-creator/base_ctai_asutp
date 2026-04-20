@@ -327,7 +327,7 @@
             }
         }
 
-        // ОБНОВЛЕННАЯ ФУНКЦИЯ: Принудительный выбор браузера на iOS PWA
+        // КРИТИЧЕСКИЙ ФИКС ДЛЯ iOS PWA: Прямая ссылка вместо JS-события
         function openBlockModal(key) {
             const data = blocksData[key] || [];
             document.getElementById('modal-block-title').textContent = key === 'other' ? 'Инструкции' : key === 'zip' ? 'ЗИП АСУ ТП' : `Блок ${key}`;
@@ -335,32 +335,24 @@
             container.innerHTML = data.length ? '' : '<div class="text-center py-10 text-zinc-600 text-sm uppercase tracking-widest">Пусто</div>';
             
             data.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = "p-5 rounded-2xl bg-[#0f172a] border border-zinc-800 flex items-center gap-4 active:bg-blue-600 transition-colors cursor-pointer";
-                itemDiv.innerHTML = `<span class="text-2xl">📄</span><span class="font-bold text-xs text-zinc-100 uppercase tracking-wide">${item.name}</span>`;
+                const absoluteUrl = new URL(item.file, window.location.href).href;
+                const itemLink = document.createElement('a');
+                itemLink.href = absoluteUrl;
+                itemLink.target = '_blank';
+                itemLink.rel = 'noopener noreferrer';
+                itemLink.className = "p-5 rounded-2xl bg-[#0f172a] border border-zinc-800 flex items-center gap-4 active:bg-blue-600 transition-colors cursor-pointer no-underline block";
+                itemLink.innerHTML = `<span class="text-2xl">📄</span><span class="font-bold text-xs text-zinc-100 uppercase tracking-wide">${item.name}</span>`;
                 
-                itemDiv.onclick = () => {
-                    const absoluteUrl = new URL(item.file, window.location.href).href;
-
-                    // Если открыто как приложение на iPhone (standalone режим)
-                    if (("standalone" in window.navigator) && window.navigator.standalone) {
-                        if (confirm("Для сохранения и поиска по файлу необходимо открыть его в Safari. Перейти в браузер?")) {
-                            // window.location.assign в PWA на iOS — это единственный способ принудительно открыть Safari
-                            window.location.assign(absoluteUrl);
+                // Обработка клика только для PWA-режима iOS
+                if (window.navigator.standalone) {
+                    itemLink.onclick = (e) => {
+                        e.preventDefault();
+                        if (confirm("Открыть файл во внешнем браузере Safari для полноценного просмотра?")) {
+                            window.location.href = absoluteUrl; // В PWA это перенаправляет в Safari
                         }
-                    } else {
-                        // Если открыто просто в браузере — открываем в новой вкладке
-                        const a = document.createElement('a');
-                        a.href = absoluteUrl;
-                        a.target = '_blank';
-                        a.rel = 'noopener noreferrer';
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                    }
-                };
-                
-                container.appendChild(itemDiv);
+                    };
+                }
+                container.appendChild(itemLink);
             });
             document.getElementById('block-modal').classList.remove('hidden');
         }
