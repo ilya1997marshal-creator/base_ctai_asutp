@@ -12,38 +12,36 @@
 
     <button onclick="toggleTheme()" class="theme-toggle" id="theme-icon">🌙</button>
 
-    <div class="max-w-xl mx-auto min-h-screen relative">
+    <div class="max-w-xl mx-auto min-h-screen relative px-4">
 
-        <section id="tab-home" class="tab-content active px-4 pt-10">
+        <section id="tab-home" class="tab-content active pt-10">
             <div class="flex flex-col items-center mb-8 text-center">
-                <div class="w-20 h-20 bg-blue-600/10 rounded-3xl flex items-center justify-center mb-4 border border-blue-500/20 shadow-xl">
-                    <span class="text-4xl">⚡</span>
-                </div>
+                <div class="header-icon-main"><span>⚡</span></div>
                 <h1 class="text-3xl font-extrabold tracking-tight">ЦТАИ АСУ ТП</h1>
-                <p class="text-zinc-500 text-sm mt-2 font-medium">Информационная панель <br> подразделения</p>
+                <p class="text-zinc-500 text-[11px] mt-2 font-extrabold uppercase tracking-[0.15em] italic opacity-80">Информационная панель подразделения</p>
             </div>
 
-            <div id="on-duty-container" class="px-2 mb-6">
-                <div class="bg-blue-600/5 border border-blue-500/20 rounded-2xl p-4">
+            <div id="on-duty-container" class="mb-6">
+                <div class="bg-blue-600/5 border border-blue-500/10 rounded-3xl p-5">
                     <div class="flex items-center gap-2 mb-3">
-                        <span class="text-blue-500 text-xs font-black uppercase tracking-widest">Сейчас на смене:</span>
+                        <span class="text-blue-500 text-[10px] font-black uppercase tracking-[0.2em]">На смене:</span>
                         <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
                     </div>
                     <div id="duty-list" class="flex flex-wrap gap-2 text-sm font-bold"></div>
                 </div>
             </div>
 
-            <div id="blocks-container" class="space-y-3 px-2"></div>
+            <div id="blocks-container" class="space-y-3"></div>
             
-            <div class="px-2 mt-6 space-y-3">
-                <button onclick="openBlockModal('other')" class="w-full action-btn p-5 rounded-2xl flex items-center justify-between active:scale-[0.97] transition-all">
+            <div class="mt-6 space-y-3 pb-20">
+                <button onclick="openBlockModal('other')" class="w-full action-btn p-5 rounded-3xl flex items-center justify-between active:scale-[0.97]">
                     <div class="flex items-center gap-4">
                         <div class="w-10 h-10 bg-amber-500/10 text-amber-500 rounded-xl flex items-center justify-center text-xl">📌</div>
                         <span class="font-bold text-sm uppercase tracking-wide">Инструкции</span>
                     </div>
                     <span class="opacity-30">›</span>
                 </button>
-                <button onclick="openBlockModal('zip')" class="w-full action-btn p-5 rounded-2xl flex items-center justify-between active:scale-[0.97] transition-all">
+                <button onclick="openBlockModal('zip')" class="w-full action-btn p-5 rounded-3xl flex items-center justify-between active:scale-[0.97]">
                     <div class="flex items-center gap-4">
                         <div class="w-10 h-10 bg-emerald-500/10 text-emerald-500 rounded-xl flex items-center justify-center text-xl">🔧</div>
                         <span class="font-bold text-sm uppercase tracking-wide">ЗИП АСУ ТП</span>
@@ -53,92 +51,101 @@
             </div>
         </section>
 
-        <section id="tab-schedule" class="tab-content px-2 pt-10">
-            <div class="flex flex-col items-center mb-8">
-                <div class="w-16 h-16 bg-blue-600/10 rounded-3xl flex items-center justify-center mb-4 border border-blue-500/20">
-                    <span class="text-3xl">📅</span>
-                </div>
-                <h1 class="text-2xl font-extrabold tracking-tight">График работы</h1>
-            </div>
-
-            <div class="flex items-center justify-end mb-4 px-2">
-                <div class="month-picker-btn">
-                    <span id="current-month-display">Апрель 2026</span>
-                    <span class="text-[10px] opacity-50">▼</span>
-                    <select id="month-selector" class="month-select-hidden" onchange="renderSchedule(this.value)">
-                        <option value="Январь">Январь</option>
-                        <option value="Февраль">Февраль</option>
-                        <option value="Март">Март</option>
-                        <option value="Апрель" selected>Апрель</option>
-                        <option value="Май">Май</option>
-                        <option value="Июнь">Июнь</option>
-                        <option value="Июль">Июль</option>
-                        <option value="Август">Август</option>
-                        <option value="Сентябрь">Сентябрь</option>
-                        <option value="Октябрь">Октябрь</option>
-                        <option value="Ноябрь">Ноябрь</option>
-                        <option value="Декабрь">Декабрь</option>
-                    </select>
+        <section id="tab-schedule" class="tab-content pt-10">
+            <div class="flex flex-col items-center mb-8 text-center">
+                <div class="header-icon-main"><span>📅</span></div>
+                <h1 class="text-3xl font-extrabold tracking-tight">График</h1>
+                <div class="mt-4 relative z-[50]">
+                    <div class="month-picker-wrapper">
+                        <span id="current-month-display">Апрель 2026</span>
+                        <select id="month-selector" onchange="renderSchedule(this.value)">
+                            <option value="Январь">Январь 2026</option>
+                            <option value="Февраль">Февраль 2026</option>
+                            <option value="Март">Март 2026</option>
+                            <option value="Апрель" selected>Апрель 2026</option>
+                            <option value="Май">Май 2026</option>
+                            <option value="Июнь">Июнь 2026</option>
+                            <option value="Июль">Июль 2026</option>
+                            <option value="Август">Август 2026</option>
+                            <option value="Сентябрь">Сентябрь 2026</option>
+                            <option value="Октябрь">Октябрь 2026</option>
+                            <option value="Ноябрь">Ноябрь 2026</option>
+                            <option value="Декабрь">Декабрь 2026</option>
+                        </select>
+                        <span class="ml-2 text-[10px] opacity-40">▼</span>
+                    </div>
                 </div>
             </div>
 
-            <div id="schedule-viewport" class="schedule-container shadow-lg"></div>
+            <div id="schedule-viewport" class="schedule-container shadow-2xl relative z-[10]"></div>
             
-            <div class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 px-2 mb-20">
-                <div class="flex items-center gap-2 text-[9px] text-zinc-500 font-bold uppercase tracking-widest"><div class="w-2.5 h-2.5 rounded-sm bg-emerald-600"></div> День</div>
-                <div class="flex items-center gap-2 text-[9px] text-zinc-500 font-bold uppercase tracking-widest"><div class="w-2.5 h-2.5 rounded-sm bg-indigo-600"></div> Ночь</div>
-                <div class="flex items-center gap-2 text-[9px] text-zinc-500 font-bold uppercase tracking-widest"><div class="w-2.5 h-2.5 rounded-sm bg-amber-600"></div> Спец</div>
+            <div class="mt-8 flex items-center justify-center gap-4 px-2 mb-24 overflow-x-auto whitespace-nowrap no-scrollbar">
+                <div class="legend-badge">
+                    <div class="w-2.5 h-2.5 rounded-full bg-[#10b981]"></div>
+                    <span>День</span>
+                </div>
+                <div class="legend-badge">
+                    <div class="w-2.5 h-2.5 rounded-full bg-[#6366f1]"></div>
+                    <span>Ночь</span>
+                </div>
+                <div class="legend-badge">
+                    <div class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></div>
+                    <span>Спец</span>
+                </div>
+                <div class="legend-badge">
+                    <div class="w-2.5 h-2.5 rounded-full bg-[#64748b] opacity-30"></div>
+                    <span>Отпуск</span>
+                </div>
             </div>
         </section>
 
-        <section id="tab-tests" class="tab-content px-4 pt-10 min-h-screen">
-            <div class="flex flex-col items-center justify-center py-20 text-center">
-                <div class="w-20 h-20 bg-indigo-600/10 rounded-3xl flex items-center justify-center mb-6 border border-indigo-500/20 shadow-xl">
-                    <span class="text-4xl">📋</span>
-                </div>
-                <h1 class="text-3xl font-extrabold mb-8">Тесты знаний</h1>
-                <div class="w-full max-w-sm px-6 py-16 action-btn rounded-[2.5rem]">
-                    <p class="text-zinc-500 text-sm font-semibold uppercase tracking-widest">Раздел в разработке</p>
-                </div>
+        <section id="tab-tests" class="tab-content pt-10">
+            <div class="flex flex-col items-center mb-8 text-center">
+                <div class="header-icon-main"><span>🎓</span></div>
+                <h1 class="text-3xl font-extrabold tracking-tight">Тесты</h1>
+            </div>
+            <div class="w-full max-w-md mx-auto px-8 py-16 action-btn rounded-[3rem] border-dashed border-2 text-center opacity-50">
+                <p class="text-zinc-400 text-xs font-black uppercase tracking-[0.2em]">В разработке</p>
             </div>
         </section>
 
-        <section id="tab-help" class="tab-content px-4 pt-10 min-h-screen">
-            <div class="flex flex-col items-center justify-center py-20 text-center">
-                <div class="w-20 h-20 bg-blue-600/10 rounded-3xl flex items-center justify-center mb-6 border border-blue-500/20 shadow-xl">
-                    <span class="text-4xl">📡</span>
-                </div>
-                <h2 class="text-3xl font-extrabold mb-10">Поддержка</h2>
-                <div class="w-full grid grid-cols-1 gap-3 px-4 max-w-sm">
-                    <a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full action-btn py-6 rounded-3xl flex flex-col items-center justify-center">
-                        <div class="w-14 h-14 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center text-2xl mb-3">💬</div>
-                        <span class="font-black text-sm uppercase tracking-widest">Telegram</span>
-                    </a>
-                    <a href="mailto:admin@ctai.pro" class="w-full action-btn py-6 rounded-3xl flex flex-col items-center justify-center">
-                        <div class="w-14 h-14 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center text-2xl mb-3">✉️</div>
-                        <span class="font-black text-sm uppercase tracking-widest">Почта</span>
-                    </a>
-                </div>
+        <section id="tab-help" class="tab-content pt-10">
+            <div class="flex flex-col items-center mb-12 text-center">
+                <div class="header-icon-main"><span>💬</span></div>
+                <h1 class="text-3xl font-extrabold tracking-tight">Поддержка</h1>
+                <p class="text-zinc-500 text-[10px] mt-2 font-bold uppercase tracking-widest opacity-60">Связь с разработчиком</p>
+            </div>
+            
+            <div class="flex-1 flex flex-col justify-center items-center gap-6 w-full max-w-md mx-auto px-6 mb-20">
+                <a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full help-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] transition-transform">
+                    <div class="help-icon text-3xl">✈️</div>
+                    <span class="font-black text-sm uppercase tracking-widest">Telegram</span>
+                </a>
+
+                <a href="mailto:support@ctai.ru" class="w-full help-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] transition-transform">
+                    <div class="help-icon text-3xl">📧</div>
+                    <span class="font-black text-sm uppercase tracking-widest">Почта</span>
+                </a>
             </div>
         </section>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 max-w-xl mx-auto z-[100] safe-nav">
-        <div class="flex h-full">
-            <button onclick="switchTab(0)" id="nav-btn-0" class="flex-1 nav-btn active"><span>🏠</span><span class="nav-text">Главная</span></button>
-            <button onclick="switchTab(1)" id="nav-btn-1" class="flex-1 nav-btn"><span>📅</span><span class="nav-text">График</span></button>
-            <button onclick="switchTab(2)" id="nav-btn-2" class="flex-1 nav-btn"><span>📋</span><span class="nav-text">Тесты</span></button>
-            <button onclick="switchTab(3)" id="nav-btn-3" class="flex-1 nav-btn"><span>🛠️</span><span class="nav-text">Помощь</span></button>
+    <nav class="fixed bottom-6 left-4 right-4 max-w-xl mx-auto z-[100] custom-nav shadow-2xl">
+        <div class="flex h-full items-center justify-around px-2">
+            <button onclick="switchTab(0)" id="nav-btn-0" class="nav-item active"><div class="nav-icon">🏠</div><span class="nav-label">Главная</span></button>
+            <button onclick="switchTab(1)" id="nav-btn-1" class="nav-item"><div class="nav-icon">📅</div><span class="nav-label">График</span></button>
+            <button onclick="switchTab(2)" id="nav-btn-2" class="nav-item"><div class="nav-icon">🎓</div><span class="nav-label">Тесты</span></button>
+            <button onclick="switchTab(3)" id="nav-btn-3" class="nav-item"><div class="nav-icon">📡</div><span class="nav-label">Помощь</span></button>
         </div>
     </nav>
 
-    <div id="block-modal" onclick="if(event.target===this) closeBlockModal()" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[200] p-4">
-        <div class="card-bg border rounded-[2.5rem] w-full max-w-md max-h-[75vh] flex flex-col overflow-hidden shadow-2xl">
-            <div class="px-8 py-6 border-b flex items-center justify-between">
-                <h3 id="modal-block-title" class="font-bold text-xl"></h3>
-                <button onclick="closeBlockModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-500/10">✕</button>
+    <div id="block-modal" onclick="if(event.target===this) closeBlockModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center z-[200]">
+        <div class="card-bg border-t sm:border rounded-t-[3rem] sm:rounded-[3rem] w-full max-w-md max-h-[85vh] flex flex-col">
+            <div class="px-8 py-8 border-b flex items-center justify-between">
+                <h3 id="modal-block-title" class="font-black text-xl uppercase tracking-tighter"></h3>
+                <button onclick="closeBlockModal()" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-zinc-500/10 font-bold text-xl">✕</button>
             </div>
-            <div id="instructions-list" class="flex-1 overflow-auto p-6 space-y-3"></div>
+            <div id="instructions-list" class="flex-1 overflow-auto p-6 space-y-3 pb-12"></div>
         </div>
     </div>
 
