@@ -36,7 +36,6 @@ function updateOnDutyWidget() {
     }
 
     // Ищем тех, у кого сегодня смена D (День), S (Спец) или N (Ночь)
-    // Так как у нас сейчас апрель 2026, скрипт будет искать именно по текущему числу
     const onDuty = currentMonthData
         .filter(p => {
             const shift = p.name === "Бондаренко Т.А." ? 'O' : (p.shifts[day - 1] || '');
