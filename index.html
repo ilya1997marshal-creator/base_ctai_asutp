@@ -16,17 +16,14 @@
         body { 
             font-family: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, sans-serif; 
             background-color: #0a0a0a;
-            -webkit-tap-highlight-color: transparent;
         }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        
         .modal { animation: modalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
         @keyframes modalPop {
             from { opacity: 0; transform: translateY(30px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-
         .instruction-item { transition: all 0.2s ease; }
         .instruction-item:active { background-color: #1f2937; transform: scale(0.985); }
 
@@ -36,67 +33,65 @@
             text-align: center;
             border: 1px solid #27272a;
             white-space: nowrap;
+            transition: all 0.3s ease;
         }
-        
         .day-shift   { background-color: #166534; color: #fff; }
         .night-shift { background-color: #4338ca; color: #fff; }
         .sp-shift    { background-color: #b45309; color: #fff; }
         .off         { background-color: #3f3f46; color: #a1a1aa; }
         .weekend     { background-color: #1f2937 !important; color: #e4e4e7; }
 
+        /* Выделение строки */
         .highlighted-row td {
             background-color: #1e2937 !important;
             color: #f1f5f9;
             font-weight: 600;
+            transform: scale(1.02);
         }
         .blurred-row td {
             opacity: 0.25;
             filter: blur(0.5px);
         }
 
-        .card-bg { background-color: #111827; border: 1px solid #334155; }
-        
-        /* Стили для активной кнопки в навигации */
-        .nav-btn.active { color: #60a5fa; }
-        .nav-btn.active span:first-child { transform: scale(1.1); }
+        .card-bg { background-color: #111827; border-color: #334155; }
     </style>
 </head>
-<body class="bg-[#0a0a0a] text-zinc-100 min-h-screen pb-20">
+<body class="bg-[#0a0a0a] text-zinc-100 min-h-screen pb-16">
 
     <div class="max-w-xl mx-auto">
 
         <div id="tab-home" class="tab-content active px-4 pt-6">
             <div class="flex items-center gap-3 mb-6 px-1">
-                <div class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-blue-900/20">Ц</div>
+                <div class="w-8 h-8 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-semibold text-2xl leading-none pt-0.5">Ц</div>
                 <h1 class="text-2xl font-semibold tracking-tighter">ЦТАИ АСУ ТП</h1>
             </div>
             <p class="text-zinc-400 text-[15px] mb-5 px-1">Выберите раздел</p>
 
-            <div class="space-y-2 px-1">
-                <button onclick="openBlockModal(1)" class="block-btn w-full text-left card-bg hover:border-slate-500 rounded-2xl p-4 flex items-center justify-between transition-all active:scale-[0.98]">
-                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg">01</span><span class="font-medium text-[17px]">Блок 1</span></div><span class="text-zinc-500 text-xl">›</span>
+            <div class="space-y-1.5 px-1">
+                <button onclick="openBlockModal(1)" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg tracking-tight">01</span><span class="font-medium text-[17px]">Блок 1</span></div><span class="text-zinc-500 text-xl">›</span>
                 </button>
-                <button onclick="openBlockModal(2)" class="block-btn w-full text-left card-bg hover:border-slate-500 rounded-2xl p-4 flex items-center justify-between transition-all active:scale-[0.98]">
-                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg">02</span><span class="font-medium text-[17px]">Блок 2</span></div><span class="text-zinc-500 text-xl">›</span>
+                <button onclick="openBlockModal(2)" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg tracking-tight">02</span><span class="font-medium text-[17px]">Блок 2</span></div><span class="text-zinc-500 text-xl">›</span>
                 </button>
-                <button onclick="openBlockModal(3)" class="block-btn w-full text-left card-bg hover:border-slate-500 rounded-2xl p-4 flex items-center justify-between transition-all active:scale-[0.98]">
-                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg">03</span><span class="font-medium text-[17px]">Блок 3</span></div><span class="text-zinc-500 text-xl">›</span>
+                <button onclick="openBlockModal(3)" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg tracking-tight">03</span><span class="font-medium text-[17px]">Блок 3</span></div><span class="text-zinc-500 text-xl">›</span>
                 </button>
-                <button onclick="openBlockModal(4)" class="block-btn w-full text-left card-bg hover:border-slate-500 rounded-2xl p-4 flex items-center justify-between transition-all active:scale-[0.98]">
-                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg">04</span><span class="font-medium text-[17px]">Блок 4</span></div><span class="text-zinc-500 text-xl">›</span>
+                <button onclick="openBlockModal(4)" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg tracking-tight">04</span><span class="font-medium text-[17px]">Блок 4</span></div><span class="text-zinc-500 text-xl">›</span>
                 </button>
-                <button onclick="openBlockModal(5)" class="block-btn w-full text-left card-bg hover:border-slate-500 rounded-2xl p-4 flex items-center justify-between transition-all active:scale-[0.98]">
-                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg">05</span><span class="font-medium text-[17px]">Блок 5</span></div><span class="text-zinc-500 text-xl">›</span>
+                <button onclick="openBlockModal(5)" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg tracking-tight">05</span><span class="font-medium text-[17px]">Блок 5</span></div><span class="text-zinc-500 text-xl">›</span>
                 </button>
-                <button onclick="openBlockModal(6)" class="block-btn w-full text-left card-bg hover:border-slate-500 rounded-2xl p-4 flex items-center justify-between transition-all active:scale-[0.98]">
-                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg">06</span><span class="font-medium text-[17px]">Блок 6</span></div><span class="text-zinc-500 text-xl">›</span>
+                <button onclick="openBlockModal(6)" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-4"><span class="text-blue-400 font-medium text-lg tracking-tight">06</span><span class="font-medium text-[17px]">Блок 6</span></div><span class="text-zinc-500 text-xl">›</span>
                 </button>
 
-                <button onclick="openBlockModal('other')" class="block-btn w-full text-left card-bg hover:border-slate-500 rounded-2xl p-4 flex items-center justify-between transition-all active:scale-[0.98] mt-4">
-                    <div class="flex items-center gap-4"><span class="text-xl">📌</span><span class="font-medium text-[17px]">Остальная информация</span></div><span class="text-zinc-500 text-xl">›</span>
+                <button onclick="openBlockModal('other')" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-4"><span class="text-zinc-400 text-xl">📌</span><span class="font-medium text-[17px]">Остальная информация</span></div><span class="text-zinc-500 text-xl">›</span>
                 </button>
-                <button onclick="openBlockModal('zip')" class="block-btn w-full text-left card-bg hover:border-slate-500 rounded-2xl p-4 flex items-center justify-between transition-all active:scale-[0.98]">
-                    <div class="flex items-center gap-4"><span class="text-xl">🔧</span><span class="font-medium text-[17px]">ЗИП АСУТП</span></div><span class="text-zinc-500 text-xl">›</span>
+                <button onclick="openBlockModal('zip')" class="block-btn w-full text-left card-bg border rounded-2xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-4"><span class="text-zinc-400 text-xl">🔧</span><span class="font-medium text-[17px]">ЗИП АСУТП</span></div><span class="text-zinc-500 text-xl">›</span>
                 </button>
             </div>
         </div>
@@ -106,11 +101,11 @@
                 <h2 class="text-2xl font-semibold mb-1">График работы</h2>
                 <p class="text-zinc-400 text-sm mb-6">Апрель 2026 • Оперативный персонал</p>
                 
-                <div class="overflow-x-auto rounded-3xl border border-slate-700 bg-[#111827] shadow-xl">
+                <div class="overflow-x-auto rounded-3xl border border-slate-700 bg-[#111827]">
                     <table id="schedule-table" class="schedule-table w-full min-w-[1180px] text-xs">
                         <thead>
-                            <tr class="bg-slate-800/50 text-slate-300">
-                                <th class="text-left pl-4 w-52 bg-[#111827] sticky left-0">Фамилия</th>
+                            <tr class="bg-slate-800 text-slate-300">
+                                <th class="text-left pl-4 w-52">Фамилия</th>
                                 <th>1</th><th>2</th><th>3</th><th class="weekend">4</th><th class="weekend">5</th>
                                 <th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
                                 <th class="weekend">11</th><th class="weekend">12</th>
@@ -119,13 +114,13 @@
                                 <th>20</th><th>21</th><th>22</th><th>23</th><th>24</th>
                                 <th class="weekend">25</th><th class="weekend">26</th>
                                 <th>27</th><th>28</th><th>29</th><th>30</th>
-                                <th class="font-medium">Смен</th>
-                                <th class="font-medium">Часы</th>
+                                <th class="bg-slate-800 font-medium">Смен</th>
+                                <th class="bg-slate-800 font-medium">Часы</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-800">
-                            <tr onclick="highlightRow(this)" class="cursor-pointer transition-all">
-                                <td class="pl-4 font-medium bg-[#111827] sticky left-0">Лагутенков Р.С.</td>
+                        <tbody class="divide-y divide-slate-700">
+                            <tr onclick="highlightRow(this)">
+                                <td class="pl-4 font-medium">Лагутенков Р.С.</td>
                                 <td></td><td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td class="off"></td>
                                 <td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td></td><td></td>
                                 <td class="day-shift">1219</td><td class="off"></td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td>
@@ -133,8 +128,8 @@
                                 <td class="day-shift">1219</td><td class="night-shift">1202</td><td class="day-shift">1219</td><td class="day-shift">1219</td><td></td><td></td>
                                 <td class="font-medium">17</td><td class="font-medium">204</td>
                             </tr>
-                            <tr onclick="highlightRow(this)" class="cursor-pointer transition-all">
-                                <td class="pl-4 font-medium bg-[#111827] sticky left-0">Миронов С.А.</td>
+                            <tr onclick="highlightRow(this)">
+                                <td class="pl-4 font-medium">Миронов С.А.</td>
                                 <td></td><td></td><td class="day-shift">1219</td><td class="day-shift">1219</td><td class="off"></td>
                                 <td></td><td></td><td class="day-shift">1219</td><td></td><td class="day-shift">1219</td>
                                 <td class="day-shift">1219</td><td class="off"></td><td></td><td></td><td class="day-shift">1219</td><td class="night-shift">1202</td><td></td>
@@ -147,24 +142,24 @@
                 </div>
 
                 <div class="mt-6 px-1 text-sm">
-                    <p class="font-medium mb-3 text-zinc-300">Обозначения:</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                        <div class="flex items-center gap-2"><div class="w-5 h-5 bg-emerald-700 rounded shadow-sm"></div><span>1219 — Дневная (08:00–20:00)</span></div>
-                        <div class="flex items-center gap-2"><div class="w-5 h-5 bg-indigo-700 rounded shadow-sm"></div><span>1202 — Ночная (20:00–08:00)</span></div>
-                        <div class="flex items-center gap-2"><div class="w-5 h-5 bg-amber-700 rounded shadow-sm"></div><span>СП — Спецподготовка (8 ч)</span></div>
-                        <div class="flex items-center gap-2"><div class="w-5 h-5 bg-zinc-600 rounded shadow-sm"></div><span>ОТП — Отпуск / выходной</span></div>
+                    <p class="font-medium mb-3">Обозначения:</p>
+                    <div class="flex flex-wrap gap-x-6 gap-y-3 text-xs">
+                        <div class="flex items-center gap-2"><div class="w-5 h-5 bg-emerald-700 rounded"></div><span>1219 — Дневная (08:00–20:00)</span></div>
+                        <div class="flex items-center gap-2"><div class="w-5 h-5 bg-indigo-700 rounded"></div><span>1202 — Ночная (20:00–08:00)</span></div>
+                        <div class="flex items-center gap-2"><div class="w-5 h-5 bg-amber-700 rounded"></div><span>СП — Спецподготовка (8 ч)</span></div>
+                        <div class="flex items-center gap-2"><div class="w-5 h-5 bg-zinc-600 rounded"></div><span>ОТП — Отпуск / выходной</span></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="tab-tests" class="tab-content px-4 pt-6">
-            <div class="text-center py-12 px-4">
-                <div class="mx-auto w-20 h-20 bg-violet-600/20 text-violet-500 rounded-3xl flex items-center justify-center text-4xl mb-6">📝</div>
+            <div class="text-center py-12">
+                <div class="mx-auto w-16 h-16 bg-violet-600 rounded-3xl flex items-center justify-center text-4xl mb-6">📝</div>
                 <h2 class="text-2xl font-semibold mb-2">Тесты по охране труда</h2>
-                <p class="text-zinc-400 max-w-xs mx-auto">Раздел находится в разработке. Скоро здесь появятся актуальные вопросы для подготовки.</p>
-                <div class="mt-10 card-bg rounded-3xl p-8 border-dashed border-slate-700">
-                    <button onclick="alert('Тесты скоро будут доступны!')" class="w-full py-4 bg-violet-600 hover:bg-violet-500 rounded-2xl font-medium transition-colors shadow-lg shadow-violet-900/20">Начать тренировку</button>
+                <p class="text-zinc-400">Раздел в разработке</p>
+                <div class="mt-10 card-bg border rounded-3xl p-8">
+                    <button onclick="alert('Тесты скоро будут доступны!')" class="w-full py-4 bg-violet-600 hover:bg-violet-500 rounded-3xl font-medium text-base">Начать тренировку</button>
                 </div>
             </div>
         </div>
@@ -172,46 +167,38 @@
         <div id="tab-help" class="tab-content px-4 pt-6">
             <h2 class="text-2xl font-semibold mb-5 px-1">Обратная связь</h2>
             <p class="text-zinc-400 text-[15px] mb-5 px-1">Напишите про ошибки или идеи по улучшению приложения</p>
-            <textarea id="feedback-text" rows="6" class="w-full card-bg border border-slate-700 rounded-3xl p-5 text-base placeholder-zinc-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all" placeholder="Ваше сообщение..."></textarea>
-            <button onclick="sendFeedback()" class="w-full mt-6 bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-medium text-base transition-all active:scale-[0.99] shadow-lg shadow-blue-900/20">Отправить</button>
+            <textarea id="feedback-text" rows="7" class="w-full card-bg border border-slate-700 rounded-3xl p-5 text-base placeholder-zinc-400 focus:border-blue-500" placeholder="Ваше сообщение..."></textarea>
+            <button onclick="sendFeedback()" class="w-full mt-6 bg-blue-600 hover:bg-blue-500 py-4 rounded-3xl font-medium text-base">Отправить</button>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-[#111827]/95 backdrop-blur-lg border-t border-slate-800 z-40">
-        <div class="max-w-xl mx-auto flex">
-            <button onclick="switchTab(0)" class="nav-btn active flex-1 py-3 flex flex-col items-center transition-colors">
-                <span class="text-2xl mb-0.5">🏠</span><span class="text-[10px] font-medium uppercase tracking-wider">Главная</span>
-            </button>
-            <button onclick="switchTab(1)" class="nav-btn flex-1 py-3 flex flex-col items-center transition-colors">
-                <span class="text-2xl mb-0.5">📅</span><span class="text-[10px] font-medium uppercase tracking-wider">График</span>
-            </button>
-            <button onclick="switchTab(2)" class="nav-btn flex-1 py-3 flex flex-col items-center transition-colors">
-                <span class="text-2xl mb-0.5">📝</span><span class="text-[10px] font-medium uppercase tracking-wider">Тесты</span>
-            </button>
-            <button onclick="switchTab(3)" class="nav-btn flex-1 py-3 flex flex-col items-center transition-colors">
-                <span class="text-2xl mb-0.5">❓</span><span class="text-[10px] font-medium uppercase tracking-wider">Помощь</span>
-            </button>
+    <nav class="fixed bottom-0 left-0 right-0 bg-[#111827] border-t border-slate-700 max-w-xl mx-auto">
+        <div class="flex text-zinc-400 text-xs">
+            <button onclick="switchTab(0)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-2xl mb-0.5">🏠</span><span>Главная</span></button>
+            <button onclick="switchTab(1)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-2xl mb-0.5">📅</span><span>График</span></button>
+            <button onclick="switchTab(2)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-2xl mb-0.5">📝</span><span>Тесты</span></button>
+            <button onclick="switchTab(3)" class="flex-1 py-3 flex flex-col items-center active:text-blue-400"><span class="text-2xl mb-0.5">❓</span><span>Помощь</span></button>
         </div>
     </nav>
 
-    <div id="block-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" onclick="if(event.target===this) closeBlockModal()">
-        <div class="modal card-bg rounded-3xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden shadow-2xl border-slate-700">
-            <div class="px-6 py-5 border-b border-slate-800 flex items-center justify-between">
+    <div id="block-modal" onclick="if(event.target===this) closeBlockModal()" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div class="modal card-bg border rounded-3xl w-full max-w-md max-h-[78vh] flex flex-col overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-700 flex items-center justify-between">
                 <h3 id="modal-block-title" class="font-semibold text-xl"></h3>
-                <button onclick="closeBlockModal()" class="text-2xl text-zinc-500 hover:text-zinc-300">✕</button>
+                <button onclick="closeBlockModal()" class="text-3xl text-zinc-400 leading-none">✕</button>
             </div>
-            <div id="instructions-list" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
+            <div id="instructions-list" class="flex-1 overflow-auto p-2"></div>
         </div>
     </div>
 
-    <div id="pdf-modal" class="hidden fixed inset-0 bg-black/95 flex items-center justify-center z-[60] p-0 sm:p-4" onclick="if(event.target===this) closePdfModal()">
-        <div class="card-bg w-full h-full sm:rounded-3xl max-w-4xl flex flex-col overflow-hidden shadow-2xl">
-            <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between bg-[#111827]">
-                <h3 id="pdf-modal-title" class="font-medium text-sm truncate pr-4"></h3>
-                <button onclick="closePdfModal()" class="text-2xl text-zinc-500 hover:text-zinc-300">✕</button>
+    <div id="pdf-modal" onclick="if(event.target===this) closePdfModal()" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[60] p-4">
+        <div class="card-bg border rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-700 flex items-center justify-between">
+                <h3 id="pdf-modal-title" class="font-semibold text-base"></h3>
+                <button onclick="closePdfModal()" class="text-3xl text-zinc-400 leading-none">✕</button>
             </div>
-            <div class="flex-1 overflow-hidden bg-[#0a0a0a]">
-                <iframe id="pdf-frame" class="w-full h-full border-none" src=""></iframe>
+            <div class="flex-1 p-3 overflow-auto bg-[#0a0a0a]">
+                <iframe id="pdf-frame" class="w-full h-full min-h-[55vh] rounded-2xl" frameborder="0"></iframe>
             </div>
         </div>
     </div>
@@ -220,7 +207,9 @@
         let currentlyHighlighted = null;
 
         function highlightRow(row) {
-            const rows = document.querySelectorAll('#schedule-table tbody tr');
+            const table = document.getElementById('schedule-table');
+            const rows = table.querySelectorAll('tbody tr');
+
             if (currentlyHighlighted === row) {
                 rows.forEach(r => r.classList.remove('highlighted-row', 'blurred-row'));
                 currentlyHighlighted = null;
@@ -244,34 +233,27 @@
         };
 
         function switchTab(tabIndex) {
-            const tabs = document.querySelectorAll('.tab-content');
-            const btns = document.querySelectorAll('.nav-btn');
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             const tabIds = ['tab-home', 'tab-schedule', 'tab-tests', 'tab-help'];
-            
-            tabs.forEach(t => t.classList.remove('active'));
-            btns.forEach(b => b.classList.remove('active'));
-            
             document.getElementById(tabIds[tabIndex]).classList.add('active');
-            btns[tabIndex].classList.add('active');
-            window.scrollTo(0, 0);
         }
 
         function openBlockModal(blockKey) {
             const data = blocksData[blockKey] || [];
             let title = blockKey === 'other' ? 'Остальная информация' : 
                         blockKey === 'zip' ? 'ЗИП АСУТП' : `Блок ${blockKey}`;
-            
             document.getElementById('modal-block-title').textContent = title;
+
             const container = document.getElementById('instructions-list');
             container.innerHTML = '';
 
             if (data.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 text-zinc-500 italic">Инструкции пока не добавлены</div>`;
+                container.innerHTML = `<div class="text-center py-12 text-zinc-400 px-4">В этом разделе пока нет инструкций</div>`;
             } else {
                 data.forEach(item => {
                     const div = document.createElement('div');
-                    div.className = "instruction-item p-4 rounded-2xl flex items-center gap-4 cursor-pointer bg-slate-800/40 hover:bg-slate-800 transition-colors border border-slate-700/50";
-                    div.innerHTML = `<span class="text-2xl flex-shrink-0">📄</span><span class="font-medium text-[15px] leading-tight text-zinc-200">${item.name}</span>`;
+                    div.className = "instruction-item mx-2 my-1 px-5 py-5 rounded-2xl flex items-center gap-3 cursor-pointer card-bg border";
+                    div.innerHTML = `<span class="text-2xl text-zinc-400 flex-shrink-0">📘</span><span class="font-medium text-[15.5px] leading-tight">${item.name}</span>`;
                     div.onclick = () => openPdf(item.file, item.name);
                     container.appendChild(div);
                 });
@@ -279,41 +261,47 @@
 
             const modal = document.getElementById('block-modal');
             modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+            modal.classList.add('flex');
         }
 
         function closeBlockModal() {
-            document.getElementById('block-modal').classList.add('hidden');
-            document.body.style.overflow = '';
+            const modal = document.getElementById('block-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
         function openPdf(filePath, title) {
             closeBlockModal();
             document.getElementById('pdf-modal-title').textContent = title;
             document.getElementById('pdf-frame').src = filePath;
-            document.getElementById('pdf-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+            const pdfModal = document.getElementById('pdf-modal');
+            pdfModal.classList.remove('hidden');
+            pdfModal.classList.add('flex');
         }
 
         function closePdfModal() {
-            document.getElementById('pdf-modal').classList.add('hidden');
+            const modal = document.getElementById('pdf-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
             document.getElementById('pdf-frame').src = '';
-            document.body.style.overflow = '';
         }
 
         function sendFeedback() {
             const text = document.getElementById('feedback-text').value.trim();
-            if (!text) return alert('Пожалуйста, введите сообщение');
-            alert('✅ Спасибо! Ваше сообщение принято.');
+            if (!text) return alert('Напишите сообщение');
+            alert('✅ Сообщение отправлено. Спасибо!');
             document.getElementById('feedback-text').value = '';
         }
 
-        // Регистрация Service Worker для PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
-            });
-        }
+        window.onload = function() {
+            // Проверка на существование объекта tailwind перед настройкой
+            if (typeof tailwind !== 'undefined') {
+                tailwind.config = { content: [], darkMode: 'class' };
+            }
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            }
+        };
     </script>
 </body>
 </html>
