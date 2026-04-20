@@ -25,68 +25,81 @@
         .tab-content.active { display: flex; flex-direction: column; }
         .card-bg { background-color: #111827; border-color: #1f2937; }
 
-        /* Таблица графика */
+        /* ТАБЛИЦА ГРАФИКА */
         .schedule-container {
             overflow-x: auto;
-            border-radius: 16px;
+            border-radius: 12px;
             border: 1px solid #1f2937;
             background-color: #0f172a;
             -webkit-overflow-scrolling: touch;
         }
-        .schedule-table { border-collapse: separate; border-spacing: 0; width: 100%; table-layout: fixed; min-width: 1050px; }
+        .schedule-table { 
+            border-collapse: separate; 
+            border-spacing: 0; 
+            width: 100%; 
+            table-layout: fixed; 
+            min-width: 800px; 
+        }
         .schedule-table th, .schedule-table td {
-            font-size: 10px; height: 42px; text-align: center; border-right: 1px solid #1e293b; border-bottom: 1px solid #1e293b; color: #cbd5e1;
-            transition: all 0.1s ease;
+            font-size: 10px; 
+            height: 38px; 
+            text-align: center; 
+            border-right: 1px solid #1e293b; 
+            border-bottom: 1px solid #1e293b; 
+            color: #cbd5e1;
+            padding: 0 !important;
         }
 
+        /* Колонка Ф.И.О. */
         .col-name { 
             position: sticky; 
             left: 0; 
             z-index: 10; 
-            width: 130px; 
+            width: 115px; 
             text-align: left !important; 
-            padding-left: 12px !important; 
+            padding-left: 16px !important; /* Увеличен отступ от края */
             background-color: #111827 !important; 
             color: #94a3b8 !important; 
             font-weight: 700;
             border-right: 2px solid #3b82f6 !important; 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
-        thead th { background-color: #1e293b; color: #f8fafc; font-weight: 700; text-transform: uppercase; font-size: 9px; letter-spacing: 0.05em; }
+        thead th { background-color: #1e293b; color: #f8fafc; font-weight: 700; text-transform: uppercase; font-size: 9px; }
         thead th.col-name { background-color: #0f172a !important; color: #3b82f6 !important; }
 
-        /* Смены */
-        .shift-D { background-color: #059669 !important; color: white !important; } 
-        .shift-N { background-color: #4f46e5 !important; color: white !important; } 
-        .shift-S { background-color: #d97706 !important; color: white !important; } 
-        .shift-O, .shift-ПХ { background-color: #1e293b !important; color: #64748b; font-size: 9px; } 
+        .col-date { width: 22px; } 
+        
+        /* Особое выделение Итогов (Смены и Часы) */
+        .col-stat { 
+            width: 32px; 
+            font-weight: 900; 
+            color: #ffffff; 
+            background-color: #020617 !important; /* Затемнение фона */
+            border-left: 1px solid #3b82f6 !important; /* Синий разделитель */
+        }
+        thead th.col-stat { background-color: #020617 !important; color: #60a5fa !important; }
 
-        /* Подсветка строки */
+        /* Смены (только цвет, без букв) */
+        .shift-D { background-color: #059669 !important; } 
+        .shift-N { background-color: #4f46e5 !important; } 
+        .shift-S { background-color: #d97706 !important; } 
+        .shift-O, .shift-ПХ { background-color: #1e293b !important; color: #475569; font-size: 8px; } 
+
+        /* Подсветка */
         .highlighted-row {
             outline: 2px solid #ffffff !important;
             outline-offset: -2px;
             z-index: 50;
             position: relative;
         }
-        .highlighted-row td {
-            background-color: transparent !important;
-            color: #ffffff !important;
-            opacity: 1 !important;
-            filter: none !important;
-        }
-        .highlighted-row td.shift-D { background-color: #059669 !important; }
-        .highlighted-row td.shift-N { background-color: #4f46e5 !important; }
-        .highlighted-row td.shift-S { background-color: #d97706 !important; }
-
-        .highlighted-row .col-name { 
-            background-color: #1e40af !important; 
-            color: white !important;
-        }
+        .highlighted-row td { opacity: 1 !important; filter: none !important; }
+        .highlighted-row .col-name { background-color: #1e40af !important; color: white !important; }
+        .highlighted-row .col-stat { background-color: #1e40af !important; border-left-color: white !important; }
         
-        .blurred-row { 
-            opacity: 0.1; 
-            filter: grayscale(1) blur(0.5px);
-        }
+        .blurred-row { opacity: 0.15; filter: grayscale(1) blur(0.5px); }
 
         /* Выбор месяца */
         .month-picker-btn {
@@ -99,38 +112,18 @@
         /* НАВИГАЦИЯ */
         .safe-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(65px + env(safe-area-inset-bottom)); }
         .nav-btn { 
-            height: 65px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            position: relative; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            color: #52525b; 
+            height: 65px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            position: relative; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #52525b; 
         }
         .nav-btn.active { color: #3b82f6 !important; }
         .nav-btn.active::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            width: 30%;
-            height: 3px;
-            background: #3b82f6;
-            border-radius: 0 0 4px 4px;
-            box-shadow: 0 0 15px #3b82f6, 0 0 5px #3b82f6;
+            content: ''; position: absolute; top: 0; width: 30%; height: 3px;
+            background: #3b82f6; border-radius: 0 0 4px 4px; box-shadow: 0 0 15px #3b82f6;
             animation: slideIn 0.3s ease;
-        }
-        .nav-btn.active::before { 
-            content: ''; position: absolute; top: 50%; left: 50%; width: 40px; height: 40px; 
-            background: rgba(59, 130, 246, 0.15); border-radius: 50%; transform: translate(-50%, -50%); 
-            filter: blur(10px); z-index: -1;
         }
         .nav-text { font-size: 9px; font-weight: 800; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.05em; }
 
-        @keyframes slideIn {
-            from { width: 0; opacity: 0; }
-            to { width: 30%; opacity: 1; }
-        }
+        @keyframes slideIn { from { width: 0; opacity: 0; } to { width: 30%; opacity: 1; } }
     </style>
 </head>
 <body class="pb-32">
@@ -166,15 +159,15 @@
             </div>
         </div>
 
-        <div id="tab-schedule" class="tab-content px-4 pt-10">
+        <div id="tab-schedule" class="tab-content px-2 pt-10">
             <div class="flex flex-col items-center mb-8">
-                <div class="w-20 h-20 bg-blue-600/10 rounded-3xl flex items-center justify-center mb-4 border border-blue-500/20 shadow-2xl">
-                    <span class="text-4xl">📅</span>
+                <div class="w-16 h-16 bg-blue-600/10 rounded-3xl flex items-center justify-center mb-4 border border-blue-500/20">
+                    <span class="text-3xl">📅</span>
                 </div>
-                <h1 class="text-3xl font-extrabold tracking-tight text-white">График работы</h1>
+                <h1 class="text-2xl font-extrabold tracking-tight text-white">График работы</h1>
             </div>
 
-            <div class="flex items-center justify-end mb-6 px-2">
+            <div class="flex items-center justify-end mb-4 px-2">
                 <div class="month-picker-btn">
                     <span id="current-month-display">Апрель 2026</span>
                     <span>▼</span>
@@ -189,12 +182,12 @@
                 </div>
             </div>
 
-            <div id="schedule-viewport" class="schedule-container shadow-2xl min-h-[300px]"></div>
+            <div id="schedule-viewport" class="schedule-container shadow-2xl"></div>
             
-            <div id="schedule-legend" class="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-3 px-2 mb-20">
-                <div class="flex items-center gap-2 text-[10px] text-zinc-400 font-bold uppercase tracking-widest"><div class="w-3 h-3 rounded-full bg-emerald-600"></div> День</div>
-                <div class="flex items-center gap-2 text-[10px] text-zinc-400 font-bold uppercase tracking-widest"><div class="w-3 h-3 rounded-full bg-indigo-600"></div> Ночь</div>
-                <div class="flex items-center gap-2 text-[10px] text-zinc-400 font-bold uppercase tracking-widest"><div class="w-3 h-3 rounded-full bg-amber-600"></div> Спец</div>
+            <div id="schedule-legend" class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 px-2 mb-20">
+                <div class="flex items-center gap-2 text-[9px] text-zinc-500 font-bold uppercase tracking-widest"><div class="w-2.5 h-2.5 rounded-sm bg-emerald-600"></div> День</div>
+                <div class="flex items-center gap-2 text-[9px] text-zinc-500 font-bold uppercase tracking-widest"><div class="w-2.5 h-2.5 rounded-sm bg-indigo-600"></div> Ночь</div>
+                <div class="flex items-center gap-2 text-[9px] text-zinc-500 font-bold uppercase tracking-widest"><div class="w-2.5 h-2.5 rounded-sm bg-amber-600"></div> Спец</div>
             </div>
         </div>
 
@@ -221,16 +214,11 @@
 
                 <div class="w-full grid grid-cols-1 gap-3 px-4">
                     <a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full bg-[#111827] border border-zinc-800 py-6 px-5 rounded-3xl flex flex-col items-center justify-center group active:scale-[0.98] transition-all hover:border-sky-500/30">
-                        <div class="w-14 h-14 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center text-2xl mb-3 ring-1 ring-sky-500/20">
-                            💬
-                        </div>
+                        <div class="w-14 h-14 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center text-2xl mb-3 ring-1 ring-sky-500/20">💬</div>
                         <span class="font-black text-zinc-100 text-sm uppercase tracking-[0.2em]">Telegram</span>
                     </a>
-
                     <a href="mailto:i.rygih@mail.ru" class="w-full bg-[#111827] border border-zinc-800 py-6 px-5 rounded-3xl flex flex-col items-center justify-center group active:scale-[0.98] transition-all hover:border-red-500/30">
-                        <div class="w-14 h-14 bg-red-500/10 text-red-400 rounded-2xl flex items-center justify-center text-2xl mb-3 ring-1 ring-red-500/20">
-                            📟
-                        </div>
+                        <div class="w-14 h-14 bg-red-500/10 text-red-400 rounded-2xl flex items-center justify-center text-2xl mb-3 ring-1 ring-red-500/20">📟</div>
                         <span class="font-black text-zinc-100 text-sm uppercase tracking-[0.2em]">Почта</span>
                     </a>
                 </div>
@@ -308,22 +296,25 @@
             const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
             
             let html = `<table class="schedule-table"><thead><tr><th class="col-name">Ф.И.О.</th>`;
-            const weekends = [];
             for(let d=1; d<=daysInMonth; d++) {
                 const isWE = [0,6].includes(new Date(year, monthIdx, d).getDay());
-                if(isWE) weekends.push(d);
-                html += `<th class="${isWE ? 'bg-zinc-800/50 text-red-400' : ''}">${d}</th>`;
+                html += `<th class="col-date ${isWE ? 'bg-zinc-800/50 text-red-400' : ''}">${d}</th>`;
             }
-            html += `<th>С</th><th>Ч</th></tr></thead><tbody>`;
+            html += `<th class="col-stat">С</th><th class="col-stat">Ч</th></tr></thead><tbody>`;
             
             data.forEach(person => {
-                html += `<tr onclick="highlightRow(this)"><td class="col-name font-medium">${person.name}</td>`;
+                html += `<tr onclick="highlightRow(this)"><td class="col-name">${person.name}</td>`;
                 for(let d=1; d<=daysInMonth; d++) {
                     const val = person.shifts[d-1] || '';
-                    const isVisual = ['D','N','S','O','ПХ'].includes(val);
-                    html += `<td class="shift-${val} ${weekends.includes(d) ? 'bg-white/5' : ''}">${(isVisual && !['O','ПХ'].includes(val)) ? '' : (val === 'W' ? '' : val)}</td>`;
+                    const isVisual = ['D','N','S'].includes(val); // Только основные смены окрашиваем
+                    const isWE = [0,6].includes(new Date(year, monthIdx, d).getDay());
+                    
+                    // В ячейке НЕ выводим буквы D, N, S — только цвет фона
+                    const cellContent = isVisual ? '' : (val === 'W' ? '' : val);
+                    
+                    html += `<td class="shift-${val} ${isWE ? 'bg-white/5' : ''}">${cellContent}</td>`;
                 }
-                html += `<td class="font-bold">${person.s}</td><td class="font-bold">${person.h}</td></tr>`;
+                html += `<td class="col-stat">${person.s}</td><td class="col-stat">${person.h}</td></tr>`;
             });
             viewport.innerHTML = html + `</tbody></table>`;
             currentlyHighlighted = null;
