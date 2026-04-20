@@ -133,12 +133,24 @@
     <div class="max-w-xl mx-auto h-full relative">
 
         <div id="tab-home" class="tab-content active px-4 pt-10">
-            <div class="flex flex-col items-center mb-12">
+            <div class="flex flex-col items-center mb-8">
                 <div class="w-20 h-20 bg-blue-600/10 rounded-3xl flex items-center justify-center mb-4 border border-blue-500/20 shadow-2xl">
                     <span class="text-4xl">⚡</span>
                 </div>
                 <h1 class="text-3xl font-extrabold tracking-tight text-white">ЦТАИ АСУ ТП</h1>
                 <p class="text-zinc-500 text-sm mt-2 font-medium text-center">Информационная панель <br> подразделения</p>
+            </div>
+
+            <div id="on-duty-container" class="px-2 mb-6">
+                <div class="bg-blue-600/5 border border-blue-500/20 rounded-2xl p-4">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-blue-400 text-xs font-black uppercase tracking-widest">Сейчас на смене:</span>
+                        <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                    </div>
+                    <div id="duty-list" class="flex flex-wrap gap-2 text-sm font-bold text-zinc-100">
+                        <span class="text-zinc-600 text-xs font-medium">Загрузка данных...</span>
+                    </div>
+                </div>
             </div>
 
             <div id="blocks-container" class="space-y-3 px-2"></div>
@@ -261,6 +273,37 @@
             window.scrollTo(0, 0);
         }
 
+        // НОВАЯ ФУНКЦИЯ: Определение текущих дежурных
+        function updateCurrentDuty() {
+            const now = new Date();
+            const day = now.getDate();
+            const monthIndex = now.getMonth();
+            const monthNames = Object.keys(monthsMap);
+            const currentMonthName = monthNames[monthIndex];
+            
+            const dutyList = document.getElementById('duty-list');
+            
+            if (typeof scheduleData === 'undefined' || !scheduleData[currentMonthName]) {
+                dutyList.innerHTML = '<span class="text-zinc-500 text-xs italic">График на этот месяц не найден</span>';
+                return;
+            }
+
+            const activeDuty = scheduleData[currentMonthName]
+                .filter(person => {
+                    const shift = person.shifts[day - 1];
+                    return shift === 'D' || shift === 'N'; // Фильтруем только День и Ночь
+                })
+                .map(person => person.name);
+
+            if (activeDuty.length > 0) {
+                dutyList.innerHTML = activeDuty
+                    .map(name => `<div class="bg-blue-500/10 border border-blue-500/30 px-3 py-1.5 rounded-xl text-blue-100 shadow-sm">${name}</div>`)
+                    .join('');
+            } else {
+                dutyList.innerHTML = '<span class="text-zinc-500 text-xs italic">Смен на текущую дату не обнаружено</span>';
+            }
+        }
+
         function highlightRow(row) {
             const rows = document.querySelectorAll('.schedule-table tbody tr');
             if (currentlyHighlighted === row) {
@@ -355,7 +398,11 @@
         }
 
         function closeBlockModal() { document.getElementById('block-modal').classList.add('hidden'); }
-        window.onload = () => { renderSchedule("Апрель"); };
+        
+        window.onload = () => { 
+            renderSchedule("Апрель"); 
+            updateCurrentDuty(); // Запускаем при загрузке
+        };
     </script>
 </body>
 </html>
