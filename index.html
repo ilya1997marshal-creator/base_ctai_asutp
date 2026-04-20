@@ -61,8 +61,85 @@
         .month-picker-wrapper { position: relative; cursor: pointer; display: flex; align-items: center; gap: 4px; }
         .month-select { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; z-index: 10; }
 
-        .safe-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
-        .nav-btn { height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .safe-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(65px + env(safe-area-inset-bottom)); }
+        
+        /* --- КРАСИВАЯ АНИМАЦИЯ ТАББАРА --- */
+        .nav-btn { 
+            height: 65px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative;
+            transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #71717a; /* Серый для неактивных */
+            overflow: hidden;
+        }
+        
+        /* Синий blob-фон за иконкой (скрыт по умолчанию) */
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(59, 130, 246, 0.15); /* Очень прозрачный синий */
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: blur(10px);
+            z-index: -1;
+        }
+
+        /* Текст под иконкой */
+        .nav-text {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 2px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* --- АКТИВНОЕ СОСТОЯНИЕ --- */
+        .nav-btn.active {
+            color: #ffffff !important; /* Белый текст и иконка */
+        }
+
+        /* Показываем пульсирующий blob */
+        .nav-btn.active::before {
+            transform: translate(-50%, -50%) scale(1);
+            animation: pulse-glow 2s infinite;
+        }
+
+        /* Стилизация активной иконки */
+        .nav-btn.active span:first-child {
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+            transform: translateY(-2px);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Сдвигаем текст немного вниз */
+        .nav-btn.active .nav-text {
+            transform: translateY(1px);
+        }
+
+        /* Ключевые кадры для пульсации свечения */
+        @keyframes pulse-glow {
+            0% {
+                background-color: rgba(59, 130, 246, 0.15);
+                filter: blur(10px);
+            }
+            50% {
+                background-color: rgba(59, 130, 246, 0.25);
+                filter: blur(12px);
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            100% {
+                background-color: rgba(59, 130, 246, 0.15);
+                filter: blur(10px);
+            }
+        }
     </style>
 </head>
 <body class="bg-[#0a0a0a] text-zinc-100 min-h-screen pb-32">
@@ -134,10 +211,10 @@
 
     <nav class="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xl border-t border-zinc-800 max-w-xl mx-auto z-[100] safe-nav">
         <div class="flex h-full">
-            <button onclick="switchTab(0)" class="flex-1 nav-btn text-zinc-500"><span class="text-2xl mb-1">🏠</span><span class="text-[9px] font-bold uppercase">Главная</span></button>
-            <button onclick="switchTab(1)" class="flex-1 nav-btn text-zinc-500"><span class="text-2xl mb-1">📅</span><span class="text-[9px] font-bold uppercase">График</span></button>
-            <button onclick="switchTab(2)" class="flex-1 nav-btn text-zinc-500"><span class="text-2xl mb-1">📝</span><span class="text-[9px] font-bold uppercase">Тесты</span></button>
-            <button onclick="switchTab(3)" class="flex-1 nav-btn text-zinc-500"><span class="text-2xl mb-1">⚙️</span><span class="text-[9px] font-bold uppercase">Помощь</span></button>
+            <button id="nav-btn-0" onclick="switchTab(0)" class="flex-1 nav-btn active"><span class="text-2xl mb-1">🏠</span><span class="nav-text">Главная</span></button>
+            <button id="nav-btn-1" onclick="switchTab(1)" class="flex-1 nav-btn"><span class="text-2xl mb-1">📅</span><span class="nav-text">График</span></button>
+            <button id="nav-btn-2" onclick="switchTab(2)" class="flex-1 nav-btn"><span class="text-2xl mb-1">📝</span><span class="nav-text">Тесты</span></button>
+            <button id="nav-btn-3" onclick="switchTab(3)" class="flex-1 nav-btn"><span class="text-2xl mb-1">⚙️</span><span class="nav-text">Помощь</span></button>
         </div>
     </nav>
 
@@ -156,6 +233,11 @@
             const tabs = ['tab-home', 'tab-schedule', 'tab-tests', 'tab-help'];
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById(tabs[index]).classList.add('active');
+            
+            // Логика подсветки меню
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`nav-btn-${index}`).classList.add('active');
+
             if(index === 1) renderSchedule(document.getElementById('month-selector').value);
             window.scrollTo(0, 0);
         }
@@ -184,8 +266,6 @@
 
             if (!data || !Array.isArray(data) || data.length === 0) {
                 if (legend) legend.style.display = 'none';
-                
-                // Логика вывода разных сообщений для разных месяцев
                 const archivedMonths = ["Январь", "Февраль", "Март"];
                 let message = archivedMonths.includes(monthName) 
                     ? "График в архиве,<br>смены закрыты" 
@@ -225,7 +305,6 @@
             currentlyHighlighted = null;
         }
 
-        // Данные блоков (вернул Блок 1)
         const blocksData = { 
             1: [{ name: "S7-400 Installation (PDF)", file: "pdfs/blok-1/S7-400_instalation.pdf" }], 
             2: [], 3: [], 4: [], 5: [], 6: [], other: [], zip: [] 
