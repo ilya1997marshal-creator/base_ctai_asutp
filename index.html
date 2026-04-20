@@ -48,12 +48,13 @@
             border-bottom: 1px solid #1e293b; 
             color: #cbd5e1;
             padding: 0 !important;
+            transition: all 0.2s ease;
         }
 
         .col-name { 
             position: sticky; 
             left: 0; 
-            z-index: 10; 
+            z-index: 20; 
             width: 120px; 
             text-align: center !important; 
             padding-left: 8px !important; 
@@ -83,7 +84,26 @@
             background-color: #020617 !important; 
             border-left: 1px solid rgba(59, 130, 246, 0.3) !important; 
         }
-        thead th.col-stat { background-color: #020617 !important; color: #60a5fa !important; }
+
+        /* ПОДСВЕТКА СЕГОДНЯ */
+        .today-cell {
+            background-color: rgba(59, 130, 246, 0.15) !important;
+            position: relative;
+        }
+        .today-cell::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-left: 1px solid #3b82f6;
+            border-right: 1px solid #3b82f6;
+            pointer-events: none;
+            z-index: 5;
+        }
+        th.today-cell { 
+            color: #60a5fa !important; 
+            font-weight: 900 !important;
+            background-color: rgba(59, 130, 246, 0.25) !important;
+        }
 
         .shift-D { background-color: #059669 !important; } 
         .shift-N { background-color: #4f46e5 !important; } 
@@ -96,11 +116,9 @@
             z-index: 50;
             position: relative;
         }
-        .highlighted-row td { opacity: 1 !important; filter: none !important; }
         .highlighted-row .col-name { 
             background-color: #1e40af !important; 
             color: white !important;
-            border-right-color: rgba(255, 255, 255, 0.3) !important;
         }
         
         .blurred-row { opacity: 0.15; filter: grayscale(1) blur(0.5px); }
@@ -115,15 +133,10 @@
         .safe-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(65px + env(safe-area-inset-bottom)); }
         .nav-btn { 
             height: 65px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            position: relative; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #52525b; 
+            position: relative; transition: all 0.3s ease; color: #52525b; 
         }
         .nav-btn.active { color: #3b82f6 !important; }
-        .nav-btn.active::after {
-            content: ''; position: absolute; top: 0; width: 30%; height: 3px;
-            background: #3b82f6; border-radius: 0 0 4px 4px; box-shadow: 0 0 15px #3b82f6;
-            animation: slideIn 0.3s ease;
-        }
-        .nav-text { font-size: 9px; font-weight: 800; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.05em; }
+        .nav-text { font-size: 9px; font-weight: 800; text-transform: uppercase; margin-top: 4px; }
 
         @keyframes slideIn { from { width: 0; opacity: 0; } to { width: 30%; opacity: 1; } }
     </style>
@@ -137,8 +150,8 @@
                 <div class="w-20 h-20 bg-blue-600/10 rounded-3xl flex items-center justify-center mb-4 border border-blue-500/20 shadow-2xl">
                     <span class="text-4xl">⚡</span>
                 </div>
-                <h1 class="text-3xl font-extrabold tracking-tight text-white">ЦТАИ АСУ ТП</h1>
-                <p class="text-zinc-500 text-sm mt-2 font-medium text-center">Информационная панель <br> подразделения</p>
+                <h1 class="text-3xl font-extrabold tracking-tight text-white uppercase">ЦТАИ АСУ ТП</h1>
+                <p class="text-zinc-500 text-sm mt-2 font-medium text-center uppercase tracking-widest">Инфо-панель</p>
             </div>
 
             <div id="blocks-container" class="space-y-3 px-2"></div>
@@ -147,14 +160,14 @@
                 <button onclick="openBlockModal('other')" class="w-full bg-[#111827] border border-zinc-800 p-5 rounded-2xl flex items-center justify-between group active:scale-[0.97] transition-all">
                     <div class="flex items-center gap-4">
                         <div class="w-10 h-10 bg-amber-500/10 text-amber-500 rounded-xl flex items-center justify-center text-xl">📌</div>
-                        <span class="font-bold text-zinc-100 text-sm uppercase tracking-wide">Инструкции</span>
+                        <span class="font-bold text-zinc-100 text-sm uppercase">Инструкции</span>
                     </div>
                     <span class="text-zinc-700">›</span>
                 </button>
                 <button onclick="openBlockModal('zip')" class="w-full bg-[#111827] border border-zinc-800 p-5 rounded-2xl flex items-center justify-between group active:scale-[0.97] transition-all">
                     <div class="flex items-center gap-4">
                         <div class="w-10 h-10 bg-emerald-500/10 text-emerald-500 rounded-xl flex items-center justify-center text-xl">🔧</div>
-                        <span class="font-bold text-zinc-100 text-sm uppercase tracking-wide">ЗИП АСУ ТП</span>
+                        <span class="font-bold text-zinc-100 text-sm uppercase">ЗИП АСУ ТП</span>
                     </div>
                     <span class="text-zinc-700">›</span>
                 </button>
@@ -166,7 +179,7 @@
                 <div class="w-16 h-16 bg-blue-600/10 rounded-3xl flex items-center justify-center mb-4 border border-blue-500/20">
                     <span class="text-3xl">📅</span>
                 </div>
-                <h1 class="text-2xl font-extrabold tracking-tight text-white">График работы</h1>
+                <h1 class="text-2xl font-extrabold tracking-tight text-white uppercase">График</h1>
             </div>
 
             <div class="flex items-center justify-end mb-4 px-2">
@@ -198,9 +211,9 @@
                 <div class="w-20 h-20 bg-indigo-600/10 rounded-3xl flex items-center justify-center mb-4 border border-indigo-500/20 shadow-2xl">
                     <span class="text-4xl">📋</span>
                 </div>
-                <h1 class="text-3xl font-extrabold tracking-tight text-white">Тесты знаний</h1>
+                <h1 class="text-3xl font-extrabold tracking-tight text-white uppercase">Тесты</h1>
             </div>
-            <div class="px-6 py-16 bg-[#111827] border border-zinc-800 rounded-[2.5rem] shadow-2xl text-center">
+            <div class="px-6 py-16 bg-[#111827] border border-zinc-800 rounded-[2.5rem] text-center">
                 <p class="text-zinc-500 text-sm font-semibold uppercase tracking-widest">Раздел в разработке</p>
             </div>
         </div>
@@ -211,16 +224,16 @@
                     <div class="w-20 h-20 bg-blue-600/10 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-blue-500/20 shadow-2xl">
                         <span class="text-4xl">📡</span>
                     </div>
-                    <h2 class="text-3xl font-extrabold text-white tracking-tight">Поддержка</h2>
+                    <h2 class="text-3xl font-extrabold text-white tracking-tight uppercase">Связь</h2>
                 </div>
 
                 <div class="w-full grid grid-cols-1 gap-3 px-4">
                     <a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full bg-[#111827] border border-zinc-800 py-6 px-5 rounded-3xl flex flex-col items-center justify-center group active:scale-[0.98] transition-all hover:border-sky-500/30">
-                        <div class="w-14 h-14 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center text-2xl mb-3 ring-1 ring-sky-500/20">💬</div>
+                        <div class="w-14 h-14 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center text-2xl mb-3">💬</div>
                         <span class="font-black text-zinc-100 text-sm uppercase tracking-[0.2em]">Telegram</span>
                     </a>
                     <a href="mailto:i.rygih@mail.ru" class="w-full bg-[#111827] border border-zinc-800 py-6 px-5 rounded-3xl flex flex-col items-center justify-center group active:scale-[0.98] transition-all hover:border-red-500/30">
-                        <div class="w-14 h-14 bg-red-500/10 text-red-400 rounded-2xl flex items-center justify-center text-2xl mb-3 ring-1 ring-red-500/20">📟</div>
+                        <div class="w-14 h-14 bg-red-500/10 text-red-400 rounded-2xl flex items-center justify-center text-2xl mb-3">📟</div>
                         <span class="font-black text-zinc-100 text-sm uppercase tracking-[0.2em]">Почта</span>
                     </a>
                 </div>
@@ -240,7 +253,7 @@
     <div id="block-modal" onclick="if(event.target===this) closeBlockModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[200] p-4">
         <div class="card-bg border border-zinc-800 rounded-[2.5rem] w-full max-w-md max-h-[75vh] flex flex-col overflow-hidden shadow-2xl">
             <div class="px-8 py-6 border-b border-zinc-800 flex items-center justify-between">
-                <h3 id="modal-block-title" class="font-bold text-xl text-white"></h3>
+                <h3 id="modal-block-title" class="font-bold text-xl text-white uppercase"></h3>
                 <button onclick="closeBlockModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400">✕</button>
             </div>
             <div id="instructions-list" class="flex-1 overflow-auto p-6 space-y-3"></div>
@@ -281,15 +294,20 @@
         }
 
         function renderSchedule(monthName) {
+            const now = new Date();
+            const currentDay = now.getDate();
+            const isCurrentMonth = (now.getMonth() === monthsMap[monthName] && now.getFullYear() === 2026);
+
             document.getElementById('current-month-display').textContent = `${monthName} 2026`;
             const viewport = document.getElementById('schedule-viewport');
             const legend = document.getElementById('schedule-legend');
             viewport.innerHTML = '';
+            
             const data = (typeof scheduleData !== 'undefined') ? scheduleData[monthName] : null;
 
-            if (!data || !Array.isArray(data) || data.length === 0) {
+            if (!data || data.length === 0) {
                 if (legend) legend.style.display = 'none';
-                viewport.innerHTML = `<div class="py-32 text-center text-zinc-600 font-bold uppercase text-[11px] tracking-[0.2em] px-6">График отсутствует</div>`;
+                viewport.innerHTML = `<div class="py-32 text-center text-zinc-600 font-bold uppercase text-[11px] px-6">Данные отсутствуют</div>`;
                 return;
             }
 
@@ -300,7 +318,8 @@
             let html = `<table class="schedule-table"><thead><tr><th class="col-name">Ф.И.О.</th>`;
             for(let d=1; d<=daysInMonth; d++) {
                 const isWE = [0,6].includes(new Date(year, monthIdx, d).getDay());
-                html += `<th class="col-date ${isWE ? 'bg-zinc-800/50 text-red-400' : ''}">${d}</th>`;
+                const isToday = (isCurrentMonth && d === currentDay);
+                html += `<th class="col-date ${isWE ? 'bg-zinc-800/50 text-red-400' : ''} ${isToday ? 'today-cell' : ''}">${d}</th>`;
             }
             html += `<th class="col-stat">С</th><th class="col-stat">Ч</th></tr></thead><tbody>`;
             
@@ -310,8 +329,9 @@
                     const val = person.shifts[d-1] || '';
                     const isVisual = ['D','N','S'].includes(val);
                     const isWE = [0,6].includes(new Date(year, monthIdx, d).getDay());
+                    const isToday = (isCurrentMonth && d === currentDay);
                     const cellContent = isVisual ? '' : (val === 'W' ? '' : val);
-                    html += `<td class="shift-${val} ${isWE ? 'bg-white/5' : ''}">${cellContent}</td>`;
+                    html += `<td class="shift-${val} ${isWE ? 'bg-white/5' : ''} ${isToday ? 'today-cell' : ''}">${cellContent}</td>`;
                 }
                 html += `<td class="col-stat">${person.s}</td><td class="col-stat">${person.h}</td></tr>`;
             });
@@ -327,7 +347,7 @@
         const blocksCont = document.getElementById('blocks-container');
         if(blocksCont) {
             for(let i=1; i<=6; i++) {
-                blocksCont.innerHTML += `<button onclick="openBlockModal(${i})" class="w-full bg-[#111827] border border-zinc-800 p-5 rounded-2xl flex items-center justify-between group active:scale-[0.97] transition-all mb-1"><div class="flex items-center gap-4"><span class="text-blue-500 font-extrabold text-lg">0${i}</span><span class="font-bold text-zinc-100 text-sm uppercase tracking-wide">Блок ${i}</span></div><span class="text-zinc-700">›</span></button>`;
+                blocksCont.innerHTML += `<button onclick="openBlockModal(${i})" class="w-full bg-[#111827] border border-zinc-800 p-5 rounded-2xl flex items-center justify-between active:bg-zinc-800 transition-all mb-1"><div class="flex items-center gap-4"><span class="text-blue-500 font-extrabold text-lg">0${i}</span><span class="font-bold text-zinc-100 text-sm uppercase">Блок ${i}</span></div><span class="text-zinc-700">›</span></button>`;
             }
         }
 
@@ -335,24 +355,19 @@
             const data = blocksData[key] || [];
             document.getElementById('modal-block-title').textContent = key === 'other' ? 'Инструкции' : key === 'zip' ? 'ЗИП АСУ ТП' : `Блок ${key}`;
             const container = document.getElementById('instructions-list');
-            container.innerHTML = data.length ? '' : '<div class="text-center py-10 text-zinc-600 text-sm uppercase tracking-widest">Пусто</div>';
+            container.innerHTML = data.length ? '' : '<div class="text-center py-10 text-zinc-600 text-sm uppercase">Пусто</div>';
             
             data.forEach(item => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = "p-5 rounded-2xl bg-[#0f172a] border border-zinc-800 flex items-center gap-4 active:bg-blue-600 transition-colors cursor-pointer";
                 itemDiv.innerHTML = `<span class="text-2xl">📄</span><span class="font-bold text-xs text-zinc-100 uppercase tracking-wide">${item.name}</span>`;
-                
                 itemDiv.onclick = () => {
-                    const absoluteUrl = new URL(item.file, window.location.href).href;
                     const a = document.createElement('a');
-                    a.href = absoluteUrl;
+                    a.href = new URL(item.file, window.location.href).href;
                     a.target = '_blank';
                     a.rel = 'external noopener noreferrer'; 
-                    document.body.appendChild(a);
                     a.click();
-                    document.body.removeChild(a);
                 };
-                
                 container.appendChild(itemDiv);
             });
             document.getElementById('block-modal').classList.remove('hidden');
