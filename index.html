@@ -20,11 +20,11 @@
             background-color: #0a0a0a;
             padding-top: env(safe-area-inset-top);
         }
-        .tab-content { display: none; }
-        .tab-content.active { display: flex; flex-direction: column; min-height: 80vh; }
+        .tab-content { display: none; min-height: 80vh; }
+        .tab-content.active { display: flex; flex-direction: column; }
         .card-bg { background-color: #111827; border-color: #334155; }
 
-        /* Таблица графика */
+        /* График */
         .schedule-container {
             overflow-x: auto;
             border-radius: 12px;
@@ -41,18 +41,26 @@
             position: sticky; left: 0; z-index: 10; width: 130px; text-align: left !important; 
             padding-left: 10px !important; background-color: #1e293b; font-size: 11px !important; color: #f8fafc !important;
         }
-        .col-day { width: 30px; }
-        .col-total { width: 38px; background-color: #020617; font-weight: 700; color: #60a5fa; }
         thead th { background-color: #334155; color: #f8fafc; font-weight: 600; text-transform: uppercase; font-size: 9px; }
         thead th.col-name { z-index: 20; background-color: #2563eb; }
 
-        /* Стили смен */
+        /* Статусы смен */
         .shift-D { background-color: #059669 !important; color: transparent !important; } 
         .shift-N { background-color: #4f46e5 !important; color: transparent !important; } 
         .shift-S { background-color: #d97706 !important; color: transparent !important; } 
         .shift-O, .shift-ПХ { background-color: #1e293b !important; color: #64748b; font-size: 9px; } 
+        
+        /* Выходные Сб/Вс */
         .weekend-cell { background-color: rgba(255, 255, 255, 0.03) !important; }
         thead th.weekend-cell { background-color: #1e293b !important; color: #ef4444 !important; }
+
+        /* Интерактив строки */
+        tr.highlighted-row td { opacity: 1 !important; filter: none !important; background-color: #1e293b !important; }
+        .blurred-row { opacity: 0.15; filter: blur(1.5px) grayscale(0.8); pointer-events: none; }
+
+        /* Селектор месяца */
+        .month-picker-wrapper { position: relative; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .month-select { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; z-index: 10; }
 
         /* Навигация */
         .safe-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
@@ -83,7 +91,7 @@
         <div id="tab-schedule" class="tab-content px-2 pt-6">
             <div class="flex items-center justify-between px-2 mb-4">
                 <h2 class="text-xl font-bold">График работы</h2>
-                <div class="month-picker-wrapper bg-blue-600/20 text-blue-400 text-[10px] px-3 py-1.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1">
+                <div class="month-picker-wrapper bg-blue-600/20 text-blue-400 text-[10px] px-3 py-1.5 rounded-full font-bold uppercase tracking-wider">
                     <span id="current-month-display">Апрель 2026</span> <span>▼</span>
                     <select id="month-selector" class="month-select" onchange="renderSchedule(this.value)">
                         <option value="Январь">Январь</option><option value="Февраль">Февраль</option>
@@ -108,27 +116,29 @@
             <div class="card-bg border border-zinc-800 rounded-3xl p-10"><h2 class="text-xl font-bold">Тесты знаний</h2><p class="text-zinc-400 text-sm">В разработке...</p></div>
         </div>
 
-        <div id="tab-help" class="tab-content px-6 pt-8 flex-1">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold mb-2">Помощь</h2>
-                <p class="text-zinc-500 text-xs uppercase tracking-widest font-semibold">Связаться с разработчиком</p>
-            </div>
-            
-            <div class="flex flex-col items-center gap-4">
-                <a href="https://t.me/IlyaMar5hal" target="_blank" 
-                   class="w-full max-w-[280px] card-bg border border-zinc-800 py-4 px-6 rounded-2xl flex flex-col items-center justify-center gap-2 active:scale-95 transition-all shadow-lg">
-                    <div class="w-10 h-10 bg-sky-500/10 text-sky-500 rounded-full flex items-center justify-center text-xl">✈️</div>
-                    <span class="font-bold text-zinc-100 uppercase tracking-wider text-xs">Telegram</span>
-                </a>
+        <div id="tab-help" class="tab-content px-6 flex-1 items-center justify-center">
+            <div class="w-full max-w-[280px]">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold mb-1">Помощь</h2>
+                    <p class="text-zinc-500 text-[10px] uppercase tracking-[0.2em] font-bold">Связь</p>
+                </div>
                 
-                <a href="mailto:i.rygih@mail.ru" 
-                   class="w-full max-w-[280px] card-bg border border-zinc-800 py-4 px-6 rounded-2xl flex flex-col items-center justify-center gap-2 active:scale-95 transition-all shadow-lg">
-                    <div class="w-10 h-10 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center text-xl">📧</div>
-                    <span class="font-bold text-zinc-100 uppercase tracking-wider text-xs">Почта</span>
-                </a>
+                <div class="space-y-4">
+                    <a href="https://t.me/IlyaMar5hal" target="_blank" 
+                       class="w-full card-bg border border-zinc-800 py-5 rounded-2xl flex flex-col items-center justify-center gap-2 active:scale-95 transition-all shadow-xl">
+                        <div class="w-10 h-10 bg-sky-500/10 text-sky-500 rounded-full flex items-center justify-center text-xl">✈️</div>
+                        <span class="font-bold text-zinc-100 uppercase tracking-widest text-[10px]">Telegram</span>
+                    </a>
+                    
+                    <a href="mailto:i.rygih@mail.ru" 
+                       class="w-full card-bg border border-zinc-800 py-5 rounded-2xl flex flex-col items-center justify-center gap-2 active:scale-95 transition-all shadow-xl">
+                        <div class="w-10 h-10 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center text-xl">📧</div>
+                        <span class="font-bold text-zinc-100 uppercase tracking-widest text-[10px]">Почта</span>
+                    </a>
+                </div>
+                
+                <p class="text-center text-[10px] text-zinc-700 mt-12 uppercase tracking-widest font-black">Версия 1.2.5</p>
             </div>
-
-            <p class="text-center text-[10px] text-zinc-700 mt-auto mb-10 uppercase tracking-[0.2em] font-black">Версия 1.2.4</p>
         </div>
     </div>
 
@@ -149,7 +159,6 @@
     </div>
 
     <script>
-        // JS остается без изменений, кроме логики рендера графиков
         let currentlyHighlighted = null;
         const monthsMap = { "Январь":0, "Февраль":1, "Март":2, "Апрель":3, "Май":4, "Июнь":5, "Июль":6, "Август":7, "Сентябрь":8, "Октябрь":9, "Ноябрь":10, "Декабрь":11 };
 
@@ -161,15 +170,23 @@
             window.scrollTo(0, 0);
         }
 
+        // Исправленная функция выделения
         function highlightRow(row) {
             const rows = document.querySelectorAll('#schedule-table tbody tr');
             if (currentlyHighlighted === row) {
-                rows.forEach(r => r.classList.remove('highlighted-row', 'blurred-row'));
+                rows.forEach(r => {
+                    r.classList.remove('highlighted-row', 'blurred-row');
+                });
                 currentlyHighlighted = null;
             } else {
                 rows.forEach(r => {
-                    r.classList.toggle('highlighted-row', r === row);
-                    r.classList.toggle('blurred-row', r !== row);
+                    if (r === row) {
+                        r.classList.add('highlighted-row');
+                        r.classList.remove('blurred-row');
+                    } else {
+                        r.classList.add('blurred-row');
+                        r.classList.remove('highlighted-row');
+                    }
                 });
                 currentlyHighlighted = row;
             }
@@ -178,7 +195,7 @@
         function renderSchedule(monthName) {
             document.getElementById('current-month-display').textContent = `${monthName} 2026`;
             const viewport = document.getElementById('schedule-viewport');
-            const data = typeof scheduleData !== 'undefined' ? scheduleData[monthName] : "future";
+            const data = (typeof scheduleData !== 'undefined') ? scheduleData[monthName] : "future";
 
             if (!data || data === "future") {
                 viewport.innerHTML = `<div class="py-20 text-center text-zinc-500 font-medium italic px-4">${!data ? 'Смены закрыты' : 'График отсутствует'}</div>`;
@@ -211,6 +228,7 @@
                 html += `<td class="col-total">${person.s}</td><td class="col-total">${person.h}</td></tr>`;
             });
             viewport.innerHTML = html + `</tbody></table>`;
+            currentlyHighlighted = null; // Сброс при перерендере
         }
 
         const blocksData = { 1: [{ name: "S7-400 Installation (PDF)", file: "pdfs/blok-1/S7-400_instalation.pdf" }], 2: [], 3: [], 4: [], 5: [], 6: [], other: [], zip: [] };
