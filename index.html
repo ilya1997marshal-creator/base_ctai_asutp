@@ -12,7 +12,7 @@
 
     <button onclick="toggleTheme()" class="theme-toggle" id="theme-icon">🌙</button>
 
-    <div class="max-w-xl mx-auto h-full relative">
+    <div class="max-w-xl mx-auto min-h-screen relative">
 
         <section id="tab-home" class="tab-content active px-4 pt-10">
             <div class="flex flex-col items-center mb-8 text-center">
@@ -64,55 +64,61 @@
             <div class="flex items-center justify-end mb-4 px-2">
                 <div class="month-picker-btn">
                     <span id="current-month-display">Апрель 2026</span>
-                    <span>▼</span>
+                    <span class="text-[10px] opacity-50">▼</span>
                     <select id="month-selector" class="month-select-hidden" onchange="renderSchedule(this.value)">
-                        <option value="Январь">Январь</option><option value="Февраль">Февраль</option>
-                        <option value="Март">Март</option><option value="Апрель">Апрель</option>
-                        <option value="Май">Май</option><option value="Июнь">Июнь</option>
-                        <option value="Июль">Июль</option><option value="Август">Август</option>
-                        <option value="Сентябрь">Сентябрь</option><option value="Октябрь">Октябрь</option>
-                        <option value="Ноябрь">Ноябрь</option><option value="Декабрь">Декабрь</option>
+                        <option value="Январь">Январь</option>
+                        <option value="Февраль">Февраль</option>
+                        <option value="Март">Март</option>
+                        <option value="Апрель" selected>Апрель</option>
+                        <option value="Май">Май</option>
+                        <option value="Июнь">Июнь</option>
+                        <option value="Июль">Июль</option>
+                        <option value="Август">Август</option>
+                        <option value="Сентябрь">Сентябрь</option>
+                        <option value="Октябрь">Октябрь</option>
+                        <option value="Ноябрь">Ноябрь</option>
+                        <option value="Декабрь">Декабрь</option>
                     </select>
                 </div>
             </div>
 
             <div id="schedule-viewport" class="schedule-container shadow-lg"></div>
             
-            <div id="schedule-legend" class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 px-2 mb-20">
+            <div class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 px-2 mb-20">
                 <div class="flex items-center gap-2 text-[9px] text-zinc-500 font-bold uppercase tracking-widest"><div class="w-2.5 h-2.5 rounded-sm bg-emerald-600"></div> День</div>
                 <div class="flex items-center gap-2 text-[9px] text-zinc-500 font-bold uppercase tracking-widest"><div class="w-2.5 h-2.5 rounded-sm bg-indigo-600"></div> Ночь</div>
                 <div class="flex items-center gap-2 text-[9px] text-zinc-500 font-bold uppercase tracking-widest"><div class="w-2.5 h-2.5 rounded-sm bg-amber-600"></div> Спец</div>
             </div>
         </section>
 
-        <section id="tab-tests" class="tab-content px-4 pt-10 text-center">
-            <div class="flex flex-col items-center mb-12">
-                <div class="w-20 h-20 bg-indigo-600/10 rounded-3xl flex items-center justify-center mb-4 border border-indigo-500/20 shadow-xl">
+        <section id="tab-tests" class="tab-content px-4 pt-10 min-h-screen">
+            <div class="flex flex-col items-center justify-center py-20 text-center">
+                <div class="w-20 h-20 bg-indigo-600/10 rounded-3xl flex items-center justify-center mb-6 border border-indigo-500/20 shadow-xl">
                     <span class="text-4xl">📋</span>
                 </div>
-                <h1 class="text-3xl font-extrabold tracking-tight">Тесты знаний</h1>
-            </div>
-            <div class="px-6 py-16 action-btn rounded-[2.5rem] shadow-xl">
-                <p class="text-zinc-500 text-sm font-semibold uppercase tracking-widest">Раздел в разработке</p>
+                <h1 class="text-3xl font-extrabold mb-8">Тесты знаний</h1>
+                <div class="w-full max-w-sm px-6 py-16 action-btn rounded-[2.5rem]">
+                    <p class="text-zinc-500 text-sm font-semibold uppercase tracking-widest">Раздел в разработке</p>
+                </div>
             </div>
         </section>
 
-        <section id="tab-help" class="tab-content px-4 pt-10 flex-1 flex flex-col items-center">
-            <div class="text-center mb-10 w-full">
-                <div class="w-20 h-20 bg-blue-600/10 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-blue-500/20 shadow-xl">
+        <section id="tab-help" class="tab-content px-4 pt-10 min-h-screen">
+            <div class="flex flex-col items-center justify-center py-20 text-center">
+                <div class="w-20 h-20 bg-blue-600/10 rounded-3xl flex items-center justify-center mb-6 border border-blue-500/20 shadow-xl">
                     <span class="text-4xl">📡</span>
                 </div>
-                <h2 class="text-3xl font-extrabold tracking-tight">Поддержка</h2>
-            </div>
-            <div class="w-full grid grid-cols-1 gap-3 px-4 max-w-sm">
-                <a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full action-btn py-6 px-5 rounded-3xl flex flex-col items-center justify-center active:scale-[0.98] transition-all">
-                    <div class="w-14 h-14 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center text-2xl mb-3">💬</div>
-                    <span class="font-black text-sm uppercase tracking-[0.2em]">Telegram</span>
-                </a>
-                <a href="mailto:admin@ctai.pro" class="w-full action-btn py-6 px-5 rounded-3xl flex flex-col items-center justify-center active:scale-[0.98] transition-all">
-                    <div class="w-14 h-14 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center text-2xl mb-3">✉️</div>
-                    <span class="font-black text-sm uppercase tracking-[0.2em]">Почта</span>
-                </a>
+                <h2 class="text-3xl font-extrabold mb-10">Поддержка</h2>
+                <div class="w-full grid grid-cols-1 gap-3 px-4 max-w-sm">
+                    <a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full action-btn py-6 rounded-3xl flex flex-col items-center justify-center">
+                        <div class="w-14 h-14 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center text-2xl mb-3">💬</div>
+                        <span class="font-black text-sm uppercase tracking-widest">Telegram</span>
+                    </a>
+                    <a href="mailto:admin@ctai.pro" class="w-full action-btn py-6 rounded-3xl flex flex-col items-center justify-center">
+                        <div class="w-14 h-14 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center text-2xl mb-3">✉️</div>
+                        <span class="font-black text-sm uppercase tracking-widest">Почта</span>
+                    </a>
+                </div>
             </div>
         </section>
     </div>
