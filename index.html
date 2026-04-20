@@ -131,7 +131,7 @@
                         <span class="font-bold text-zinc-100 uppercase tracking-widest text-[10px]">Почта</span>
                     </a>
                 </div>
-                <p class="text-center text-[10px] text-zinc-700 mt-12 uppercase tracking-widest font-black">Версия 1.3.4</p>
+                <p class="text-center text-[10px] text-zinc-700 mt-12 uppercase tracking-widest font-black">Версия 1.3.5</p>
             </div>
         </div>
     </div>
@@ -184,21 +184,20 @@
             viewport.innerHTML = ''; 
             currentlyHighlighted = null;
 
-            // Константа текущего месяца (Апрель = 3)
-            const currentMonthIdx = 3; 
+            const currentMonthIdx = 3; // Апрель
             const selectedMonthIdx = monthsMap[monthName];
 
-            // Если данных в data.js нет
-            if (typeof scheduleData === 'undefined' || !scheduleData[monthName]) {
+            // Проверка наличия данных в data.js
+            const hasData = typeof scheduleData !== 'undefined' && scheduleData[monthName];
+
+            if (!hasData) {
                 let message = "";
                 let icon = "";
                 
                 if (selectedMonthIdx < currentMonthIdx) {
-                    // Прошедшие месяцы
                     icon = "📑";
                     message = "Отчетный период закрыт.<br>Смены завершены.";
                 } else {
-                    // Будущие месяцы
                     icon = "📅";
                     message = "График на данный период<br>находится на утверждении.";
                 }
@@ -213,15 +212,15 @@
                 return;
             }
 
+            // Если данные есть, рисуем таблицу
             const data = scheduleData[monthName];
             const year = 2026;
-            const monthIdx = selectedMonthIdx;
-            const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
+            const daysInMonth = new Date(year, selectedMonthIdx + 1, 0).getDate();
 
             let html = `<table id="schedule-table" class="schedule-table"><thead><tr><th class="col-name">Ф.И.О.</th>`;
             const weekends = [];
             for(let d=1; d<=daysInMonth; d++) {
-                const dayOfWeek = new Date(year, monthIdx, d).getDay();
+                const dayOfWeek = new Date(year, selectedMonthIdx, d).getDay();
                 const isWE = (dayOfWeek === 0 || dayOfWeek === 6);
                 if(isWE) weekends.push(d);
                 html += `<th class="col-day ${isWE ? 'weekend-cell' : ''}">${d}</th>`;
