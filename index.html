@@ -55,34 +55,40 @@
             position: sticky; 
             left: 0; 
             z-index: 10; 
-            width: 115px; 
+            width: 120px; 
             text-align: left !important; 
-            padding-left: 16px !important; /* Увеличен отступ от края */
+            padding-left: 14px !important; /* Отступ текста от левого края экрана */
+            padding-right: 10px !important; /* Отступ текста от линии разграничения */
             background-color: #111827 !important; 
             color: #94a3b8 !important; 
             font-weight: 700;
-            border-right: 2px solid #3b82f6 !important; 
+            /* Сделали линию менее резкой: тонкая и полупрозрачная */
+            border-right: 1px solid rgba(59, 130, 246, 0.4) !important; 
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         
         thead th { background-color: #1e293b; color: #f8fafc; font-weight: 700; text-transform: uppercase; font-size: 9px; }
-        thead th.col-name { background-color: #0f172a !important; color: #3b82f6 !important; }
+        thead th.col-name { 
+            background-color: #0f172a !important; 
+            color: #3b82f6 !important;
+            border-right: 1px solid rgba(59, 130, 246, 0.4) !important;
+        }
 
         .col-date { width: 22px; } 
         
-        /* Особое выделение Итогов (Смены и Часы) */
+        /* Итоги (Смены и Часы) */
         .col-stat { 
             width: 32px; 
             font-weight: 900; 
             color: #ffffff; 
-            background-color: #020617 !important; /* Затемнение фона */
-            border-left: 1px solid #3b82f6 !important; /* Синий разделитель */
+            background-color: #020617 !important; 
+            border-left: 1px solid rgba(59, 130, 246, 0.3) !important; 
         }
         thead th.col-stat { background-color: #020617 !important; color: #60a5fa !important; }
 
-        /* Смены (только цвет, без букв) */
+        /* Смены (только цвет) */
         .shift-D { background-color: #059669 !important; } 
         .shift-N { background-color: #4f46e5 !important; } 
         .shift-S { background-color: #d97706 !important; } 
@@ -96,8 +102,11 @@
             position: relative;
         }
         .highlighted-row td { opacity: 1 !important; filter: none !important; }
-        .highlighted-row .col-name { background-color: #1e40af !important; color: white !important; }
-        .highlighted-row .col-stat { background-color: #1e40af !important; border-left-color: white !important; }
+        .highlighted-row .col-name { 
+            background-color: #1e40af !important; 
+            color: white !important;
+            border-right-color: rgba(255, 255, 255, 0.3) !important;
+        }
         
         .blurred-row { opacity: 0.15; filter: grayscale(1) blur(0.5px); }
 
@@ -306,12 +315,9 @@
                 html += `<tr onclick="highlightRow(this)"><td class="col-name">${person.name}</td>`;
                 for(let d=1; d<=daysInMonth; d++) {
                     const val = person.shifts[d-1] || '';
-                    const isVisual = ['D','N','S'].includes(val); // Только основные смены окрашиваем
+                    const isVisual = ['D','N','S'].includes(val);
                     const isWE = [0,6].includes(new Date(year, monthIdx, d).getDay());
-                    
-                    // В ячейке НЕ выводим буквы D, N, S — только цвет фона
                     const cellContent = isVisual ? '' : (val === 'W' ? '' : val);
-                    
                     html += `<td class="shift-${val} ${isWE ? 'bg-white/5' : ''}">${cellContent}</td>`;
                 }
                 html += `<td class="col-stat">${person.s}</td><td class="col-stat">${person.h}</td></tr>`;
