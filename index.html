@@ -25,14 +25,13 @@
         .tab-content.active { display: flex; flex-direction: column; }
         .card-bg { background-color: #111827; border-color: #334155; }
 
-        /* График */
         .schedule-container {
             overflow-x: auto;
             border-radius: 12px;
             border: 1px solid #1e1e1e;
             background-color: #0f172a;
             -webkit-overflow-scrolling: touch;
-            min-height: 200px;
+            min-height: 250px;
             display: flex;
             flex-direction: column;
         }
@@ -48,7 +47,6 @@
         thead th { background-color: #334155; color: #f8fafc; font-weight: 600; text-transform: uppercase; font-size: 9px; }
         thead th.col-name { z-index: 20; background-color: #2563eb; }
 
-        /* Стили смен */
         .shift-D { background-color: #059669 !important; color: transparent !important; } 
         .shift-N { background-color: #4f46e5 !important; color: transparent !important; } 
         .shift-S { background-color: #d97706 !important; color: transparent !important; } 
@@ -57,7 +55,6 @@
         .weekend-cell { background-color: rgba(255, 255, 255, 0.03); }
         thead th.weekend-cell { background-color: #1e293b !important; color: #ef4444 !important; }
 
-        /* Выделение */
         tr.highlighted-row td:not([class*="shift-D"]):not([class*="shift-N"]):not([class*="shift-S"]) { 
             background-color: #1e293b !important; 
         }
@@ -134,7 +131,7 @@
                         <span class="font-bold text-zinc-100 uppercase tracking-widest text-[10px]">Почта</span>
                     </a>
                 </div>
-                <p class="text-center text-[10px] text-zinc-700 mt-12 uppercase tracking-widest font-black">Версия 1.3.3</p>
+                <p class="text-center text-[10px] text-zinc-700 mt-12 uppercase tracking-widest font-black">Версия 1.3.4</p>
             </div>
         </div>
     </div>
@@ -187,13 +184,30 @@
             viewport.innerHTML = ''; 
             currentlyHighlighted = null;
 
-            // Проверка наличия данных в data.js
+            // Константа текущего месяца (Апрель = 3)
+            const currentMonthIdx = 3; 
+            const selectedMonthIdx = monthsMap[monthName];
+
+            // Если данных в data.js нет
             if (typeof scheduleData === 'undefined' || !scheduleData[monthName]) {
+                let message = "";
+                let icon = "";
+                
+                if (selectedMonthIdx < currentMonthIdx) {
+                    // Прошедшие месяцы
+                    icon = "📑";
+                    message = "Отчетный период закрыт.<br>Смены завершены.";
+                } else {
+                    // Будущие месяцы
+                    icon = "📅";
+                    message = "График на данный период<br>находится на утверждении.";
+                }
+
                 viewport.innerHTML = `
                     <div class="flex-1 flex flex-col items-center justify-center py-20 px-6 text-center">
-                        <div class="text-4xl mb-4 opacity-20">📅</div>
-                        <div class="text-zinc-400 font-medium text-sm tracking-wide">
-                            График на данный период<br>находится на утверждении
+                        <div class="text-4xl mb-4 opacity-20">${icon}</div>
+                        <div class="text-zinc-400 font-medium text-sm tracking-wide leading-relaxed">
+                            ${message}
                         </div>
                     </div>`;
                 return;
@@ -201,7 +215,7 @@
 
             const data = scheduleData[monthName];
             const year = 2026;
-            const monthIdx = monthsMap[monthName];
+            const monthIdx = selectedMonthIdx;
             const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
 
             let html = `<table id="schedule-table" class="schedule-table"><thead><tr><th class="col-name">Ф.И.О.</th>`;
@@ -229,14 +243,12 @@
             viewport.innerHTML = html + `</tbody></table>`;
         }
 
-        /* Кнопки блоков на главной */
         const blocksCont = document.getElementById('blocks-container');
         for(let i=1; i<=6; i++) {
             blocksCont.innerHTML += `<button onclick="openBlockModal(${i})" class="w-full card-bg border border-zinc-800 rounded-2xl p-4 flex items-center justify-between mb-2 text-zinc-200 font-medium active:scale-95 transition-transform"><div class="flex items-center gap-4"><span class="text-blue-500 font-bold text-lg">0${i}</span>Блок ${i}</div><span>›</span></button>`;
         }
 
         function openBlockModal(key) {
-            // Данные берутся из внешнего файла library.js
             const data = (typeof blocksData !== 'undefined') ? blocksData[key] : [];
             document.getElementById('modal-block-title').textContent = key === 'other' ? 'Инструкции' : key === 'zip' ? 'ЗИП АСУ ТП' : `Блок ${key}`;
             const container = document.getElementById('instructions-list');
