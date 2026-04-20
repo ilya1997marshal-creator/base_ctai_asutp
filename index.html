@@ -34,26 +34,25 @@
             -webkit-overflow-scrolling: touch;
         }
         
-        /* Таблица стала компактнее */
         .schedule-table { 
             border-collapse: separate; 
             border-spacing: 0; 
             width: 100%; 
             table-layout: fixed;
-            min-width: 1050px; /* Уменьшили общую ширину для плотности */
+            min-width: 1050px;
         }
         
         .schedule-table th, .schedule-table td {
-            font-size: 10px; /* Меньше шрифт */
-            height: 38px;   /* Меньше высота строки */
+            font-size: 10px; 
+            height: 38px;   
             text-align: center;
             vertical-align: middle; 
             border-right: 1px solid #1e293b; 
             border-bottom: 1px solid #1e293b;
             color: #cbd5e1;
+            transition: background-color 0.2s;
         }
 
-        /* Столбец с фамилией стал чуть уже */
         .col-name { 
             position: sticky; 
             left: 0; 
@@ -67,31 +66,33 @@
             color: #f8fafc !important;
         }
 
-        /* Дни стали узкими - теперь их влезет больше */
         .col-day { width: 28px; }
         .col-total { width: 38px; background-color: #020617; font-weight: 700; color: #60a5fa; }
 
         thead th { background-color: #334155; color: #f8fafc; font-weight: 600; text-transform: uppercase; font-size: 9px; letter-spacing: 0.05em; }
         thead th.col-name { z-index: 20; background-color: #2563eb; }
 
-        /* Цвета смен (сделали чуть мягче) */
+        /* Цвета смен */
         .day-shift   { background-color: #059669 !important; }
         .night-shift { background-color: #4f46e5 !important; }
         .sp-shift    { background-color: #d97706 !important; }
         .off-status  { background-color: #1e293b !important; color: #64748b; font-size: 9px; }
         .weekend     { background-color: #0f172a !important; color: #475569; }
 
-        /* Выделение строки */
-        .highlighted-row td { background-color: #1e293b !important; color: #fff; }
-        .highlighted-row td.col-name { background-color: #3b82f6 !important; }
-        .blurred-row { opacity: 0.25; filter: blur(0.5px); }
+        /* ИСПРАВЛЕННАЯ ПОДСВЕТКА */
+        tr.highlighted-row td { background-color: #1d4ed8 !important; color: #ffffff !important; }
+        tr.highlighted-row td.col-name { background-color: #2563eb !important; }
+        tr.highlighted-row td.off-status { background-color: #3b82f6 !important; color: #ffffff !important; }
+        
+        .blurred-row { opacity: 0.25; filter: grayscale(0.5); }
 
-        /* Навигация iOS */
+        /* Навигация */
         .safe-nav {
             padding-bottom: env(safe-area-inset-bottom);
             height: calc(60px + env(safe-area-inset-bottom));
         }
-        .nav-btn { height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .nav-btn { height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.2s; }
+        .nav-btn:active { opacity: 0.6; }
 
         .dot { width: 10px; height: 10px; border-radius: 3px; }
     </style>
@@ -128,7 +129,7 @@
         <div id="tab-schedule" class="tab-content px-2 pt-6">
             <div class="flex items-center justify-between px-2 mb-4">
                 <h2 class="text-xl font-bold">График работы</h2>
-                <span class="bg-blue-600/20 text-blue-400 text-[10px] px-2 py-1 rounded-full font-bold">АПРЕЛЬ 2026</span>
+                <span class="bg-blue-600/20 text-blue-400 text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider">Апрель 2026</span>
             </div>
             
             <div class="schedule-container shadow-2xl">
@@ -156,10 +157,10 @@
             </div>
 
             <div class="mt-6 grid grid-cols-2 gap-y-2 px-2 mb-20">
-                <div class="flex items-center gap-2 text-[10px] text-zinc-400"><div class="dot bg-emerald-600"></div> ДЕНЬ</div>
-                <div class="flex items-center gap-2 text-[10px] text-zinc-400"><div class="dot bg-indigo-600"></div> НОЧЬ</div>
-                <div class="flex items-center gap-2 text-[10px] text-zinc-400"><div class="dot bg-amber-600"></div> СПЕЦ</div>
-                <div class="flex items-center gap-2 text-[10px] text-zinc-400"><div class="dot bg-slate-700"></div> ОТПУСК</div>
+                <div class="flex items-center gap-2 text-[10px] text-zinc-400 font-bold"><div class="dot bg-emerald-600"></div> ДЕНЬ</div>
+                <div class="flex items-center gap-2 text-[10px] text-zinc-400 font-bold"><div class="dot bg-indigo-600"></div> НОЧЬ</div>
+                <div class="flex items-center gap-2 text-[10px] text-zinc-400 font-bold"><div class="dot bg-amber-600"></div> СПЕЦ</div>
+                <div class="flex items-center gap-2 text-[10px] text-zinc-400 font-bold"><div class="dot bg-slate-700"></div> ОТПУСК</div>
             </div>
         </div>
 
@@ -186,7 +187,7 @@
                     <div><h4 class="font-bold text-lg text-zinc-100">Почта</h4><p class="text-zinc-500 text-sm">i.rygih@mail.ru</p></div>
                 </a>
             </div>
-            <p class="text-center text-[10px] text-zinc-600 mt-12 uppercase tracking-widest font-bold">Версия: 1.1.5</p>
+            <p class="text-center text-[10px] text-zinc-600 mt-12 uppercase tracking-widest font-bold">Версия: 1.1.6</p>
         </div>
     </div>
 
@@ -215,12 +216,19 @@
         function highlightRow(row) {
             const rows = document.querySelectorAll('#schedule-table tbody tr');
             if (currentlyHighlighted === row) {
-                rows.forEach(r => { r.classList.remove('highlighted-row', 'blurred-row'); });
+                rows.forEach(r => { 
+                    r.classList.remove('highlighted-row', 'blurred-row'); 
+                });
                 currentlyHighlighted = null;
             } else {
                 rows.forEach(r => {
-                    r.classList.toggle('highlighted-row', r === row);
-                    r.classList.toggle('blurred-row', r !== row);
+                    if (r === row) {
+                        r.classList.add('highlighted-row');
+                        r.classList.remove('blurred-row');
+                    } else {
+                        r.classList.add('blurred-row');
+                        r.classList.remove('highlighted-row');
+                    }
                 });
                 currentlyHighlighted = row;
             }
