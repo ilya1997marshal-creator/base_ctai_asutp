@@ -25,7 +25,7 @@
         
         .card-bg { background-color: #111827; border-color: #334155; }
 
-        /* Таблица */
+        /* Контейнер таблицы */
         .schedule-container {
             overflow-x: auto;
             border-radius: 1rem;
@@ -34,28 +34,41 @@
             -webkit-overflow-scrolling: touch;
         }
         
-        .schedule-table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 800px; }
+        .schedule-table { 
+            border-collapse: separate; 
+            border-spacing: 0; 
+            width: 100%; 
+            table-layout: fixed;
+            min-width: 1200px;
+        }
         
         .schedule-table th, .schedule-table td {
-            font-size: 11px; height: 48px; text-align: center;
-            vertical-align: middle; border-right: 0.5px solid #27272a; border-bottom: 0.5px solid #27272a; 
+            font-size: 11px; 
+            height: 50px; 
+            text-align: center;
+            vertical-align: middle; 
+            border-right: 0.5px solid #27272a; 
+            border-bottom: 0.5px solid #27272a;
+            overflow: hidden;
         }
 
-        /* Возвращаем нормальный размер колонок */
         .col-name { 
             position: sticky; 
             left: 0; 
             z-index: 10;
-            width: 150px; 
-            min-width: 150px; 
+            width: 160px;
             text-align: left !important; 
             padding-left: 12px !important;
             background-color: #111827;
-            box-shadow: 4px 0 8px rgba(0,0,0,0.4);
+            box-shadow: 4px 0 10px rgba(0,0,0,0.5);
             font-size: 12px !important;
         }
 
-        thead th.col-name { background-color: #1e293b; z-index: 20; }
+        .col-day { width: 35px; }
+        .col-total { width: 45px; background-color: #0f172a; font-weight: bold; }
+
+        thead th { background-color: #1e293b; color: #94a3b8; font-weight: 600; }
+        thead th.col-name { z-index: 20; color: #fff; }
 
         /* Цвета смен */
         .day-shift   { background-color: #166534 !important; }
@@ -64,25 +77,33 @@
         .off-status  { background-color: #3f3f46 !important; color: #a1a1aa; font-size: 10px; }
         .weekend     { background-color: #1f2937 !important; color: #94a3b8; }
 
-        /* Выделение */
+        /* Выделение строки */
         .highlighted-row td { background-color: #1e293b; color: #fff; }
         .highlighted-row td.col-name { background-color: #2563eb !important; }
-        .blurred-row { opacity: 0.3; filter: grayscale(0.7); }
+        .blurred-row { opacity: 0.2; filter: grayscale(0.8); }
 
-        /* Адаптация под iPhone */
+        /* ИСПРАВЛЕННАЯ НАВИГАЦИЯ */
         .safe-nav {
             padding-bottom: env(safe-area-inset-bottom);
-            height: calc(75px + env(safe-area-inset-bottom));
+            height: calc(65px + env(safe-area-inset-bottom));
+            pointer-events: auto; /* Явно разрешаем нажатия */
         }
         
-        .nav-btn { height: 100%; padding-top: 8px; }
+        .nav-btn { 
+            height: 65px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            transition: all 0.2s; 
+        }
 
         .dot { width: 12px; height: 12px; border-radius: 4px; }
     </style>
 </head>
 <body class="bg-[#0a0a0a] text-zinc-100 min-h-screen pb-32">
 
-    <div class="max-w-xl mx-auto h-full">
+    <div class="max-w-xl mx-auto h-full relative">
 
         <div id="tab-home" class="tab-content active px-4 pt-8">
             <div class="flex flex-col items-center mb-10">
@@ -90,20 +111,20 @@
                 <h1 class="text-2xl font-bold tracking-tight text-center">ЦТАИ АСУ ТП</h1>
             </div>
 
-            <div class="space-y-2 px-1">
+            <div class="space-y-2 px-1 relative z-10">
                 <script>
                     for(let i=1; i<=6; i++) {
                         document.write(`
-                            <button onclick="openBlockModal(${i})" class="w-full card-bg border rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform mb-2 text-zinc-200 font-medium">
+                            <button onclick="openBlockModal(${i})" class="w-full card-bg border border-zinc-800 rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform mb-2 text-zinc-200 font-medium">
                                 <div class="flex items-center gap-4"><span class="text-blue-500 font-bold text-lg">0${i}</span>Блок ${i}</div><span>›</span>
                             </button>
                         `);
                     }
                 </script>
-                <button onclick="openBlockModal('other')" class="w-full card-bg border rounded-2xl p-4 flex items-center justify-between mt-4 text-zinc-200">
+                <button onclick="openBlockModal('other')" class="w-full card-bg border border-zinc-800 rounded-2xl p-4 flex items-center justify-between mt-4 text-zinc-200 active:scale-[0.98]">
                     <div class="flex items-center gap-4"><span>📌</span><span class="font-medium">Общие инструкции</span></div><span>›</span>
                 </button>
-                <button onclick="openBlockModal('zip')" class="w-full card-bg border rounded-2xl p-4 flex items-center justify-between text-zinc-200">
+                <button onclick="openBlockModal('zip')" class="w-full card-bg border border-zinc-800 rounded-2xl p-4 flex items-center justify-between text-zinc-200 active:scale-[0.98]">
                     <div class="flex items-center gap-4"><span>🔧</span><span class="font-medium">ЗИП АСУ ТП</span></div><span>›</span>
                 </button>
             </div>
@@ -118,28 +139,28 @@
             <div class="schedule-container">
                 <table id="schedule-table" class="schedule-table">
                     <thead>
-                        <tr class="bg-zinc-800/50 text-zinc-400">
+                        <tr>
                             <th class="col-name">Фамилия</th>
                             <script>
                                 for(let i=1; i<=30; i++) {
                                     let isW = (i==4||i==5||i==11||i==12||i==18||i==19||i==25||i==26);
-                                    document.write(`<th class="${isW?'weekend':''}">${i}</th>`);
+                                    document.write(`<th class="col-day ${isW?'weekend':''}">${i}</th>`);
                                 }
                             </script>
-                            <th class="bg-zinc-900/80">С</th><th class="bg-zinc-900/80">Ч</th>
+                            <th class="col-total">С</th><th class="col-total">Ч</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-zinc-800">
-                        <tr onclick="highlightRow(this)"><td class="col-name font-medium">Лагутенков Р.С.</td><td class="off-status">ПХ</td><td></td><td class="day-shift"></td><td class="day-shift"></td><td class="weekend"></td><td></td><td class="sp-shift"></td><td class="night-shift"></td><td></td><td></td><td class="day-shift"></td><td class="weekend"></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td class="night-shift"></td><td class="weekend"></td><td class="night-shift"></td><td></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td class="night-shift"></td><td class="weekend"></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td></td><td></td><td class="font-bold">14</td><td class="font-bold">164</td></tr>
-                        <tr onclick="highlightRow(this)"><td class="col-name font-medium">Миронов С.А.</td><td class="off-status">ПХ</td><td></td><td class="day-shift"></td><td class="day-shift"></td><td class="weekend"></td><td></td><td></td><td class="night-shift"></td><td></td><td class="sp-shift"></td><td class="day-shift"></td><td class="weekend"></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td class="night-shift"></td><td class="weekend"></td><td class="night-shift"></td><td></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td class="night-shift"></td><td class="weekend"></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td></td><td></td><td class="font-bold">14</td><td class="font-bold">164</td></tr>
-                        <tr onclick="highlightRow(this)"><td class="col-name font-medium">Куштанов А.А.</td><td></td><td class="day-shift"></td><td class="night-shift"></td><td class="night-shift"></td><td class="weekend"></td><td class="sp-shift"></td><td class="night-shift"></td><td></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td class="weekend"></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td class="day-shift"></td><td class="weekend"></td><td></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td></td><td class="weekend"></td><td class="night-shift"></td><td></td><td></td><td class="day-shift"></td><td></td><td class="font-bold">14</td><td class="font-bold">164</td></tr>
-                        <tr onclick="highlightRow(this)"><td class="col-name font-medium">Рыжих И.Н.</td><td></td><td></td><td></td><td class="weekend"></td><td class="weekend"></td><td></td><td></td><td></td><td></td><td></td><td class="weekend"></td><td class="weekend"></td><td></td><td></td><td></td><td></td><td class="day-shift"></td><td class="weekend"></td><td></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td></td><td class="weekend"></td><td class="night-shift"></td><td></td><td></td><td class="day-shift"></td><td></td><td class="font-bold">5</td><td class="font-bold">60</td></tr>
-                        <tr onclick="highlightRow(this)"><td class="col-name font-medium text-zinc-500">Бондаренко Т.А.</td><td class="off-status">О</td><td class="off-status">О</td><td></td><td class="weekend"></td><td class="weekend"></td><td class="off-status">О</td><td class="off-status">О</td><td></td><td></td><td class="off-status">О</td><td class="weekend"></td><td class="weekend"></td><td></td><td class="off-status">О</td><td></td><td></td><td class="off-status">О</td><td class="weekend"></td><td></td><td class="off-status">О</td><td class="off-status">О</td><td></td><td></td><td class="off-status">О</td><td class="weekend"></td><td class="off-status">О</td><td class="off-status">О</td><td></td><td></td><td></td><td class="font-bold">0</td><td class="font-bold">ОТП</td></tr>
+                        <tr onclick="highlightRow(this)"><td class="col-name font-medium">Лагутенков Р.С.</td><td class="off-status">ПХ</td><td></td><td class="day-shift"></td><td class="day-shift"></td><td class="weekend"></td><td></td><td class="sp-shift"></td><td class="night-shift"></td><td></td><td></td><td class="day-shift"></td><td class="weekend"></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td class="night-shift"></td><td class="weekend"></td><td class="night-shift"></td><td></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td class="night-shift"></td><td class="weekend"></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td></td><td></td><td class="col-total">14</td><td class="col-total">164</td></tr>
+                        <tr onclick="highlightRow(this)"><td class="col-name font-medium">Миронов С.А.</td><td class="off-status">ПХ</td><td></td><td class="day-shift"></td><td class="day-shift"></td><td class="weekend"></td><td></td><td></td><td class="night-shift"></td><td></td><td class="sp-shift"></td><td class="day-shift"></td><td class="weekend"></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td class="night-shift"></td><td class="weekend"></td><td class="night-shift"></td><td></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td class="night-shift"></td><td class="weekend"></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td></td><td></td><td class="col-total">14</td><td class="col-total">164</td></tr>
+                        <tr onclick="highlightRow(this)"><td class="col-name font-medium">Куштанов А.А.</td><td></td><td class="day-shift"></td><td class="night-shift"></td><td class="night-shift"></td><td class="weekend"></td><td class="sp-shift"></td><td class="night-shift"></td><td></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td class="weekend"></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td class="day-shift"></td><td class="weekend"></td><td></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td></td><td class="weekend"></td><td class="night-shift"></td><td></td><td></td><td class="day-shift"></td><td></td><td class="col-total">14</td><td class="col-total">164</td></tr>
+                        <tr onclick="highlightRow(this)"><td class="col-name font-medium">Рыжих И.Н.</td><td></td><td></td><td></td><td class="weekend"></td><td class="weekend"></td><td></td><td></td><td></td><td></td><td></td><td class="weekend"></td><td class="weekend"></td><td></td><td></td><td></td><td></td><td class="day-shift"></td><td class="weekend"></td><td></td><td></td><td class="day-shift"></td><td class="night-shift"></td><td></td><td></td><td class="weekend"></td><td class="night-shift"></td><td></td><td></td><td class="day-shift"></td><td></td><td class="col-total">5</td><td class="col-total">60</td></tr>
+                        <tr onclick="highlightRow(this)"><td class="col-name font-medium text-zinc-500">Бондаренко Т.А.</td><td class="off-status">О</td><td class="off-status">О</td><td></td><td class="weekend"></td><td class="weekend"></td><td class="off-status">О</td><td class="off-status">О</td><td></td><td></td><td class="off-status">О</td><td class="weekend"></td><td class="weekend"></td><td></td><td class="off-status">О</td><td></td><td></td><td class="off-status">О</td><td class="weekend"></td><td></td><td class="off-status">О</td><td class="off-status">О</td><td></td><td></td><td class="off-status">О</td><td class="weekend"></td><td class="off-status">О</td><td class="off-status">О</td><td></td><td></td><td></td><td class="col-total">0</td><td class="col-total">ОТП</td></tr>
                     </tbody>
                 </table>
             </div>
 
-            <div class="mt-8 grid grid-cols-2 gap-y-3 px-2">
+            <div class="mt-8 grid grid-cols-2 gap-y-3 px-2 mb-20">
                 <div class="flex items-center gap-3 text-xs text-zinc-400"><div class="dot bg-emerald-600"></div> День</div>
                 <div class="flex items-center gap-3 text-xs text-zinc-400"><div class="dot bg-indigo-600"></div> Ночь</div>
                 <div class="flex items-center gap-3 text-xs text-zinc-400"><div class="dot bg-amber-600"></div> Спецподготовка</div>
@@ -151,40 +172,40 @@
             <div class="card-bg border border-zinc-800 rounded-3xl p-10">
                 <span class="text-4xl mb-4 block">📝</span>
                 <h2 class="text-xl font-bold mb-2">Тесты знаний</h2>
-                <p class="text-zinc-400 text-sm">Раздел в разработке.</p>
+                <p class="text-zinc-400 text-sm">В разработке...</p>
             </div>
         </div>
 
         <div id="tab-help" class="tab-content px-4 pt-8 flex-1 justify-center">
             <div class="text-center mb-10">
-                <h2 class="text-3xl font-bold mb-2">Помощь</h2>
-                <p class="text-zinc-500 text-sm">Связь с разработчиком</p>
+                <h2 class="text-3xl font-bold mb-2 text-zinc-100">Помощь</h2>
+                <p class="text-zinc-500 text-sm">Свяжитесь со мной</p>
             </div>
             <div class="space-y-4">
                 <a href="https://t.me/IlyaMar5hal" target="_blank" class="flex items-center gap-5 card-bg border border-zinc-800 p-6 rounded-[2rem] active:scale-[0.98] transition-all">
                     <div class="w-14 h-14 bg-sky-500/20 text-sky-500 rounded-2xl flex items-center justify-center text-2xl">✈️</div>
-                    <div><h4 class="font-bold text-lg">Telegram</h4><p class="text-zinc-500 text-sm">Личное сообщение</p></div>
+                    <div><h4 class="font-bold text-lg text-zinc-100">Telegram</h4><p class="text-zinc-500 text-sm">@IlyaMar5hal</p></div>
                 </a>
-                <a href="mailto:i.rygih@mail.ru?subject=ЦТАИ%20АСУ%20ТП" class="flex items-center gap-5 card-bg border border-zinc-800 p-6 rounded-[2rem] active:scale-[0.98] transition-all">
+                <a href="mailto:i.rygih@mail.ru" class="flex items-center gap-5 card-bg border border-zinc-800 p-6 rounded-[2rem] active:scale-[0.98] transition-all">
                     <div class="w-14 h-14 bg-red-500/20 text-red-500 rounded-2xl flex items-center justify-center text-2xl">📧</div>
-                    <div><h4 class="font-bold text-lg">Почта</h4><p class="text-zinc-500 text-sm">i.rygih@mail.ru</p></div>
+                    <div><h4 class="font-bold text-lg text-zinc-100">Почта</h4><p class="text-zinc-500 text-sm">i.rygih@mail.ru</p></div>
                 </a>
             </div>
-            <p class="text-center text-[10px] text-zinc-600 mt-12 uppercase tracking-widest font-bold">Версия: 1.1.0</p>
+            <p class="text-center text-[10px] text-zinc-600 mt-12 uppercase tracking-widest font-bold">Версия: 1.1.3</p>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xl border-t border-zinc-800 max-w-xl mx-auto z-50 safe-nav">
+    <nav class="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xl border-t border-zinc-800 max-w-xl mx-auto z-[100] safe-nav">
         <div class="flex h-full">
-            <button onclick="switchTab(0)" class="flex-1 nav-btn flex flex-col items-center justify-center text-zinc-500 active:text-blue-500"><span class="text-2xl mb-1">🏠</span><span class="text-[10px] font-bold">ГЛАВНАЯ</span></button>
-            <button onclick="switchTab(1)" class="flex-1 nav-btn flex flex-col items-center justify-center text-zinc-500 active:text-blue-500"><span class="text-2xl mb-1">📅</span><span class="text-[10px] font-bold">ГРАФИК</span></button>
-            <button onclick="switchTab(2)" class="flex-1 nav-btn flex flex-col items-center justify-center text-zinc-500 active:text-blue-500"><span class="text-2xl mb-1">📝</span><span class="text-[10px] font-bold">ТЕСТЫ</span></button>
-            <button onclick="switchTab(3)" class="flex-1 nav-btn flex flex-col items-center justify-center text-zinc-500 active:text-blue-500"><span class="text-2xl mb-1">⚙️</span><span class="text-[10px] font-bold">ПОМОЩЬ</span></button>
+            <button onclick="switchTab(0)" class="flex-1 nav-btn text-zinc-500 active:text-blue-500"><span class="text-2xl mb-1">🏠</span><span class="text-[10px] font-bold">ГЛАВНАЯ</span></button>
+            <button onclick="switchTab(1)" class="flex-1 nav-btn text-zinc-500 active:text-blue-500"><span class="text-2xl mb-1">📅</span><span class="text-[10px] font-bold">ГРАФИК</span></button>
+            <button onclick="switchTab(2)" class="flex-1 nav-btn text-zinc-500 active:text-blue-500"><span class="text-2xl mb-1">📝</span><span class="text-[10px] font-bold">ТЕСТЫ</span></button>
+            <button onclick="switchTab(3)" class="flex-1 nav-btn text-zinc-500 active:text-blue-500"><span class="text-2xl mb-1">⚙️</span><span class="text-[10px] font-bold">ПОМОЩЬ</span></button>
         </div>
     </nav>
 
-    <div id="block-modal" onclick="if(event.target===this) closeBlockModal()" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-        <div class="card-bg border rounded-[2rem] w-full max-w-md max-h-[70vh] flex flex-col overflow-hidden">
+    <div id="block-modal" onclick="if(event.target===this) closeBlockModal()" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[200] p-4">
+        <div class="card-bg border border-zinc-800 rounded-[2rem] w-full max-w-md max-h-[70vh] flex flex-col overflow-hidden">
             <div class="px-6 py-5 border-b border-zinc-800 flex items-center justify-between">
                 <h3 id="modal-block-title" class="font-bold text-xl text-zinc-100"></h3>
                 <button onclick="closeBlockModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400">✕</button>
@@ -199,12 +220,12 @@
         function highlightRow(row) {
             const rows = document.querySelectorAll('#schedule-table tbody tr');
             if (currentlyHighlighted === row) {
-                rows.forEach(r => r.classList.remove('highlighted-row', 'blurred-row'));
+                rows.forEach(r => { r.classList.remove('highlighted-row', 'blurred-row'); });
                 currentlyHighlighted = null;
             } else {
                 rows.forEach(r => {
-                    r.classList.add(r === row ? 'highlighted-row' : 'blurred-row');
-                    if(r === row) r.classList.remove('blurred-row'); else r.classList.remove('highlighted-row');
+                    r.classList.toggle('highlighted-row', r === row);
+                    r.classList.toggle('blurred-row', r !== row);
                 });
                 currentlyHighlighted = row;
             }
