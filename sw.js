@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ctai-base-v48';
+const CACHE_NAME = 'ctai-base-v49';
 const ASSETS = [
   './',
   './index.html',
@@ -9,7 +9,7 @@ const ASSETS = [
   './apple-touch-icon.png',
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap',
-  './?v=47'
+  './?v=48'
 ];
 
 self.addEventListener('install', (event) => {
