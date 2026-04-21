@@ -11,22 +11,17 @@ function toggleTheme() {
 // --- НАВИГАЦИЯ ---
 function switchTab(index) {
     const tabs = ['tab-home', 'tab-schedule', 'tab-tests', 'tab-help'];
-    
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    
     const targetTab = document.getElementById(tabs[index]);
     if (targetTab) targetTab.classList.add('active');
-    
     document.querySelectorAll('.nav-item').forEach((btn, i) => {
         btn.classList.toggle('active', i === index);
     });
-    
     if(index === 0) updateOnDutyWidget(); 
     if(index === 1) {
         const selector = document.getElementById('month-selector');
         if(selector) renderSchedule(selector.value);
     }
-    
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
@@ -34,23 +29,19 @@ function switchTab(index) {
 function updateOnDutyWidget() {
     const dutyList = document.getElementById('duty-list');
     if (!dutyList) return;
-    
     const now = new Date();
     const day = now.getDate(); 
     const currentMonthData = scheduleData["Апрель"];
-    
     if (!currentMonthData) {
         dutyList.innerHTML = '<span class="opacity-40">Нет данных на сегодня</span>';
         return;
     }
-    
     const onDuty = currentMonthData
         .filter(p => {
             const shift = p.name === "Бондаренко Т.А." ? 'O' : (p.shifts[day - 1] || '');
             return shift === 'D' || shift === 'S' || shift === 'N';
         })
         .map(p => p.name);
-        
     if (onDuty.length > 0) {
         dutyList.innerHTML = onDuty.join(', ');
     } else {
@@ -58,65 +49,39 @@ function updateOnDutyWidget() {
     }
 }
 
-// --- ГРАФИК (ИСПРАВЛЕННЫЙ СИНТАКСИС) ---
+// --- ГРАФИК ---
 function renderSchedule(monthName) {
     const display = document.getElementById('current-month-display');
     if(display) display.textContent = monthName + " 2026";
-    
     const viewport = document.getElementById('schedule-viewport');
     if (!viewport) return;
-
     const monthIndex = monthsList.indexOf(monthName);
-    
     if (monthIndex !== 3) { 
-        viewport.innerHTML = `
-            <div class="py-24 flex flex-col items-center justify-center opacity-30 text-center">
-                <span class="text-4xl mb-3">📁</span>
-                <span class="text-[10px] font-black uppercase tracking-[0.2em]">Нет данных</span>
-            </div>`;
+        viewport.innerHTML = `<div class="py-24 flex flex-col items-center justify-center opacity-30 text-center"><span class="text-4xl mb-3">📁</span><span class="text-[10px] font-black uppercase tracking-[0.2em]">Нет данных</span></div>`;
         return;
     }
-    
     const data = scheduleData["Апрель"];
     const daysInMonth = 30;
     const today = new Date();
     const currentDay = today.getDate();
     const isCurrentMonth = monthIndex === today.getMonth();
-    
-    let html = `
-        <table class="schedule-table">
-            <thead>
-                <tr>
-                    <th class="col-name head-fio">Ф.И.О.</th>`;
-    
+    let html = `<table class="schedule-table"><thead><tr><th class="col-name head-fio">Ф.И.О.</th>`;
     for(let d=1; d<=daysInMonth; d++) {
         const isToday = isCurrentMonth && d === currentDay;
         html += `<th class="${isToday ? 'today-header' : ''}">${d}</th>`;
     }
-    
-    html += `
-                    <th class="col-stat">СМ.</th>
-                    <th class="col-stat">ЧАС.</th>
-                </tr>
-            </thead>
-            <tbody>`;
-            
+    html += `<th class="col-stat">СМ.</th><th class="col-stat">ЧАС.</th></tr></thead><tbody>`;
     data.forEach(p => {
         let shiftsCount = 0;
         let hoursCount = 0;
-        
         html += `<tr onclick="highlightRow(this)"><td class="col-name">${p.name}</td>`;
-        
         for(let d=1; d<=daysInMonth; d++) {
             let val = p.shifts[d-1] || '';
             if (p.name === "Бондаренко Т.А.") val = 'O';
-            
             const isToday = isCurrentMonth && d === currentDay;
             let cellClass = val ? `shift-${val}` : '';
             if (isToday) cellClass += ' today-column';
-
             html += `<td class="${cellClass}"></td>`;
-            
             if(val === 'D' || val === 'N' || val === 'S') {
                 shiftsCount++;
                 hoursCount += (val === 'S' ? 8 : 12);
@@ -124,15 +89,11 @@ function renderSchedule(monthName) {
         }
         html += `<td class="col-stat">${shiftsCount}</td><td class="col-stat">${hoursCount}</td></tr>`;
     });
-    
     viewport.innerHTML = html + `</tbody></table>`;
-
     if (isCurrentMonth) {
         setTimeout(() => {
             const todayHeader = document.querySelector('.today-header');
-            if (todayHeader) {
-                todayHeader.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-            }
+            if (todayHeader) todayHeader.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         }, 100);
     }
 }
@@ -140,34 +101,33 @@ function renderSchedule(monthName) {
 function highlightRow(row) {
     const rows = document.querySelectorAll('.schedule-table tbody tr');
     const isActive = row.classList.contains('highlighted-row');
-    
     rows.forEach(r => r.classList.remove('highlighted-row', 'blurred-row'));
-    
     if (!isActive) {
         row.classList.add('highlighted-row');
-        rows.forEach(r => {
-            if (r !== row) r.classList.add('blurred-row');
-        });
+        rows.forEach(r => { if (r !== row) r.classList.add('blurred-row'); });
     }
 }
 
-// --- ФУНКЦИЯ ДЛЯ PDF (WEB SHARE API) ---
-async function downloadAndOpenPDF(url, fileName) {
+// --- ФУНКЦИИ ДЛЯ PDF ---
+
+// 1. Просто открыть (без поиска, системный просмотр)
+function viewPDF(url) {
+    window.open(url, '_blank');
+}
+
+// 2. Вызвать меню "Поделиться/Сохранить" (для поиска в Файлах)
+async function sharePDF(url, fileName) {
     try {
         const response = await fetch(url);
         const blob = await response.blob();
         const file = new File([blob], fileName, { type: 'application/pdf' });
-
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-                files: [file],
-                title: fileName
-            });
+            await navigator.share({ files: [file], title: fileName });
         } else {
             window.open(url, '_blank');
         }
     } catch (err) {
-        console.error("Ошибка при передаче файла:", err);
+        console.error("Ошибка:", err);
         window.open(url, '_blank');
     }
 }
@@ -177,20 +137,22 @@ function openBlockModal(key) {
     const title = document.getElementById('modal-block-title');
     const list = document.getElementById('instructions-list');
     const modal = document.getElementById('block-modal');
-    
     if (!list || !title || !modal) return;
     
     list.innerHTML = ''; 
     
     if (key === 'other') {
         title.textContent = 'Инструкции';
+        // Здесь мы разделяем: клик по тексту — просмотр, клик по иконке — меню
         list.innerHTML = `
-            <div onclick="downloadAndOpenPDF('docs/S7-400_instalation.pdf', 'S7-400_Manual.pdf')" class="doc-item cursor-pointer">
-                <div class="flex flex-col">
-                    <span class="doc-name">Руководство S7-400</span>
-                    <span class="text-[9px] opacity-40 mt-1 uppercase font-bold">Открыть или сохранить</span>
+            <div class="doc-item flex items-center justify-between p-4 bg-white/5 rounded-2xl mb-2">
+                <div onclick="viewPDF('docs/S7-400_instalation.pdf')" class="flex flex-col flex-1 cursor-pointer">
+                    <span class="doc-name font-bold">Руководство S7-400</span>
+                    <span class="text-[9px] opacity-40 mt-1 uppercase">Нажмите для просмотра</span>
                 </div>
-                <span class="text-blue-500 text-xl">📂</span>
+                <button onclick="sharePDF('docs/S7-400_instalation.pdf', 'S7-400_Manual.pdf')" class="p-3 bg-blue-500/10 rounded-xl">
+                    <span class="text-blue-500 text-sm font-bold">СОХРАНИТЬ</span>
+                </button>
             </div>`;
     } else if (key === 'zip') {
         title.textContent = 'ЗИП АСУ ТП';
@@ -210,11 +172,9 @@ function closeBlockModal() {
     document.body.style.overflow = '';
 }
 
-// --- ВЫВОД ВЕРСИИ ---
 function displayAppVersion() {
     const versionElement = document.getElementById('app-version');
     if (!versionElement) return;
-
     if ('serviceWorker' in navigator) {
         caches.keys().then(keys => {
             const versionKey = keys.find(key => key.startsWith('ctai-base-'));
@@ -226,7 +186,6 @@ function displayAppVersion() {
     }
 }
 
-// --- ИНИЦИАЛИЗАЦИЯ ---
 window.onload = () => {
     const blocksCont = document.getElementById('blocks-container');
     if (blocksCont) {
@@ -242,7 +201,6 @@ window.onload = () => {
                 </button>`;
         }
     }
-    
     if(localStorage.getItem('theme') === 'light') toggleTheme();
     updateOnDutyWidget(); 
     displayAppVersion(); 
