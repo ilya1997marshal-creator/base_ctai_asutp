@@ -142,11 +142,9 @@
     <div id="update-toast" class="update-toast">
         <div class="update-toast-content">
             <div class="update-icon">🚀</div>
-            <div class="update-text">
-                <p class="update-title">Доступно обновление</p>
-                <p class="update-desc">Перезагрузите для применения</p>
-            </div>
-            <button id="update-btn" class="update-action-btn">Обновить</button>
+            <p class="update-title">Доступно обновление</p>
+            <p class="update-desc">Перезагрузите для применения новых функций</p>
+            <button id="update-btn" class="update-action-btn">ОБНОВИТЬ</button>
         </div>
     </div>
 
@@ -154,22 +152,38 @@
     <script src="app.js"></script>
     <script>
         let newWorker;
+        
+        console.log("Лог: Скрипт SW запущен"); // Проверка запуска скрипта
+
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').then(reg => {
+                console.log("Лог: Service Worker успешно зарегистрирован");
+
                 reg.addEventListener('updatefound', () => {
+                    console.log("Лог: Найдено новое обновление!");
                     newWorker = reg.installing;
+                    
                     newWorker.addEventListener('statechange', () => {
+                        console.log("Лог: Статус SW изменился на: " + newWorker.state);
                         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            console.log("Лог: Показываю уведомление об обновлении");
                             document.getElementById('update-toast').classList.add('show');
                         }
                     });
                 });
+            }).catch(err => {
+                console.error("Лог: Ошибка регистрации SW: ", err);
             });
 
             document.getElementById('update-btn').addEventListener('click', () => {
-                newWorker.postMessage({ action: 'skipWaiting' });
+                console.log("Лог: Кнопка нажата, отправляю skipWaiting");
+                if (newWorker) {
+                    newWorker.postMessage({ action: 'skipWaiting' });
+                }
                 window.location.reload();
             });
+        } else {
+            console.warn("Лог: Service Worker не поддерживается этим браузером");
         }
     </script>
 </body>
