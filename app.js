@@ -26,7 +26,10 @@ function switchTab(index) {
     
     // Специфическая логика для вкладок
     if(index === 0) updateOnDutyWidget(); 
-    if(index === 1) renderSchedule(document.getElementById('month-selector').value);
+    if(index === 1) {
+        const selector = document.getElementById('month-selector');
+        if(selector) renderSchedule(selector.value);
+    }
     
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
@@ -126,7 +129,7 @@ function renderSchedule(monthName) {
         }
         
         html += `<td class="col-stat">${shiftsCount}</td><td class="col-stat">${hoursCount}</td></tr>`;
-    });
+    }); // Исправлено закрытие forEach
     
     viewport.innerHTML = html + `</tbody></table>`;
 
@@ -154,32 +157,6 @@ function highlightRow(row) {
     }
 }
 
-// --- ОБНОВЛЕННАЯ ФУНКЦИЯ ДЛЯ PDF ---
-async function handlePDF(url, fileName) {
-    try {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        
-        // Создаем Blob URL
-        const blobUrl = URL.createObjectURL(blob);
-        
-        // Открываем в новой вкладке. 
-        // На iOS в PWA это создаст окно с инструментами Safari
-        const newWindow = window.open(blobUrl, '_blank');
-        
-        if (!newWindow) {
-            alert('Пожалуйста, разрешите всплывающие окна');
-        }
-
-        // Чистим память через некоторое время
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-        
-    } catch (error) {
-        console.error('Ошибка открытия PDF:', error);
-        window.open(url, '_blank');
-    }
-}
-
 // --- МОДАЛЬНОЕ ОКНО ---
 function openBlockModal(key) {
     const title = document.getElementById('modal-block-title');
@@ -193,13 +170,16 @@ function openBlockModal(key) {
     if (key === 'other') {
         title.textContent = 'Инструкции';
         list.innerHTML = `
-            <div onclick="handlePDF('docs/S7-400_instalation.pdf', 'S7-400_Manual.pdf')" class="doc-item cursor-pointer">
+            <a href="docs/S7-400_instalation.pdf" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="doc-item">
                 <div class="flex flex-col">
                     <span class="doc-name">Руководство S7-400</span>
-                    <span class="text-[9px] opacity-40 mt-1 uppercase font-bold">Открыть для чтения</span>
+                    <span class="text-[9px] opacity-40 mt-1 uppercase font-bold">Нажмите для просмотра</span>
                 </div>
                 <span class="text-blue-500 text-xl">📄</span>
-            </div>`;
+            </a>`;
     } else if (key === 'zip') {
         title.textContent = 'ЗИП АСУ ТП';
         list.innerHTML = '<div class="text-center py-20 opacity-20 text-[9px] font-black uppercase">Нет данных</div>';
