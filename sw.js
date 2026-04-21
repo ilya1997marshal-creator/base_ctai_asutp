@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ctai-base-v47';
+const CACHE_NAME = 'ctai-base-v48';
 const ASSETS = [
   './',
   './index.html',
@@ -9,21 +9,21 @@ const ASSETS = [
   './apple-touch-icon.png',
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap',
-  './?v=46'
+  './?v=47'
 ];
 
 self.addEventListener('install', (event) => {
-  console.log('[SW] Установка v46...');
+  console.log(`[SW] Установка ${CACHE_NAME}...`);
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.allSettled(
         ASSETS.map(url => {
           return cache.add(url)
             .then(() => console.log(`[SW] Кэшировано: ${url}`))
-            .catch(err => console.error(`[SW] Ошибка: ${url}`, err));
+            .catch(err => console.error(`[SW] Ошибка кэширования: ${url}`, err));
         })
       );
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
@@ -32,7 +32,10 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) return caches.delete(key);
+          if (key !== CACHE_NAME) {
+            console.log(`[SW] Удаление старого кэша: ${key}`);
+            return caches.delete(key);
+          }
         })
       );
     })

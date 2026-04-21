@@ -151,17 +151,26 @@
     <script src="app.js"></script>
     <script>
         let newWorker;
+        let refreshing = false;
+
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
+            // Перезагружаем страницу только когда новый SW действительно вступил в силу
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                refreshing = true;
+                window.location.reload();
+            });
 
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
-                    reg.update(); // Принудительный поиск обновлений
-                    
+                    // Проверка на наличие обновлений при загрузке
+                    reg.update();
+
                     if (reg.waiting) {
                         newWorker = reg.waiting;
                         showUpdateBar();
                     }
+
                     reg.addEventListener('updatefound', () => {
                         newWorker = reg.installing;
                         newWorker.addEventListener('statechange', () => {
@@ -179,8 +188,11 @@
             }
 
             document.getElementById('update-btn').addEventListener('click', () => {
-                if (newWorker) newWorker.postMessage({ action: 'skipWaiting' });
-                else window.location.reload();
+                if (newWorker) {
+                    newWorker.postMessage({ action: 'skipWaiting' });
+                } else {
+                    window.location.reload();
+                }
             });
         }
     </script>
