@@ -2,8 +2,6 @@
  * ЦТАИ АСУ ТП - Основной скрипт
  */
 
-const monthsList = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-
 function toggleTheme() {
     const isLight = document.body.classList.toggle('light-mode');
     const icon = document.getElementById('theme-icon');
@@ -13,9 +11,11 @@ function toggleTheme() {
 
 function switchTab(index) {
     const tabs = ['tab-home', 'tab-schedule', 'tab-tests', 'tab-help'];
-    document.querySelectorAll('.tab-content').forEach((t, i) => {
-        t.classList.toggle('active', i === index);
+    tabs.forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('active', i === index);
     });
+    
     document.querySelectorAll('.nav-item').forEach((btn, i) => {
         btn.classList.toggle('active', i === index);
     });
@@ -26,19 +26,14 @@ function switchTab(index) {
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-// Улучшенная функция получения версии из Service Worker
 async function updateVersionNumber() {
     const verElement = document.getElementById('app-version');
     if (!verElement) return;
-
     try {
         if ('serviceWorker' in navigator) {
             const keys = await caches.keys();
-            // Ищем ключ кэша, который содержит 'ctai' или 'v'
             const cacheKey = keys.find(k => k.toLowerCase().includes('v') || k.toLowerCase().includes('ctai'));
-            
             if (cacheKey) {
-                // Пытаемся вычленить саму версию (например v1.0.56)
                 const match = cacheKey.match(/v\d+\.\d+\.\d+/i);
                 verElement.textContent = match ? match[0].toUpperCase() : cacheKey.toUpperCase();
             } else {
@@ -55,11 +50,7 @@ function updateOnDutyWidget() {
     if (!dutyList) return;
     const day = new Date().getDate(); 
     const currentMonthData = scheduleData["Апрель"];
-    
-    if (!currentMonthData) {
-        dutyList.innerHTML = '<span class="opacity-40 uppercase text-[10px] font-black">Нет данных</span>';
-        return;
-    }
+    if (!currentMonthData) return;
 
     const onDuty = currentMonthData
         .filter(p => ['D', 'S', 'N'].includes(p.shifts[day - 1] || ''))
@@ -67,7 +58,7 @@ function updateOnDutyWidget() {
     
     dutyList.innerHTML = onDuty.length > 0 
         ? onDuty.map(name => `<span class="bg-blue-500/10 px-3 py-1 rounded-full text-blue-500 border border-blue-500/20">${name}</span>`).join('') 
-        : '<span class="opacity-40">Нет активных смен</span>';
+        : '<span class="opacity-40">Сегодня нет смен</span>';
 }
 
 function renderSchedule(monthName) {
@@ -107,11 +98,14 @@ function renderSchedule(monthName) {
     
     viewport.innerHTML = html + `</tbody></table>`;
 
+    // АВТОСКРОЛЛ К ТЕКУЩЕЙ ДАТЕ
     if (isCurrent) {
         setTimeout(() => {
-            const todayEl = document.querySelector('.today-header');
-            if (todayEl) todayEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        }, 200);
+            const todayHeader = document.querySelector('.today-header');
+            if (todayHeader) {
+                todayHeader.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+        }, 100);
     }
 }
 
@@ -148,7 +142,6 @@ function openBlockModal(key) {
         mData.items.forEach(item => {
             const div = document.createElement('div');
             div.className = "diag-card mb-3";
-            
             if (item.link) {
                 div.innerHTML = `
                     <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 active:scale-[0.98] transition-transform">
@@ -156,9 +149,7 @@ function openBlockModal(key) {
                             <span class="font-bold text-sm block">${item.title}</span>
                             <span class="text-[9px] opacity-40 uppercase font-black">Открыть документ</span>
                         </div>
-                        <a href="${item.link}" download class="ml-2 px-4 py-2 bg-blue-500/10 text-blue-500 rounded-xl text-[10px] font-black uppercase">
-                            Сохранить
-                        </a>
+                        <a href="${item.link}" download class="ml-2 px-4 py-2 bg-blue-500/10 text-blue-500 rounded-xl text-[10px] font-black uppercase">Сохранить</a>
                     </div>`;
             } else {
                 div.innerHTML = `

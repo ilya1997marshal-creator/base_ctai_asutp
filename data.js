@@ -49,6 +49,5 @@ const scheduleData = {
         { name: "Сучков Д.В.", shifts: Array(31).fill("") },
         { name: "Рыжих И.Н.", shifts: Array(31).fill("") },
         { name: "Бондаренко Т.А.", shifts: Array(31).fill("") }
-    ],
-    "Январь": null, "Февраль": null, "Март": null, "Июнь": null, "Июль": null, "Август": null, "Сентябрь": null, "Октябрь": null, "Ноябрь": null, "Декабрь": null
+    ]
 };
