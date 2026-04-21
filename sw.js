@@ -30,8 +30,15 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.filter((key) => key !== CACHE_NAME)
-            .map((key) => caches.delete(key))
+          .map((key) => caches.delete(key))
       );
     })
   );
+});
+
+// Слушатель для мгновенного обновления
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
 });

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+c:\Backup-app\еще новее 2\instructions-app\data c:\Backup-app\еще новее 2\instructions-app\docs c:\Backup-app\еще новее 2\instructions-app\pdfjs c:\Backup-app\еще новее 2\instructions-app\pdfs c:\Backup-app\еще новее 2\instructions-app\app.js c:\Backup-app\еще новее 2\instructions-app\apple-touch-icon.png c:\Backup-app\еще новее 2\instructions-app\data.js c:\Backup-app\еще новее 2\instructions-app\index.html c:\Backup-app\еще новее 2\instructions-app\library.js c:\Backup-app\еще новее 2\instructions-app\manifest.json c:\Backup-app\еще новее 2\instructions-app\README.md c:\Backup-app\еще новее 2\instructions-app\styles.css c:\Backup-app\еще новее 2\instructions-app\sw.jsc:\Backup-app\еще новее 2\instructions-app\data c:\Backup-app\еще новее 2\instructions-app\docs c:\Backup-app\еще новее 2\instructions-app\pdfjs c:\Backup-app\еще новее 2\instructions-app\pdfs c:\Backup-app\еще новее 2\instructions-app\app.js c:\Backup-app\еще новее 2\instructions-app\apple-touch-icon.png c:\Backup-app\еще новее 2\instructions-app\data.js c:\Backup-app\еще новее 2\instructions-app\index.html c:\Backup-app\еще новее 2\instructions-app\library.js c:\Backup-app\еще новее 2\instructions-app\manifest.json c:\Backup-app\еще новее 2\instructions-app\README.md c:\Backup-app\еще новее 2\instructions-app\styles.css c:\Backup-app\еще новее 2\instructions-app\sw.<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -139,13 +139,37 @@
         </div>
     </div>
 
+    <div id="update-toast" class="update-toast">
+        <div class="update-toast-content">
+            <div class="update-icon">🚀</div>
+            <div class="update-text">
+                <p class="update-title">Доступно обновление</p>
+                <p class="update-desc">Перезагрузите для применения</p>
+            </div>
+            <button id="update-btn" class="update-action-btn">Обновить</button>
+        </div>
+    </div>
+
     <script src="data.js"></script>
     <script src="app.js"></script>
     <script>
+        let newWorker;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then(() => console.log('SW зарегистрирован'))
-                .catch((err) => console.log('Ошибка SW:', err));
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                reg.addEventListener('updatefound', () => {
+                    newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            document.getElementById('update-toast').classList.add('show');
+                        }
+                    });
+                });
+            });
+
+            document.getElementById('update-btn').addEventListener('click', () => {
+                newWorker.postMessage({ action: 'skipWaiting' });
+                window.location.reload();
+            });
         }
     </script>
 </body>
