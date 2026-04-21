@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ctai-base-v60';
+const CACHE_NAME = 'ctai-base-v55';
 const ASSETS = [
   './',
   './index.html',
@@ -8,7 +8,8 @@ const ASSETS = [
   './manifest.json',
   './apple-touch-icon.png',
   'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap'
+  'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap',
+  './?v=52' // Это заставляет сервер отдать свежий файл, игнорируя кэш
 ];
 
 self.addEventListener('install', (event) => {
@@ -16,16 +17,14 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.allSettled(
         ASSETS.map(url => {
-          return fetch(`${url}?update=${Date.now()}`, { cache: 'no-store' })
-            .then(response => {
-              if (response.ok) return cache.put(url, response);
-            })
-            .catch(() => console.error('Ошибка загрузки:', url));
+          return fetch(url, { cache: 'no-cache' }).then(response => {
+            if (response.ok) return cache.put(url, response);
+            throw new Error(`Failed to fetch ${url}`);
+          }).catch(err => console.error(err));
         })
       );
     })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
