@@ -10,6 +10,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
 </head>
 <body class="pb-32">
 
@@ -153,37 +156,45 @@
     <script>
         let newWorker;
         
-        console.log("Лог: Скрипт SW запущен"); // Проверка запуска скрипта
+        console.log("Лог: Скрипт инициализации запущен");
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').then(reg => {
-                console.log("Лог: Service Worker успешно зарегистрирован");
+                console.log("Лог: SW зарегистрирован");
+
+                // Если обновление уже ждет (status: redundant на скриншоте мог быть из-за этого)
+                if (reg.waiting) {
+                    console.log("Лог: Обновление уже в режиме ожидания");
+                    newWorker = reg.waiting;
+                    showUpdateBar();
+                }
 
                 reg.addEventListener('updatefound', () => {
                     console.log("Лог: Найдено новое обновление!");
                     newWorker = reg.installing;
                     
                     newWorker.addEventListener('statechange', () => {
-                        console.log("Лог: Статус SW изменился на: " + newWorker.state);
+                        console.log("Лог: Новый статус SW: " + newWorker.state);
                         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            console.log("Лог: Показываю уведомление об обновлении");
-                            document.getElementById('update-toast').classList.add('show');
+                            showUpdateBar();
                         }
                     });
                 });
-            }).catch(err => {
-                console.error("Лог: Ошибка регистрации SW: ", err);
-            });
+            }).catch(err => console.error("Лог: Ошибка SW:", err));
+
+            function showUpdateBar() {
+                console.log("Лог: Показываю окно обновления");
+                const toast = document.getElementById('update-toast');
+                if (toast) toast.classList.add('show');
+            }
 
             document.getElementById('update-btn').addEventListener('click', () => {
-                console.log("Лог: Кнопка нажата, отправляю skipWaiting");
+                console.log("Лог: Нажата кнопка ОБНОВИТЬ");
                 if (newWorker) {
                     newWorker.postMessage({ action: 'skipWaiting' });
                 }
                 window.location.reload();
             });
-        } else {
-            console.warn("Лог: Service Worker не поддерживается этим браузером");
         }
     </script>
 </body>
