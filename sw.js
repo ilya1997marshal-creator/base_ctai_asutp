@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ctai-base-v55'; // Увеличивай версию здесь для обновления
+const CACHE_NAME = 'ctai-base-v56'; 
 const ASSETS = [
   './',
   './index.html',
@@ -24,7 +24,7 @@ self.addEventListener('install', (event) => {
       );
     })
   );
-  self.skipWaiting();
+  // self.skipWaiting(); <--- УДАЛЕНО, чтобы не обновлялось само
 });
 
 self.addEventListener('activate', (event) => {

@@ -154,6 +154,7 @@
         let refreshing = false;
 
         if ('serviceWorker' in navigator) {
+            // Слушаем смену контроллера, чтобы обновить страницу после активации нового SW
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (refreshing) return;
                 refreshing = true;
@@ -162,17 +163,20 @@
 
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
-                    // Форсированная проверка обновлений при каждом запуске PWA
+                    // Принудительная проверка наличия новой версии в sw.js
                     reg.update();
 
+                    // Ситуация 1: Новый воркер уже ожидает активации (например, после прошлой загрузки)
                     if (reg.waiting) {
                         newWorker = reg.waiting;
                         showUpdateBar();
                     }
 
+                    // Ситуация 2: Воркер только что скачался или обновляется
                     reg.addEventListener('updatefound', () => {
                         newWorker = reg.installing;
                         newWorker.addEventListener('statechange', () => {
+                            // Показываем уведомление только когда воркер полностью установлен (installed)
                             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                                 showUpdateBar();
                             }
@@ -188,8 +192,10 @@
 
             document.getElementById('update-btn').addEventListener('click', () => {
                 if (newWorker) {
+                    // Отправляем сигнал "skipWaiting" в sw.js
                     newWorker.postMessage({ action: 'skipWaiting' });
                 } else {
+                    // На крайний случай, если ссылка на воркер потеряна
                     window.location.reload();
                 }
             });
