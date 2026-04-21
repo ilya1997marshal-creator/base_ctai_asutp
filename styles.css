@@ -104,7 +104,7 @@ body {
 
 .action-btn:active { transform: scale(0.97); }
 
-/* --- ТАБЛИЦА ГРАФИКА (ОПТИМИЗИРОВАНО) --- */
+/* --- ТАБЛИЦА ГРАФИКА --- */
 .schedule-container {
     background: var(--card-bg);
     border-radius: 2rem;
@@ -116,21 +116,23 @@ body {
 .schedule-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 11px; /* Уменьшено с 12px для компактности */
+    font-size: 11px;
 }
 
 .schedule-table th, .schedule-table td {
-    padding: 8px 4px; /* Уменьшены отступы (было 12px 8px) */
+    padding: 8px 4px;
     text-align: center;
     border-bottom: 1px solid rgba(255,255,255,0.02);
-    min-width: 28px; /* Сужены ячейки (было 40px) */
+    min-width: 28px;
 }
 
 .col-name {
     text-align: left !important;
-    padding-left: 12px !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
     font-weight: 700;
-    min-width: 100px !important; /* Уменьшено (было 140px) */
+    min-width: 145px !important; 
+    white-space: nowrap; 
     position: sticky;
     left: 0;
     background: var(--card-bg);
@@ -153,7 +155,7 @@ body {
 .shift-D::after, .shift-N::after, .shift-S::after, .shift-O::after {
     content: '';
     position: absolute;
-    inset: 5px; /* Увеличено с 4px, чтобы маркеры были аккуратнее в малых ячейках */
+    inset: 5px;
     border-radius: 4px;
 }
 
@@ -225,44 +227,53 @@ body {
     width: 100%;
 }
 
-/* --- ОБНОВЛЕНИЕ --- */
+/* --- УВЕДОМЛЕНИЕ (ОРИГИНАЛЬНАЯ ЛОГИКА) --- */
 .update-toast {
     position: fixed;
-    bottom: 110px;
-    left: 1.5rem;
-    right: 1.5rem;
+    bottom: 100px;
+    left: 20px;
+    right: 20px;
+    margin: 0 auto; /* Центрирование для ПК */
+    max-width: 400px; /* Ограничение ширины */
     background: #2563eb;
     color: white;
     border-radius: 1.5rem;
-    padding: 1rem;
-    transform: translateY(200%);
-    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 1000;
-    box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
+    padding: 12px 20px;
+    z-index: 2000;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    
+    /* Скрытое состояние */
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(100px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.update-toast.show { transform: translateY(0); }
+.update-toast.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
 
 .update-toast-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 12px;
 }
 
-.update-icon { font-size: 1.5rem; }
-.update-title { font-weight: 800; font-size: 13px; margin-bottom: 2px; }
+.update-icon { font-size: 1.4rem; }
+.update-title { font-weight: 800; font-size: 13px; }
 .update-desc { font-size: 10px; opacity: 0.8; font-weight: 600; }
 
 .update-action-btn {
     background: white;
     color: #2563eb;
-    padding: 0.6rem 1.2rem;
-    border-radius: 0.8rem;
+    padding: 8px 16px;
+    border-radius: 12px;
     font-weight: 900;
     font-size: 11px;
     text-transform: uppercase;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 /* --- СКРОЛЛБАР --- */

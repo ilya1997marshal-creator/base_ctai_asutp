@@ -140,10 +140,14 @@
 
     <div id="update-toast" class="update-toast">
         <div class="update-toast-content">
-            <div class="update-icon">🚀</div>
-            <p class="update-title">Доступно обновление</p>
-            <p class="update-desc">Перезагрузите для применения</p>
-            <button id="update-btn" class="update-action-btn">ОБНОВИТЬ</button>
+            <div class="flex items-center gap-3">
+                <div class="update-icon">🚀</div>
+                <div>
+                    <p class="update-title">Доступно обновление</p>
+                    <p class="update-desc">Нажмите для применения</p>
+                </div>
+            </div>
+            <button id="update-btn" class="update-action-btn">ОК</button>
         </div>
     </div>
 
@@ -163,12 +167,10 @@
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
                     reg.update();
-
                     if (reg.waiting) {
                         newWorker = reg.waiting;
                         showUpdateBar();
                     }
-
                     reg.addEventListener('updatefound', () => {
                         newWorker = reg.installing;
                         newWorker.addEventListener('statechange', () => {
@@ -186,6 +188,8 @@
             }
 
             document.getElementById('update-btn').addEventListener('click', () => {
+                const toast = document.getElementById('update-toast');
+                if (toast) toast.classList.remove('show');
                 if (newWorker) {
                     newWorker.postMessage({ action: 'skipWaiting' });
                 } else {
