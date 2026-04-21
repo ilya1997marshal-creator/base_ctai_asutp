@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ctai-base-v38';
+const CACHE_NAME = 'ctai-base-v39';
 const ASSETS = [
   './',
   './index.html',
@@ -24,7 +24,6 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Активация: удаляем старые кэши, чтобы не занимать место
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -36,7 +35,6 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Слушатель для мгновенного обновления
 self.addEventListener('message', (event) => {
   if (event.data && event.data.action === 'skipWaiting') {
     self.skipWaiting();
