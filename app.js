@@ -32,16 +32,17 @@ async function updateVersionNumber() {
     try {
         if ('serviceWorker' in navigator) {
             const keys = await caches.keys();
-            const cacheKey = keys.reverse().find(k => k.toLowerCase().includes('v'));
+            // Находим самый свежий ключ кэша (обычно последний в массиве)
+            const cacheKey = keys.find(k => k.toLowerCase().includes('v'));
             if (cacheKey) {
                 const match = cacheKey.match(/v\d+/i);
                 verElement.textContent = match ? match[0].toUpperCase() : cacheKey.toUpperCase();
             } else {
-                verElement.textContent = "V79"; 
+                verElement.textContent = "V80"; 
             }
         }
     } catch (e) {
-        verElement.textContent = "V79";
+        verElement.textContent = "V80";
     }
 }
 
@@ -66,7 +67,6 @@ function updateOnDutyWidget() {
         return;
     }
 
-    // Теперь вставляем ТОЛЬКО блоки с именами, так как заголовок уже есть в index.html
     dutyList.innerHTML = `
         <div class="flex w-full gap-2 items-start justify-center">
             ${dayShift.length > 0 ? `
@@ -244,11 +244,14 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (refreshing) return;
         refreshing = true;
-        window.location.reload();
+        window.location.reload(true); // Принудительная перезагрузка с сервера
     });
 
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then(reg => {
+            // Проверка на наличие обновлений каждые 30 минут
+            setInterval(() => reg.update(), 1000 * 60 * 30);
+
             if (reg.waiting) showUpdateToast(reg.waiting);
 
             reg.addEventListener('updatefound', () => {
@@ -260,14 +263,6 @@ if ('serviceWorker' in navigator) {
                 });
             });
         });
-    });
-
-    window.addEventListener('focus', async () => {
-        const reg = await navigator.serviceWorker.getRegistration();
-        if (reg) {
-            reg.update();
-            if (reg.waiting) showUpdateToast(reg.waiting);
-        }
     });
 }
 
