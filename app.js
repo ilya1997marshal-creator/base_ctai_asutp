@@ -62,28 +62,29 @@ function updateOnDutyWidget() {
         .map(p => p.name.split(' ')[0]);
 
     if (dayShift.length === 0 && nightShift.length === 0) {
-        dutyList.innerHTML = '<div class="w-full text-center py-2 opacity-30 text-[9px] font-black uppercase tracking-widest">Нет смен</div>';
+        dutyList.innerHTML = '<div class="w-full text-center py-3 opacity-30 text-[10px] font-black uppercase tracking-widest">Нет смен</div>';
         return;
     }
 
+    // Компактный дизайн: меньше отступов, шрифт фамилий 12px
     dutyList.innerHTML = `
         <div class="flex w-full gap-2 items-start justify-center">
             ${dayShift.length > 0 ? `
                 <div class="flex-1 text-center">
-                    <div class="text-[8px] font-black uppercase text-emerald-500/60 mb-1.5 tracking-tighter">День (08-20)</div>
-                    <div class="flex flex-wrap justify-center gap-1">
-                        ${dayShift.map(name => `<span class="bg-emerald-500/5 px-2 py-0.5 rounded-lg text-emerald-500 border border-emerald-500/10 text-[10px] font-bold">${name}</span>`).join('')}
+                    <div class="text-[8px] font-black uppercase text-emerald-500/60 mb-1 tracking-wider">День</div>
+                    <div class="flex flex-col items-center gap-1">
+                        ${dayShift.map(name => `<span class="bg-emerald-500/5 px-3 py-1 rounded-lg text-emerald-500 border border-emerald-500/10 text-xs font-bold">${name}</span>`).join('')}
                     </div>
                 </div>
             ` : ''}
             
-            ${dayShift.length > 0 && nightShift.length > 0 ? `<div class="w-[1px] bg-white/5 self-stretch my-1"></div>` : ''}
+            ${dayShift.length > 0 && nightShift.length > 0 ? `<div class="w-[1px] bg-white/10 self-stretch my-1"></div>` : ''}
             
             ${nightShift.length > 0 ? `
                 <div class="flex-1 text-center">
-                    <div class="text-[8px] font-black uppercase text-blue-500/60 mb-1.5 tracking-tighter">Ночь (20-08)</div>
-                    <div class="flex flex-wrap justify-center gap-1">
-                        ${nightShift.map(name => `<span class="bg-blue-500/5 px-2 py-0.5 rounded-lg text-blue-500 border border-blue-500/10 text-[10px] font-bold">${name}</span>`).join('')}
+                    <div class="text-[8px] font-black uppercase text-blue-400/60 mb-1 tracking-wider">Ночь</div>
+                    <div class="flex flex-col items-center gap-1">
+                        ${nightShift.map(name => `<span class="bg-blue-500/5 px-3 py-1 rounded-lg text-blue-400 border border-blue-500/10 text-xs font-bold">${name}</span>`).join('')}
                     </div>
                 </div>
             ` : ''}
