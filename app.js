@@ -32,17 +32,17 @@ async function updateVersionNumber() {
     try {
         if ('serviceWorker' in navigator) {
             const keys = await caches.keys();
-            // Ищем ключ кэша, который содержит 'v'
-            const cacheKey = keys.find(k => k.toLowerCase().includes('v'));
+            // Ищем последний созданный кэш с версией
+            const cacheKey = keys.reverse().find(k => k.toLowerCase().includes('v'));
             if (cacheKey) {
                 const match = cacheKey.match(/v\d+/i);
                 verElement.textContent = match ? match[0].toUpperCase() : cacheKey.toUpperCase();
             } else {
-                verElement.textContent = "V73"; // Дефолт на актуальную версию
+                verElement.textContent = "V74"; 
             }
         }
     } catch (e) {
-        verElement.textContent = "V73";
+        verElement.textContent = "V74";
     }
 }
 
@@ -53,7 +53,7 @@ function updateOnDutyWidget() {
     const currentMonthData = scheduleData["Апрель"];
     if (!currentMonthData) return;
 
-    // Разделение смен на День и Ночь для виджета
+    // Фильтруем сотрудников по типам смен: D/S - день, N - ночь
     const dayShift = currentMonthData
         .filter(p => ['D', 'S'].includes(p.shifts[day - 1] || ''))
         .map(p => p.name.split(' ')[0]);
@@ -63,6 +63,7 @@ function updateOnDutyWidget() {
         .map(p => p.name.split(' ')[0]);
 
     let html = '';
+
     if (dayShift.length === 0 && nightShift.length === 0) {
         html = '<span class="opacity-40 text-xs uppercase font-black tracking-widest py-2">Сегодня нет смен</span>';
     } else {
@@ -87,6 +88,7 @@ function updateOnDutyWidget() {
             </div>
         `;
     }
+    
     dutyList.innerHTML = html;
 }
 
@@ -255,7 +257,7 @@ if ('serviceWorker' in navigator) {
                     }
                 });
             });
-            // Каждые 30 минут проверяем наличие обновлений на сервере
+            // Проверка обновлений каждые 30 минут
             setInterval(() => reg.update(), 1000 * 60 * 30);
         }).catch(err => console.error('SW Error:', err));
     });
