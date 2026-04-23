@@ -281,13 +281,11 @@ function manualCheckForUpdates() {
                     });
                 } else {
                     if (toast) {
-                        // Красивое уведомление об актуальной версии
+                        // Минималистичное уведомление об актуальной версии
                         toast.innerHTML = `
                             <div class="flex flex-col items-center">
-                                <span class="text-4xl mb-3">✅</span>
-                                <div class="text-base font-black uppercase tracking-wide mb-1">Актуальная версия</div>
-                                <div class="text-xs opacity-60">У вас установлена последняя версия приложения</div>
-                                <button class="update-action-btn mt-5">Понятно</button>
+                                <div class="text-sm font-medium mb-4">У вас установлена последняя версия приложения</div>
+                                <button class="update-action-btn">Понятно</button>
                             </div>
                         `;
                         const okBtn = toast.querySelector('.update-action-btn');
