@@ -32,17 +32,16 @@ async function updateVersionNumber() {
     try {
         if ('serviceWorker' in navigator) {
             const keys = await caches.keys();
-            // Ищем последний созданный кэш с версией
             const cacheKey = keys.reverse().find(k => k.toLowerCase().includes('v'));
             if (cacheKey) {
                 const match = cacheKey.match(/v\d+/i);
                 verElement.textContent = match ? match[0].toUpperCase() : cacheKey.toUpperCase();
             } else {
-                verElement.textContent = "V74"; 
+                verElement.textContent = "V75"; 
             }
         }
     } catch (e) {
-        verElement.textContent = "V74";
+        verElement.textContent = "V75";
     }
 }
 
@@ -53,7 +52,8 @@ function updateOnDutyWidget() {
     const currentMonthData = scheduleData["Апрель"];
     if (!currentMonthData) return;
 
-    // Фильтруем сотрудников по типам смен: D/S - день, N - ночь
+    // Центрируем заголовок виджета через родительский контейнер в index.html (если нужно)
+    // Но здесь мы управляем внутренним контентом
     const dayShift = currentMonthData
         .filter(p => ['D', 'S'].includes(p.shifts[day - 1] || ''))
         .map(p => p.name.split(' ')[0]);
@@ -65,23 +65,24 @@ function updateOnDutyWidget() {
     let html = '';
 
     if (dayShift.length === 0 && nightShift.length === 0) {
-        html = '<span class="opacity-40 text-xs uppercase font-black tracking-widest py-2">Сегодня нет смен</span>';
+        html = '<div class="w-full text-center py-2 opacity-40 text-[10px] font-black uppercase tracking-widest">Нет активных смен</div>';
     } else {
         html = `
-            <div class="flex w-full gap-4 pt-1">
+            <div class="flex w-full gap-2 pt-0">
                 ${dayShift.length > 0 ? `
-                    <div class="flex-1">
-                        <div class="text-[9px] font-black uppercase text-emerald-500 opacity-60 mb-2 tracking-widest">День (08-20)</div>
-                        <div class="flex flex-wrap gap-2">
-                            ${dayShift.map(name => `<span class="bg-emerald-500/10 px-3 py-1 rounded-full text-emerald-500 border border-emerald-500/20 text-[11px]">${name}</span>`).join('')}
+                    <div class="flex-1 text-center">
+                        <div class="text-[8px] font-black uppercase text-emerald-500/60 mb-1 tracking-tighter">День (08-20)</div>
+                        <div class="flex flex-wrap justify-center gap-1">
+                            ${dayShift.map(name => `<span class="bg-emerald-500/5 px-2 py-0.5 rounded-lg text-emerald-500 border border-emerald-500/10 text-[10px] font-bold">${name}</span>`).join('')}
                         </div>
                     </div>
                 ` : ''}
+                ${dayShift.length > 0 && nightShift.length > 0 ? `<div class="w-[1px] bg-white/5 self-stretch"></div>` : ''}
                 ${nightShift.length > 0 ? `
-                    <div class="flex-1 border-l border-white/5 pl-4">
-                        <div class="text-[9px] font-black uppercase text-blue-500 opacity-60 mb-2 tracking-widest">Ночь (20-08)</div>
-                        <div class="flex flex-wrap gap-2">
-                            ${nightShift.map(name => `<span class="bg-blue-500/10 px-3 py-1 rounded-full text-blue-500 border border-blue-500/20 text-[11px]">${name}</span>`).join('')}
+                    <div class="flex-1 text-center">
+                        <div class="text-[8px] font-black uppercase text-blue-500/60 mb-1 tracking-tighter">Ночь (20-08)</div>
+                        <div class="flex flex-wrap justify-center gap-1">
+                            ${nightShift.map(name => `<span class="bg-blue-500/5 px-2 py-0.5 rounded-lg text-blue-500 border border-blue-500/10 text-[10px] font-bold">${name}</span>`).join('')}
                         </div>
                     </div>
                 ` : ''}
@@ -257,8 +258,7 @@ if ('serviceWorker' in navigator) {
                     }
                 });
             });
-            // Проверка обновлений каждые 30 минут
-            setInterval(() => reg.update(), 1000 * 60 * 30);
+            setInterval(() => reg.update(), 1000 * 60 * 15); // Проверка каждые 15 минут
         }).catch(err => console.error('SW Error:', err));
     });
 
