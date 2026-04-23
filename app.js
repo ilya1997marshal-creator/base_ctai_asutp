@@ -37,25 +37,29 @@ async function updateVersionNumber() {
                 const match = cacheKey.match(/v\d+/i);
                 verElement.textContent = match ? match[0].toUpperCase() : cacheKey.toUpperCase();
             } else {
-                verElement.textContent = "V76"; 
+                verElement.textContent = "V77"; 
             }
         }
     } catch (e) {
-        verElement.textContent = "V76";
+        verElement.textContent = "V77";
     }
 }
 
 function updateOnDutyWidget() {
     const dutyList = document.getElementById('duty-list');
-    const dutyHeader = document.querySelector('.duty-header'); // Находим заголовок "На смене"
-    
-    if (!dutyList) return;
-    
-    // Центрируем заголовок "На смене" внутри его родительского блока
-    if (dutyHeader) {
-        dutyHeader.classList.add('flex', 'justify-center', 'w-full');
-        dutyHeader.style.textAlign = 'center';
+    // Ищем заголовок "На смене:"
+    const headers = document.getElementsByTagName('div');
+    for (let h of headers) {
+        if (h.textContent.includes('На смене:')) {
+            h.style.display = 'flex';
+            h.style.justifyContent = 'center';
+            h.style.width = '100%';
+            h.style.textAlign = 'center';
+            h.classList.add('justify-center', 'text-center', 'w-full');
+        }
     }
+
+    if (!dutyList) return;
 
     const day = new Date().getDate(); 
     const currentMonthData = scheduleData["Апрель"];
@@ -70,12 +74,11 @@ function updateOnDutyWidget() {
         .map(p => p.name.split(' ')[0]);
 
     let html = '';
-
     if (dayShift.length === 0 && nightShift.length === 0) {
         html = '<div class="w-full text-center py-2 opacity-30 text-[9px] font-black uppercase tracking-widest">Нет смен</div>';
     } else {
         html = `
-            <div class="flex w-full gap-2 pt-0 items-start">
+            <div class="flex w-full gap-2 pt-0 items-start justify-center">
                 ${dayShift.length > 0 ? `
                     <div class="flex-1 text-center">
                         <div class="text-[8px] font-black uppercase text-emerald-500/60 mb-1.5 tracking-tighter">День (08-20)</div>
@@ -96,7 +99,6 @@ function updateOnDutyWidget() {
             </div>
         `;
     }
-    
     dutyList.innerHTML = html;
 }
 
@@ -238,6 +240,7 @@ function showUpdateToast(worker) {
     const btn = document.querySelector('.update-action-btn');
     if (!toast || !btn) return;
 
+    console.log("Показ окна обновления...");
     toast.classList.add('show');
     btn.onclick = () => {
         btn.classList.add('loading');
@@ -248,17 +251,25 @@ function showUpdateToast(worker) {
 
 if ('serviceWorker' in navigator) {
     let refreshing = false;
+    
+    // Перезагрузка при активации нового воркера
     navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (refreshing) return;
         refreshing = true;
+        console.log("Контроллер изменился, перезагрузка...");
         window.location.reload();
     });
 
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then(reg => {
-            // Если воркер уже ждет активации при загрузке
-            if (reg.waiting) showUpdateToast(reg.waiting);
-            
+            console.log("SW зарегистрирован");
+
+            // 1. Если воркер уже ждет (пользователь просто зашел снова)
+            if (reg.waiting) {
+                showUpdateToast(reg.waiting);
+            }
+
+            // 2. Если воркер устанавливается прямо сейчас
             reg.addEventListener('updatefound', () => {
                 const newWorker = reg.installing;
                 newWorker.addEventListener('statechange', () => {
@@ -270,11 +281,11 @@ if ('serviceWorker' in navigator) {
         }).catch(err => console.error('SW Error:', err));
     });
 
+    // Проверка обновлений при каждом открытии/фокусе приложения
     window.addEventListener('focus', async () => {
         const reg = await navigator.serviceWorker.getRegistration();
         if (reg) {
-            await reg.update();
-            if (reg.waiting) showUpdateToast(reg.waiting);
+            reg.update();
         }
     });
 }
