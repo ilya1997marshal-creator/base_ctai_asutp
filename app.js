@@ -258,7 +258,12 @@ function manualCheckForUpdates() {
         
         const toast = document.querySelector('.update-toast');
         if (toast) {
-            toast.innerHTML = `<div class="text-center">🔍 Проверка обновлений...</div>`;
+            toast.innerHTML = `
+                <div class="flex flex-col items-center">
+                    <span class="text-3xl mb-2">🔍</span>
+                    <div class="text-sm font-medium">Проверка обновлений...</div>
+                </div>
+            `;
             toast.classList.add('show');
         }
         
@@ -276,9 +281,14 @@ function manualCheckForUpdates() {
                     });
                 } else {
                     if (toast) {
+                        // Красивое уведомление об актуальной версии
                         toast.innerHTML = `
-                            <div class="text-center">✅ У вас актуальная версия</div>
-                            <button class="update-action-btn mt-4">OK</button>
+                            <div class="flex flex-col items-center">
+                                <span class="text-4xl mb-3">✅</span>
+                                <div class="text-base font-black uppercase tracking-wide mb-1">Актуальная версия</div>
+                                <div class="text-xs opacity-60">У вас установлена последняя версия приложения</div>
+                                <button class="update-action-btn mt-5">Понятно</button>
+                            </div>
                         `;
                         const okBtn = toast.querySelector('.update-action-btn');
                         okBtn.onclick = () => toast.classList.remove('show');
