@@ -2,6 +2,15 @@
  * ЦТАИ АСУ ТП - Основной скрипт
  */
 
+// ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ТЕСТОВ ====================
+let testMode = null; // 'exam', 'all', 'review'
+let currentQuestions = [];
+let userAnswers = {}; // { questionId: [selectedIndices] }
+let currentIndex = 0;
+let testFinished = false;
+let selectedTestQuestions = allQuestions; // по умолчанию все вопросы ПТЭ
+
+// ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 function toggleTheme() {
     const isLight = document.body.classList.toggle('light-mode');
     const icon = document.getElementById('theme-icon');
@@ -86,7 +95,6 @@ function updateOnDutyWidget() {
         return;
     }
 
-    // Компактный виджет без растягивания на всю ширину
     dutyList.innerHTML = `
         <div class="flex justify-center gap-4">
             ${dayShift.length > 0 ? `
@@ -258,8 +266,254 @@ function closeBlockModal() {
     document.body.style.overflow = '';
 }
 
-// ==================== СЕКЦИЯ SERVICE WORKER И ОБНОВЛЕНИЙ ====================
+// ==================== ТЕСТИРОВАНИЕ ====================
+function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
 
+// Показать экран выбора режима для выбранного теста
+function showModeSelector() {
+    document.getElementById('test-list-screen').classList.add('hidden');
+    document.getElementById('test-mode-selector').classList.remove('hidden');
+    document.getElementById('test-runner').classList.add('hidden');
+    document.getElementById('test-results').classList.add('hidden');
+}
+
+// Вернуться к списку тестов
+function backToTestList() {
+    document.getElementById('test-list-screen').classList.remove('hidden');
+    document.getElementById('test-mode-selector').classList.add('hidden');
+    document.getElementById('test-runner').classList.add('hidden');
+    document.getElementById('test-results').classList.add('hidden');
+}
+
+function startExamMode() {
+    testMode = 'exam';
+    const shuffled = shuffleArray([...selectedTestQuestions]);
+    currentQuestions = shuffled.slice(0, 20);
+    userAnswers = {};
+    currentIndex = 0;
+    testFinished = false;
+    showTestRunner();
+    renderQuestion();
+}
+
+function startAllMode() {
+    testMode = 'all';
+    currentQuestions = [...selectedTestQuestions];
+    userAnswers = {};
+    currentIndex = 0;
+    testFinished = false;
+    showTestRunner();
+    renderQuestion();
+}
+
+function showTestRunner() {
+    document.getElementById('test-list-screen').classList.add('hidden');
+    document.getElementById('test-mode-selector').classList.add('hidden');
+    document.getElementById('test-runner').classList.remove('hidden');
+    document.getElementById('test-results').classList.add('hidden');
+    document.getElementById('total-q-num').textContent = currentQuestions.length;
+    updateProgress();
+}
+
+function exitTest() {
+    if (confirm('Выйти из теста? Прогресс будет потерян.')) {
+        document.getElementById('test-mode-selector').classList.remove('hidden');
+        document.getElementById('test-runner').classList.add('hidden');
+        document.getElementById('test-results').classList.add('hidden');
+    }
+}
+
+function renderQuestion() {
+    const q = currentQuestions[currentIndex];
+    if (!q) return;
+    
+    document.getElementById('current-q-num').textContent = currentIndex + 1;
+    document.getElementById('question-id-display').textContent = q.id;
+    document.getElementById('question-text').textContent = q.text;
+    
+    // Подсказка о количестве правильных ответов
+    const hintEl = document.getElementById('multiple-hint');
+    if (q.multiple) {
+        const count = q.correct.length;
+        hintEl.textContent = `Выберите ${count} верных ${count === 1 ? 'утверждение' : (count < 5 ? 'утверждения' : 'утверждений')}`;
+    } else {
+        hintEl.textContent = '';
+    }
+    
+    const container = document.getElementById('options-container');
+    const saved = userAnswers[q.id] || [];
+    const isMultiple = q.multiple;
+    
+    let html = '';
+    q.options.forEach((opt, idx) => {
+        const checked = saved.includes(idx) ? 'checked' : '';
+        if (isMultiple) {
+            html += `
+                <label class="flex items-start gap-3 p-3 bg-white/5 rounded-xl border border-white/5 cursor-pointer">
+                    <input type="checkbox" name="option" value="${idx}" ${checked} class="mt-1">
+                    <span class="text-sm">${opt}</span>
+                </label>
+            `;
+        } else {
+            html += `
+                <label class="flex items-start gap-3 p-3 bg-white/5 rounded-xl border border-white/5 cursor-pointer">
+                    <input type="radio" name="option" value="${idx}" ${checked} class="mt-1">
+                    <span class="text-sm">${opt}</span>
+                </label>
+            `;
+        }
+    });
+    container.innerHTML = html;
+    
+    if (testMode === 'all' && userAnswers[q.id] !== undefined) {
+        highlightAnswers(q);
+    }
+    if (testMode === 'review') {
+        highlightAnswers(q);
+    }
+    
+    document.getElementById('prev-question').disabled = (currentIndex === 0);
+    const nextBtn = document.getElementById('next-question');
+    const finishBtn = document.getElementById('finish-test');
+    
+    if (currentIndex === currentQuestions.length - 1) {
+        nextBtn.classList.add('hidden');
+        finishBtn.classList.remove('hidden');
+    } else {
+        nextBtn.classList.remove('hidden');
+        finishBtn.classList.add('hidden');
+    }
+    
+    updateProgress();
+}
+
+function highlightAnswers(q) {
+    const selected = userAnswers[q.id] || [];
+    const container = document.getElementById('options-container');
+    const labels = container.querySelectorAll('label');
+    labels.forEach((label, idx) => {
+        const isCorrect = q.correct.includes(idx);
+        const isSelected = selected.includes(idx);
+        label.classList.remove('correct-answer', 'wrong-answer');
+        if (isSelected) {
+            label.classList.add(isCorrect ? 'correct-answer' : 'wrong-answer');
+        } else if (isCorrect && (testMode === 'all' || testMode === 'review')) {
+            label.classList.add('correct-answer');
+        }
+    });
+}
+
+function saveCurrentAnswer() {
+    const q = currentQuestions[currentIndex];
+    const container = document.getElementById('options-container');
+    const inputs = container.querySelectorAll('input[type="checkbox"], input[type="radio"]');
+    const selected = [];
+    inputs.forEach(input => {
+        if (input.checked) selected.push(parseInt(input.value));
+    });
+    userAnswers[q.id] = selected;
+    
+    if (testMode === 'all' || testMode === 'review') {
+        highlightAnswers(q);
+    }
+}
+
+function nextQuestion() {
+    saveCurrentAnswer();
+    if (currentIndex < currentQuestions.length - 1) {
+        currentIndex++;
+        renderQuestion();
+    }
+}
+
+function prevQuestion() {
+    saveCurrentAnswer();
+    if (currentIndex > 0) {
+        currentIndex--;
+        renderQuestion();
+    }
+}
+
+function finishTest() {
+    saveCurrentAnswer();
+    testFinished = true;
+    
+    if (testMode === 'exam') {
+        let correctCount = 0;
+        const mistakes = [];
+        currentQuestions.forEach(q => {
+            const selected = userAnswers[q.id] || [];
+            const isCorrect = arraysEqual(selected.sort(), q.correct.sort());
+            if (isCorrect) correctCount++;
+            else mistakes.push(q.id);
+        });
+        const total = currentQuestions.length;
+        const wrongCount = total - correctCount;
+        const passed = wrongCount <= 2;
+        
+        showExamResult(passed, correctCount, total, mistakes);
+    } else {
+        backToTestList();
+    }
+}
+
+function arraysEqual(a, b) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) return false;
+    }
+    return true;
+}
+
+function showExamResult(passed, correct, total, mistakes) {
+    document.getElementById('test-runner').classList.add('hidden');
+    const resultsDiv = document.getElementById('test-results');
+    resultsDiv.classList.remove('hidden');
+    
+    const icon = document.getElementById('result-icon');
+    const title = document.getElementById('result-title');
+    const details = document.getElementById('result-details');
+    
+    if (passed) {
+        icon.textContent = '✅';
+        title.textContent = 'Экзамен сдан!';
+        title.className = 'text-2xl font-black uppercase tracking-tight mb-2 text-emerald-500';
+    } else {
+        icon.textContent = '❌';
+        title.textContent = 'Экзамен не сдан';
+        title.className = 'text-2xl font-black uppercase tracking-tight mb-2 text-red-500';
+    }
+    details.textContent = `Правильных: ${correct} из ${total}. Ошибок: ${total - correct} (допустимо 2).`;
+    
+    const reviewBtn = document.getElementById('review-mistakes');
+    if (mistakes.length > 0) {
+        reviewBtn.classList.remove('hidden');
+        reviewBtn.onclick = () => showMistakesReview(mistakes);
+    } else {
+        reviewBtn.classList.add('hidden');
+    }
+}
+
+function showMistakesReview(mistakeIds) {
+    currentQuestions = currentQuestions.filter(q => mistakeIds.includes(q.id));
+    currentIndex = 0;
+    testMode = 'review';
+    showTestRunner();
+    renderQuestion();
+}
+
+function updateProgress() {
+    const progress = ((currentIndex + 1) / currentQuestions.length) * 100;
+    document.getElementById('test-progress').style.width = progress + '%';
+}
+
+// ==================== SERVICE WORKER ====================
 function showUpdateToast(worker) {
     const toast = document.querySelector('.update-toast');
     if (!toast) return;
@@ -384,4 +638,24 @@ window.onload = () => {
     if (checkBtn) {
         checkBtn.addEventListener('click', manualCheckForUpdates);
     }
+
+    // Обработчики тестов
+    document.getElementById('pte-test-btn').addEventListener('click', () => {
+        selectedTestQuestions = allQuestions; // Пока только один тест
+        showModeSelector();
+    });
+    document.getElementById('back-to-test-list').addEventListener('click', backToTestList);
+    document.getElementById('start-exam-mode').addEventListener('click', startExamMode);
+    document.getElementById('start-all-mode').addEventListener('click', startAllMode);
+    document.getElementById('exit-test').addEventListener('click', exitTest);
+    document.getElementById('prev-question').addEventListener('click', prevQuestion);
+    document.getElementById('next-question').addEventListener('click', nextQuestion);
+    document.getElementById('finish-test').addEventListener('click', finishTest);
+    document.getElementById('back-to-mode').addEventListener('click', () => {
+        document.getElementById('test-results').classList.add('hidden');
+        showModeSelector();
+    });
+    document.getElementById('review-mistakes').addEventListener('click', () => {
+        // Уже настроено в showExamResult
+    });
 };

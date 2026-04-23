@@ -10,7 +10,6 @@
     --nav-bg: rgba(18, 18, 20, 0.95);
     color-scheme: dark;
 
-    /* Новые переменные цветов для синхронизации */
     --color-day: #10b981;
     --color-night: #5d6dfa;
     --color-spec: #f59e0b;
@@ -28,7 +27,7 @@
     --nav-bg: rgba(255, 255, 255, 0.95);
     color-scheme: light;
     
-    --color-vacation: #d4d4d8; /* В светлой теме отпуск чуть светлее */
+    --color-vacation: #d4d4d8;
 }
 
 body { 
@@ -81,7 +80,6 @@ body {
     transition: background-color 0.2s;
 }
 
-/* СТИЛИ СМЕН */
 .shift-D, .shift-N, .shift-S, .shift-О { position: relative; }
 
 .shift-D::after, .shift-N::after, .shift-S::after, .shift-О::after {
@@ -93,7 +91,6 @@ body {
 .shift-S::after { background-color: var(--color-spec); }
 .shift-О::after { background-color: var(--color-vacation); }
 
-/* СТИЛИ ПОДСВЕТКИ СЕГОДНЯ */
 .today-column {
     background-color: rgba(59, 130, 246, 0.08) !important;
     position: relative;
@@ -194,7 +191,7 @@ body {
 .doc-name { font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; }
 .doc-item:active { transform: scale(0.97); background: var(--border); }
 
-/* ========== ГЛОБАЛЬНЫЙ ТОСТ ОБНОВЛЕНИЯ ========== */
+/* Тост обновления */
 .update-toast {
     position: fixed;
     top: 50%;
@@ -207,7 +204,7 @@ body {
     padding: 24px;
     border-radius: 32px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    z-index: 3000; /* Повышен для гарантированного перекрытия */
+    z-index: 3000;
     width: 90%;
     max-width: 320px;
     display: flex;
@@ -218,10 +215,9 @@ body {
     opacity: 0;
     visibility: hidden;
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    color: #ffffff; /* Явный цвет текста для тёмной темы */
+    color: #ffffff;
 }
 
-/* Светлая тема — адаптация тоста */
 .light-mode .update-toast {
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid rgba(0, 0, 0, 0.1);
@@ -254,29 +250,41 @@ body {
     background: #2563eb;
 }
 
-/* Анимация спиннера */
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .animate-spin { animation: spin 1s linear infinite; }
 
-/* Скрываем скроллбар */
 ::-webkit-scrollbar { width: 0px; background: transparent; }
 
-/* Подсветка выходных и праздничных дней (полупрозрачный красноватый) */
+/* Подсветка выходных */
 .holiday-header {
     background: rgba(220, 110, 110, 0.12) !important;
     color: #c86868 !important;
 }
-
 .holiday-column {
     background: rgba(220, 110, 110, 0.05) !important;
     position: relative;
 }
-
 .light-mode .holiday-header {
     background: rgba(220, 110, 110, 0.18) !important;
     color: #b85858 !important;
 }
-
 .light-mode .holiday-column {
     background: rgba(220, 110, 110, 0.08) !important;
+}
+
+/* Подсветка ответов в тестах */
+.correct-answer {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: rgba(16, 185, 129, 0.4) !important;
+}
+.wrong-answer {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: rgba(239, 68, 68, 0.4) !important;
+}
+/* Подсказка в тестах */
+#multiple-hint {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
