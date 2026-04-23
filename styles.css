@@ -14,6 +14,24 @@
     --color-night: #5d6dfa;
     --color-spec: #f59e0b;
     --color-vacation: #3f3f46;
+    
+    /* Фон в стиле Telegram (тёмная тема) */
+    --bg-pattern: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.01) 0px,
+        rgba(255, 255, 255, 0.01) 2px,
+        transparent 2px,
+        transparent 8px
+    ),
+    repeating-linear-gradient(
+        135deg,
+        rgba(150, 180, 255, 0.02) 0px,
+        rgba(150, 180, 255, 0.02) 2px,
+        transparent 2px,
+        transparent 10px
+    ),
+    radial-gradient(circle at 20% 30%, rgba(100, 150, 255, 0.03) 0%, transparent 20%),
+    radial-gradient(circle at 80% 70%, rgba(100, 200, 255, 0.03) 0%, transparent 25%);
 }
 
 .light-mode {
@@ -28,11 +46,32 @@
     color-scheme: light;
     
     --color-vacation: #d4d4d8;
+    
+    /* Фон в стиле Telegram (светлая тема) */
+    --bg-pattern: repeating-linear-gradient(
+        45deg,
+        rgba(0, 0, 0, 0.01) 0px,
+        rgba(0, 0, 0, 0.01) 2px,
+        transparent 2px,
+        transparent 8px
+    ),
+    repeating-linear-gradient(
+        135deg,
+        rgba(100, 120, 200, 0.02) 0px,
+        rgba(100, 120, 200, 0.02) 2px,
+        transparent 2px,
+        transparent 10px
+    ),
+    radial-gradient(circle at 20% 30%, rgba(50, 100, 200, 0.02) 0%, transparent 20%),
+    radial-gradient(circle at 80% 70%, rgba(50, 150, 200, 0.02) 0%, transparent 25%);
 }
 
 body { 
     font-family: 'Manrope', sans-serif; 
     background-color: var(--bg-main);
+    background-image: var(--bg-pattern);
+    background-size: 200px 200px, 200px 200px, cover, cover;
+    background-repeat: repeat, repeat, no-repeat, no-repeat;
     color: var(--text-main);
     transition: background-color 0.3s ease;
     -webkit-tap-highlight-color: transparent;
@@ -52,14 +91,13 @@ body {
     transform: translateY(0);
 }
 
-/* Модальное окно с плавным появлением */
 #block-modal {
     transition: opacity 0.2s ease;
     opacity: 0;
     pointer-events: none;
+    display: flex !important;
 }
 #block-modal.hidden {
-    display: flex !important;
     opacity: 0;
     pointer-events: none;
 }
@@ -75,9 +113,10 @@ body {
     border-radius: 24px;
     display: flex; align-items: center; justify-content: center;
     font-size: 32px;
+    backdrop-filter: blur(10px);
 }
 
-.action-btn { background-color: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); transition: 0.2s; }
+.action-btn { background-color: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); transition: 0.2s; backdrop-filter: blur(10px); }
 .action-btn:active { transform: scale(0.97); opacity: 0.8; }
 
 .schedule-container {
@@ -88,6 +127,7 @@ body {
     width: 100%;
     padding-top: 5px;
     padding-bottom: 12px;
+    backdrop-filter: blur(10px);
 }
 
 .schedule-table { border-collapse: separate; border-spacing: 0; table-layout: fixed; width: max-content; }
@@ -105,11 +145,9 @@ body {
 }
 
 .shift-D, .shift-N, .shift-S, .shift-О { position: relative; }
-
 .shift-D::after, .shift-N::after, .shift-S::after, .shift-О::after {
     content: ''; position: absolute; inset: 6px; border-radius: 5px;
 }
-
 .shift-D::after { background-color: var(--color-day); }
 .shift-N::after { background-color: var(--color-night); }
 .shift-S::after { background-color: var(--color-spec); }
@@ -119,13 +157,11 @@ body {
     background-color: rgba(59, 130, 246, 0.08) !important;
     position: relative;
 }
-
 .today-header {
     color: var(--accent) !important;
     font-weight: 900 !important;
     background: rgba(59, 130, 246, 0.15) !important;
 }
-
 .today-header::after {
     content: '';
     position: absolute;
@@ -147,7 +183,6 @@ body {
     border-bottom: 2px solid var(--accent) !important;
     text-align: center !important;
 }
-
 .col-name { 
     position: sticky; left: 0; z-index: 20; 
     width: 120px !important; 
@@ -155,27 +190,22 @@ body {
     font-weight: 800; text-align: left !important; padding-left: 10px !important;
     border-right: 2px solid var(--accent) !important;
 }
-
 .col-stat { width: 44px !important; font-weight: 900; background: rgba(59, 130, 246, 0.05); color: var(--accent); }
 
-.card-bg { background-color: var(--bg-card); }
-.help-icon {
-    width: 60px; height: 60px;
-    background: rgba(59, 130, 246, 0.1);
-    border-radius: 20px;
-    display: flex; align-items: center; justify-content: center;
-}
+.card-bg { background-color: var(--bg-card); backdrop-filter: blur(10px); }
 
 .month-picker-wrapper {
     position: relative; display: inline-flex; align-items: center;
     background: var(--bg-item); border: 1px solid var(--border);
     padding: 10px 20px; border-radius: 14px; color: var(--text-main); font-weight: 800;
+    backdrop-filter: blur(10px);
 }
 #month-selector { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
 .legend-badge {
     display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase;
     background: var(--bg-item); padding: 6px 12px; border-radius: 100px; border: 1px solid var(--border);
+    backdrop-filter: blur(10px);
 }
 
 .highlighted-row { background-color: rgba(59, 130, 246, 0.05) !important; }
@@ -204,6 +234,7 @@ body {
     justify-content: center;
     font-size: 1.2rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
 }
 
 .doc-item {
@@ -211,11 +242,11 @@ body {
     padding: 18px 20px; background: var(--bg-item); border-radius: 20px;
     border: 1px solid var(--border); color: var(--text-main);
     text-decoration: none; transition: 0.2s;
+    backdrop-filter: blur(10px);
 }
 .doc-name { font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; }
 .doc-item:active { transform: scale(0.97); background: var(--border); }
 
-/* Тост обновления */
 .update-toast {
     position: fixed;
     top: 50%;
@@ -241,20 +272,17 @@ body {
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     color: #ffffff;
 }
-
 .light-mode .update-toast {
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid rgba(0, 0, 0, 0.1);
     color: #000000;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
 }
-
 .update-toast.show {
     opacity: 1;
     visibility: visible;
     transform: translate(-50%, -50%) scale(1);
 }
-
 .update-action-btn {
     width: 100%;
     background: #3b82f6;
@@ -268,7 +296,6 @@ body {
     cursor: pointer;
     transition: 0.2s;
 }
-
 .update-action-btn:active {
     transform: scale(0.96);
     background: #2563eb;
@@ -279,7 +306,6 @@ body {
 
 ::-webkit-scrollbar { width: 0px; background: transparent; }
 
-/* Подсветка выходных */
 .holiday-header {
     background: rgba(220, 110, 110, 0.12) !important;
     color: #c86868 !important;
@@ -296,7 +322,6 @@ body {
     background: rgba(220, 110, 110, 0.08) !important;
 }
 
-/* Подсветка ответов в тестах */
 .correct-answer {
     background: rgba(16, 185, 129, 0.15) !important;
     border-color: rgba(16, 185, 129, 0.4) !important;
@@ -306,12 +331,11 @@ body {
     border-color: rgba(239, 68, 68, 0.4) !important;
 }
 
-/* Плавное модальное окно */
 #block-modal {
     transition: opacity 0.2s ease;
     opacity: 0;
     pointer-events: none;
-    display: flex !important; /* display всегда flex, управляем через opacity */
+    display: flex !important;
 }
 #block-modal.hidden {
     opacity: 0;
@@ -320,4 +344,11 @@ body {
 #block-modal:not(.hidden) {
     opacity: 1;
     pointer-events: auto;
+}
+
+#weather-widget {
+    transition: opacity 0.3s ease;
+}
+#weather-widget:empty {
+    opacity: 0;
 }
