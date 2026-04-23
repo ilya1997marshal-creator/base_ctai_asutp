@@ -224,21 +224,22 @@ function closeBlockModal() {
 
 // ==================== СЕКЦИЯ SERVICE WORKER И ОБНОВЛЕНИЙ ====================
 
-let newWorkerWaiting = null; // хранит ожидающий Service Worker
-
 function showUpdateToast(worker) {
     const toast = document.querySelector('.update-toast');
-    const btn = document.querySelector('.update-action-btn');
-    if (!toast || !btn) return;
+    if (!toast) return;
 
-    // Очищаем старый обработчик
-    const newBtn = btn.cloneNode(true);
-    btn.parentNode.replaceChild(newBtn, btn);
-
+    // Восстанавливаем стандартное содержимое тоста
+    toast.innerHTML = `
+        <div class="text-lg mb-2">✨ Доступна новая версия</div>
+        <div class="text-sm opacity-60 mb-4">Обновите приложение для улучшения работы</div>
+        <button class="update-action-btn">Обновить сейчас</button>
+    `;
+    const btn = toast.querySelector('.update-action-btn');
+    
     toast.classList.add('show');
-    newBtn.onclick = () => {
-        newBtn.classList.add('loading');
-        newBtn.innerHTML = '<span class="animate-spin">🔄</span> Обновление...';
+    btn.onclick = () => {
+        btn.classList.add('loading');
+        btn.innerHTML = '<span class="animate-spin">🔄</span> Обновление...';
         worker.postMessage({ action: 'skipWaiting' });
     };
 }
@@ -248,14 +249,13 @@ function hideUpdateToast() {
     if (toast) toast.classList.remove('show');
 }
 
-// Функция ручной проверки обновлений (вызывается по кнопке)
+// Функция ручной проверки обновлений
 function manualCheckForUpdates() {
     if (!('serviceWorker' in navigator)) return;
     
     navigator.serviceWorker.getRegistration().then(reg => {
         if (!reg) return;
         
-        // Показываем статус проверки
         const toast = document.querySelector('.update-toast');
         if (toast) {
             toast.innerHTML = `<div class="text-center">🔍 Проверка обновлений...</div>`;
@@ -263,27 +263,27 @@ function manualCheckForUpdates() {
         }
         
         reg.update().then(() => {
+            // Даём время на установку
             setTimeout(() => {
                 if (reg.waiting) {
-                    // Есть ожидающий воркер - показываем тост обновления
                     showUpdateToast(reg.waiting);
                 } else if (reg.installing) {
-                    // Идёт установка, подождём события updatefound
-                    reg.addEventListener('updatefound', () => {
-                        const newWorker = reg.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                showUpdateToast(newWorker);
-                            }
-                        });
+                    reg.installing.addEventListener('statechange', function onStateChange() {
+                        if (this.state === 'installed' && navigator.serviceWorker.controller) {
+                            showUpdateToast(this);
+                            this.removeEventListener('statechange', onStateChange);
+                        }
                     });
                 } else {
-                    // Обновлений нет
                     if (toast) {
                         toast.innerHTML = `
                             <div class="text-center">✅ У вас актуальная версия</div>
-                            <button class="update-action-btn mt-4" onclick="document.querySelector('.update-toast').classList.remove('show')">OK</button>
+                            <button class="update-action-btn mt-4">OK</button>
                         `;
+                        const okBtn = toast.querySelector('.update-action-btn');
+                        okBtn.onclick = () => toast.classList.remove('show');
+                        // Автоматически скрываем через 3 секунды
+                        setTimeout(() => toast.classList.remove('show'), 3000);
                     }
                 }
             }, 500);
@@ -303,42 +303,36 @@ if ('serviceWorker' in navigator) {
 
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then(reg => {
-            // Проверяем обновления каждые 10 минут
+            // Проверка обновлений каждые 10 минут
             setInterval(() => reg.update(), 1000 * 60 * 10);
             
-            // Проверяем при возвращении на вкладку
             document.addEventListener('visibilitychange', () => {
                 if (!document.hidden) reg.update();
             });
 
-            // Если уже есть ожидающий работник
             if (reg.waiting) {
-                newWorkerWaiting = reg.waiting;
                 showUpdateToast(reg.waiting);
             }
 
-            // Следим за появлением нового работника
             reg.addEventListener('updatefound', () => {
                 const newWorker = reg.installing;
-                newWorker.addEventListener('statechange', () => {
-                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        newWorkerWaiting = newWorker;
-                        showUpdateToast(newWorker);
+                newWorker.addEventListener('statechange', function onStateChange() {
+                    if (this.state === 'installed' && navigator.serviceWorker.controller) {
+                        showUpdateToast(this);
+                        this.removeEventListener('statechange', onStateChange);
                     }
                 });
             });
         });
 
-        // Проверяем, не остался ли тост после перезагрузки
+        // Скрываем тост, если нет активного SW (после перезагрузки)
         const toast = document.querySelector('.update-toast');
         if (toast && !navigator.serviceWorker.controller) {
-            // Нет активного контроллера — скрываем тост
             toast.classList.remove('show');
         }
     });
 }
 
-// Назначение функции ручной проверки глобально
 window.checkForUpdates = manualCheckForUpdates;
 
 window.onload = () => {
@@ -347,7 +341,6 @@ window.onload = () => {
     updateVersionNumber();
     switchTab(0);
     
-    // Привязка кнопки ручной проверки
     const checkBtn = document.getElementById('manual-update-check');
     if (checkBtn) {
         checkBtn.addEventListener('click', manualCheckForUpdates);
