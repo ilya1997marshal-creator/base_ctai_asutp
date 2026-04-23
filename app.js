@@ -205,49 +205,86 @@ function openBlockModal(key) {
     if (key === 'siemens_diag') {
         list.innerHTML = `
             <div class="mb-4">
-                <input type="text" oninput="filterDiag(this.value)" placeholder="Поиск ошибки..." 
-                       class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none">
-            </div>`;
+                <input type="text" oninput="filterDiag(this.value)" placeholder="Поиск ошибки или кода..." 
+                       class="w-full bg-white/5 border border-white/10 rounded-2xl p-3 text-sm focus:outline-none">
+            </div>
+        `;
+    } else {
+        // Для остальных блоков оставляем поле поиска только если нужно (не добавляем)
     }
 
     if (!mData.items.length) {
         list.innerHTML += `<div class="py-20 text-center opacity-10 font-black uppercase text-[10px]">Раздел пуст</div>`;
     } else {
+        let currentGroupHeader = null;
+        let groupContainer = null;
+
         mData.items.forEach(item => {
-            const div = document.createElement('div');
-            div.className = "diag-card mb-3";
-            
-            if (item.link) {
-                const btnId = `share-${Math.random().toString(36).substr(2, 9)}`;
-                div.innerHTML = `
-                    <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 active:scale-[0.98] transition-transform">
-                        <div onclick="window.open('${item.link}', '_blank')" class="flex-1 cursor-pointer">
-                            <span class="font-bold text-sm block">${item.title}</span>
-                            <span class="text-[9px] opacity-40 uppercase font-black">Открыть документ</span>
-                        </div>
-                        <button id="${btnId}" class="ml-2 px-4 py-2 bg-blue-500/10 text-blue-500 rounded-xl text-[10px] font-black uppercase">Сохранить</button>
-                    </div>`;
+            if (item.type === 'header') {
+                // Создаём заголовок группы
+                const header = document.createElement('div');
+                header.className = "mt-4 mb-2 first:mt-0";
+                header.innerHTML = `<h4 class="text-xs font-black uppercase tracking-wider text-blue-400/80">${item.title}</h4>`;
+                list.appendChild(header);
                 
-                list.appendChild(div);
-                const shareBtn = div.querySelector(`#${btnId}`);
-                shareBtn.onclick = async () => {
-                    if (navigator.share) {
-                        try {
-                            await navigator.share({ title: item.title, url: item.link });
-                        } catch (err) {
-                            if (err.name !== 'AbortError') window.open(item.link, '_blank');
-                        }
-                    } else {
-                        window.open(item.link, '_blank');
-                    }
-                };
-            } else {
+                // Создаём контейнер для элементов группы
+                groupContainer = document.createElement('div');
+                groupContainer.className = "space-y-2 mb-3";
+                list.appendChild(groupContainer);
+            } else if (item.type === 'item' || item.code) {
+                // Это элемент ошибки
+                const div = document.createElement('div');
+                div.className = "diag-card p-3 bg-white/5 rounded-xl border border-white/5";
                 div.innerHTML = `
-                    <div class="p-5 bg-white/5 rounded-[2rem] border border-white/5">
-                        <div class="text-blue-500 font-black text-[10px] uppercase mb-1">${item.title}</div>
-                        <div class="text-sm opacity-80 leading-relaxed">${item.desc}</div>
-                    </div>`;
-                list.appendChild(div);
+                    <div class="flex items-start gap-3">
+                        <span class="inline-block px-2 py-1 rounded-lg bg-red-500/20 text-red-400 font-black text-xs uppercase tracking-wider shadow-[0_0_8px_rgba(239,68,68,0.3)]">${item.code}</span>
+                        <div class="flex-1">
+                            <div class="text-sm font-medium leading-tight">${item.desc}</div>
+                            <div class="text-xs opacity-60 mt-1 font-medium">💡 ${item.action}</div>
+                        </div>
+                    </div>
+                `;
+                
+                if (groupContainer) {
+                    groupContainer.appendChild(div);
+                } else {
+                    list.appendChild(div);
+                }
+            } else {
+                // Для старых форматов (если вдруг остались)
+                const div = document.createElement('div');
+                div.className = "diag-card mb-3";
+                if (item.link) {
+                    const btnId = `share-${Math.random().toString(36).substr(2, 9)}`;
+                    div.innerHTML = `
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 active:scale-[0.98] transition-transform">
+                            <div onclick="window.open('${item.link}', '_blank')" class="flex-1 cursor-pointer">
+                                <span class="font-bold text-sm block">${item.title}</span>
+                                <span class="text-[9px] opacity-40 uppercase font-black">Открыть документ</span>
+                            </div>
+                            <button id="${btnId}" class="ml-2 px-4 py-2 bg-blue-500/10 text-blue-500 rounded-xl text-[10px] font-black uppercase">Сохранить</button>
+                        </div>`;
+                    list.appendChild(div);
+                    const shareBtn = div.querySelector(`#${btnId}`);
+                    shareBtn.onclick = async () => {
+                        if (navigator.share) {
+                            try {
+                                await navigator.share({ title: item.title, url: item.link });
+                            } catch (err) {
+                                if (err.name !== 'AbortError') window.open(item.link, '_blank');
+                            }
+                        } else {
+                            window.open(item.link, '_blank');
+                        }
+                    };
+                } else {
+                    div.innerHTML = `
+                        <div class="p-5 bg-white/5 rounded-[2rem] border border-white/5">
+                            <div class="text-blue-500 font-black text-[10px] uppercase mb-1">${item.title}</div>
+                            <div class="text-sm opacity-80 leading-relaxed">${item.desc}</div>
+                        </div>`;
+                    list.appendChild(div);
+                }
             }
         });
     }
@@ -257,8 +294,20 @@ function openBlockModal(key) {
 
 function filterDiag(val) {
     const q = val.toLowerCase();
-    document.querySelectorAll('.diag-card').forEach(c => {
-        c.style.display = c.innerText.toLowerCase().includes(q) ? 'block' : 'none';
+    const cards = document.querySelectorAll('.diag-card');
+    cards.forEach(c => {
+        const text = c.innerText.toLowerCase();
+        c.style.display = text.includes(q) ? 'block' : 'none';
+    });
+    // Также скрываем заголовки групп, если внутри нет видимых элементов
+    const headers = document.querySelectorAll('#instructions-list h4');
+    headers.forEach(header => {
+        const groupContainer = header.nextElementSibling;
+        if (groupContainer && groupContainer.classList.contains('space-y-2')) {
+            const visibleItems = Array.from(groupContainer.children).filter(child => child.style.display !== 'none');
+            header.style.display = visibleItems.length > 0 ? 'block' : 'none';
+            groupContainer.style.display = visibleItems.length > 0 ? 'block' : 'none';
+        }
     });
 }
 
