@@ -52,13 +52,43 @@ function updateOnDutyWidget() {
     const currentMonthData = scheduleData["Апрель"];
     if (!currentMonthData) return;
 
-    const onDuty = currentMonthData
-        .filter(p => ['D', 'S', 'N'].includes(p.shifts[day - 1] || ''))
+    // Фильтруем сотрудников по типам смен
+    const dayShift = currentMonthData
+        .filter(p => ['D', 'S'].includes(p.shifts[day - 1] || ''))
         .map(p => p.name.split(' ')[0]);
     
-    dutyList.innerHTML = onDuty.length > 0 
-        ? onDuty.map(name => `<span class="bg-blue-500/10 px-3 py-1 rounded-full text-blue-500 border border-blue-500/20">${name}</span>`).join('') 
-        : '<span class="opacity-40">Сегодня нет смен</span>';
+    const nightShift = currentMonthData
+        .filter(p => p.shifts[day - 1] === 'N')
+        .map(p => p.name.split(' ')[0]);
+
+    let html = '';
+
+    if (dayShift.length === 0 && nightShift.length === 0) {
+        html = '<span class="opacity-40">Сегодня нет смен</span>';
+    } else {
+        html = `
+            <div class="flex w-full gap-4">
+                ${dayShift.length > 0 ? `
+                    <div class="flex-1">
+                        <div class="text-[9px] font-black uppercase text-emerald-500 opacity-60 mb-2 tracking-widest">День</div>
+                        <div class="flex flex-wrap gap-2">
+                            ${dayShift.map(name => `<span class="bg-emerald-500/10 px-3 py-1 rounded-full text-emerald-500 border border-emerald-500/20 text-[11px]">${name}</span>`).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+                ${nightShift.length > 0 ? `
+                    <div class="flex-1">
+                        <div class="text-[9px] font-black uppercase text-blue-500 opacity-60 mb-2 tracking-widest">Ночь</div>
+                        <div class="flex flex-wrap gap-2">
+                            ${nightShift.map(name => `<span class="bg-blue-500/10 px-3 py-1 rounded-full text-blue-500 border border-blue-500/20 text-[11px]">${name}</span>`).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    dutyList.innerHTML = html;
 }
 
 function renderSchedule(monthName) {
