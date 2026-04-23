@@ -1,3 +1,6 @@
+/* Подключение внешнего шрифта должно быть в самом начале */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 :root {
     --bg-main: #070708;
     --bg-card: #121214;
@@ -351,4 +354,15 @@ body {
 }
 #weather-widget:empty {
     opacity: 0;
+}
+
+/* Актуальный стиль заголовка с мягким свечением */
+.text-glow {
+    color: #e0e7ff;
+    text-shadow: 0 0 12px rgba(99, 102, 241, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: -0.01em;
+}
+.light-mode .text-glow {
+    color: #1e293b;
+    text-shadow: 0 0 10px rgba(37, 99, 235, 0.3), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
