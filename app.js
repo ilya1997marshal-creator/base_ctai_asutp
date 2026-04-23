@@ -209,35 +209,41 @@ function openBlockModal(key) {
                        class="w-full bg-white/5 border border-white/10 rounded-2xl p-3 text-sm focus:outline-none">
             </div>
         `;
-    } else {
-        // Для остальных блоков оставляем поле поиска только если нужно (не добавляем)
     }
 
     if (!mData.items.length) {
         list.innerHTML += `<div class="py-20 text-center opacity-10 font-black uppercase text-[10px]">Раздел пуст</div>`;
     } else {
-        let currentGroupHeader = null;
         let groupContainer = null;
 
         mData.items.forEach(item => {
             if (item.type === 'header') {
-                // Создаём заголовок группы
+                // Заголовок группы
                 const header = document.createElement('div');
                 header.className = "mt-4 mb-2 first:mt-0";
                 header.innerHTML = `<h4 class="text-xs font-black uppercase tracking-wider text-blue-400/80">${item.title}</h4>`;
                 list.appendChild(header);
                 
-                // Создаём контейнер для элементов группы
+                // Контейнер для элементов группы
                 groupContainer = document.createElement('div');
                 groupContainer.className = "space-y-2 mb-3";
                 list.appendChild(groupContainer);
             } else if (item.type === 'item' || item.code) {
-                // Это элемент ошибки
+                // Элемент ошибки
                 const div = document.createElement('div');
                 div.className = "diag-card p-3 bg-white/5 rounded-xl border border-white/5";
+                
+                // Определяем цвет подсветки
+                let codeColorClass = 'bg-red-500/20 text-red-400 shadow-[0_0_8px_rgba(239,68,68,0.3)]';
+                if (item.color === 'orange') {
+                    codeColorClass = 'bg-orange-500/20 text-orange-400 shadow-[0_0_8px_rgba(249,115,22,0.3)]';
+                } else if (item.color === 'yellow') {
+                    codeColorClass = 'bg-yellow-500/20 text-yellow-400 shadow-[0_0_8px_rgba(234,179,8,0.3)]';
+                }
+                
                 div.innerHTML = `
                     <div class="flex items-start gap-3">
-                        <span class="inline-block px-2 py-1 rounded-lg bg-red-500/20 text-red-400 font-black text-xs uppercase tracking-wider shadow-[0_0_8px_rgba(239,68,68,0.3)]">${item.code}</span>
+                        <span class="inline-block px-2 py-1 rounded-lg ${codeColorClass} font-black text-xs uppercase tracking-wider">${item.code}</span>
                         <div class="flex-1">
                             <div class="text-sm font-medium leading-tight">${item.desc}</div>
                             <div class="text-xs opacity-60 mt-1 font-medium">💡 ${item.action}</div>
