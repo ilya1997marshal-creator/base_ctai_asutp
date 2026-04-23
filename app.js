@@ -45,13 +45,25 @@ async function updateVersionNumber() {
     }
 }
 
+// Вспомогательная функция: название месяца по номеру (0-11)
+function getMonthName(monthIndex) {
+    const months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+    return months[monthIndex];
+}
+
 function updateOnDutyWidget() {
     const dutyList = document.getElementById('duty-list');
     if (!dutyList) return;
 
-    const day = new Date().getDate(); 
-    const currentMonthData = scheduleData["Апрель"];
-    if (!currentMonthData) return;
+    const now = new Date();
+    const day = now.getDate();
+    const monthName = getMonthName(now.getMonth());
+    const currentMonthData = scheduleData[monthName];
+    
+    if (!currentMonthData) {
+        dutyList.innerHTML = '<div class="w-full text-center py-3 opacity-30 text-[10px] font-black uppercase tracking-widest">Нет данных</div>';
+        return;
+    }
 
     const dayShift = currentMonthData
         .filter(p => ['D', 'S'].includes(p.shifts[day - 1] || ''))
@@ -66,7 +78,6 @@ function updateOnDutyWidget() {
         return;
     }
 
-    // Компактный дизайн: меньше отступов, шрифт фамилий 12px
     dutyList.innerHTML = `
         <div class="flex w-full gap-2 items-start justify-center">
             ${dayShift.length > 0 ? `
@@ -105,13 +116,27 @@ function renderSchedule(monthName) {
     }
 
     const today = new Date();
-    const isCurrent = (monthName === "Апрель");
+    const currentMonthName = getMonthName(today.getMonth());
+    const isCurrent = (monthName === currentMonthName);
     const curDay = today.getDate();
-    const daysInMonth = (monthName === "Февраль") ? 28 : (["Апрель", "Июнь", "Сентябрь", "Ноябрь"].includes(monthName) ? 30 : 31);
+    const year = 2026;
+    
+    // Определяем количество дней в выбранном месяце
+    const daysInMonth = new Date(year, ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"].indexOf(monthName) + 1, 0).getDate();
+
+    // Функция проверки, является ли день выходным или праздничным
+    function isWeekendOrHoliday(day) {
+        const date = new Date(year, ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"].indexOf(monthName), day);
+        const dayOfWeek = date.getDay(); // 0 - вс, 6 - сб
+        const dateString = date.toISOString().split('T')[0];
+        return (dayOfWeek === 0 || dayOfWeek === 6) || holidays2026.includes(dateString);
+    }
 
     let html = `<table class="schedule-table"><thead><tr><th class="col-name head-fio text-left pl-4">Ф.И.О.</th>`;
     for(let d=1; d<=daysInMonth; d++) {
-        html += `<th class="${isCurrent && d === curDay ? 'today-header' : ''}">${d}</th>`;
+        const isToday = isCurrent && d === curDay;
+        const isHoliday = isWeekendOrHoliday(d);
+        html += `<th class="${isToday ? 'today-header' : ''} ${isHoliday ? 'holiday-header' : ''}">${d}</th>`;
     }
     html += `<th class="col-stat">СМ.</th><th class="col-stat">ЧАС.</th></tr></thead><tbody>`;
 
@@ -121,7 +146,8 @@ function renderSchedule(monthName) {
         for(let d=1; d<=daysInMonth; d++) {
             const s = p.shifts[d-1] || '';
             const isToday = isCurrent && d === curDay;
-            html += `<td class="shift-${s} ${isToday ? 'today-column' : ''}"></td>`;
+            const isHoliday = isWeekendOrHoliday(d);
+            html += `<td class="shift-${s} ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}"></td>`;
             if(['D', 'N', 'S'].includes(s)) { shiftsCount++; hours += (s === 'S' ? 8 : 12); }
         }
         html += `<td class="col-stat font-bold">${shiftsCount}</td><td class="col-stat font-bold">${hours}</td></tr>`;
@@ -229,7 +255,6 @@ function showUpdateToast(worker) {
     const toast = document.querySelector('.update-toast');
     if (!toast) return;
 
-    // Восстанавливаем стандартное содержимое тоста
     toast.innerHTML = `
         <div class="text-lg mb-2">✨ Доступна новая версия</div>
         <div class="text-sm opacity-60 mb-4">Обновите приложение для улучшения работы</div>
@@ -245,12 +270,6 @@ function showUpdateToast(worker) {
     };
 }
 
-function hideUpdateToast() {
-    const toast = document.querySelector('.update-toast');
-    if (toast) toast.classList.remove('show');
-}
-
-// Функция ручной проверки обновлений
 function manualCheckForUpdates() {
     if (!('serviceWorker' in navigator)) return;
     
@@ -269,7 +288,6 @@ function manualCheckForUpdates() {
         }
         
         reg.update().then(() => {
-            // Даём время на установку
             setTimeout(() => {
                 if (reg.waiting) {
                     showUpdateToast(reg.waiting);
@@ -282,7 +300,6 @@ function manualCheckForUpdates() {
                     });
                 } else {
                     if (toast) {
-                        // Минималистичное уведомление об актуальной версии
                         toast.innerHTML = `
                             <div class="flex flex-col items-center">
                                 <div class="text-sm font-medium mb-4">У вас установлена последняя версия приложения</div>
@@ -291,7 +308,6 @@ function manualCheckForUpdates() {
                         `;
                         const okBtn = toast.querySelector('.update-action-btn');
                         okBtn.onclick = () => toast.classList.remove('show');
-                        // Автоматически скрываем через 3 секунды
                         setTimeout(() => toast.classList.remove('show'), 3000);
                     }
                 }
@@ -300,7 +316,6 @@ function manualCheckForUpdates() {
     });
 }
 
-// Инициализация Service Worker
 if ('serviceWorker' in navigator) {
     let refreshing = false;
     
@@ -312,9 +327,7 @@ if ('serviceWorker' in navigator) {
 
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then(reg => {
-            // Проверка обновлений каждые 10 минут
             setInterval(() => reg.update(), 1000 * 60 * 10);
-            
             document.addEventListener('visibilitychange', () => {
                 if (!document.hidden) reg.update();
             });
@@ -334,7 +347,6 @@ if ('serviceWorker' in navigator) {
             });
         });
 
-        // Скрываем тост, если нет активного SW (после перезагрузки)
         const toast = document.querySelector('.update-toast');
         if (toast && !navigator.serviceWorker.controller) {
             toast.classList.remove('show');

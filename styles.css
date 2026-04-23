@@ -260,3 +260,23 @@ body {
 
 /* Скрываем скроллбар */
 ::-webkit-scrollbar { width: 0px; background: transparent; }
+
+/* Подсветка выходных и праздничных дней (полупрозрачный красноватый) */
+.holiday-header {
+    background: rgba(220, 110, 110, 0.12) !important;
+    color: #c86868 !important;
+}
+
+.holiday-column {
+    background: rgba(220, 110, 110, 0.05) !important;
+    position: relative;
+}
+
+.light-mode .holiday-header {
+    background: rgba(220, 110, 110, 0.18) !important;
+    color: #b85858 !important;
+}
+
+.light-mode .holiday-column {
+    background: rgba(220, 110, 110, 0.08) !important;
+}
