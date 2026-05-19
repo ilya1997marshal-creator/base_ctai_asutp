@@ -34,8 +34,7 @@ function switchTab(index) {
     if(index === 0) { updateOnDutyWidget(); updateCurrentDateDisplay(); }
     if(index === 1) {
         renderSchedule(document.getElementById('month-selector').value);
-        const viewport = document.getElementById('schedule-viewport');
-        if (viewport) fixTableFirstColumn(viewport);
+        // синхронизация высот и подсветка уже внутри renderSchedule
     }
     if(index === 4) renderCredentials();
     if(index === 5) updateVersionNumber(); 
@@ -206,34 +205,34 @@ function updateOnDutyWidget() {
     dutyList.innerHTML = html;
 }
 
-// ==================== ФИКСАЦИЯ СТОЛБЦА ФАМИЛИЙ (плавное закрепление) ====================
-function fixTableFirstColumn(container) {
+// ==================== ГРАФИК (новая компактная структура) ====================
+function highlightRowByIndex(index) {
+    const container = document.getElementById('schedule-viewport');
     if (!container) return;
-
-    const cols = container.querySelectorAll('.col-name');
-    if (cols.length === 0) return;
-
-    let rafId = null;
-
-    const updateSticky = () => {
-        if (rafId) cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(() => {
-            const scrollLeft = container.scrollLeft;
-            cols.forEach(col => {
-                col.style.transform = `translateX(${scrollLeft}px)`;
-            });
-        });
-    };
-
-    // Снимаем старый обработчик, если был, и вешаем новый с passive для производительности
-    container.removeEventListener('scroll', updateSticky);
-    container.addEventListener('scroll', updateSticky, { passive: true });
-
-    // Применяем начальное положение
-    updateSticky();
+    
+    // Строки в фиксированной и прокручиваемой частях
+    const fixedRows = container.querySelectorAll('.schedule-fixed tbody tr');
+    const scrollRows = container.querySelectorAll('.schedule-scroll tbody tr');
+    
+    const allRows = [...fixedRows, ...scrollRows];
+    const targetFixed = fixedRows[index];
+    const targetScroll = scrollRows[index];
+    
+    // Проверяем, активна ли уже строка
+    const isActive = targetFixed && targetFixed.classList.contains('highlighted-row');
+    
+    // Снимаем выделение со всех
+    allRows.forEach(r => r.classList.remove('highlighted-row', 'blurred-row'));
+    
+    if (!isActive && targetFixed && targetScroll) {
+        targetFixed.classList.add('highlighted-row');
+        targetScroll.classList.add('highlighted-row');
+        // Затеняем остальные
+        fixedRows.forEach((r, i) => { if (i !== index) r.classList.add('blurred-row'); });
+        scrollRows.forEach((r, i) => { if (i !== index) r.classList.add('blurred-row'); });
+    }
 }
 
-// ==================== ГРАФИК ====================
 function renderSchedule(monthName) {
     const display = document.getElementById('current-month-display');
     const viewport = document.getElementById('schedule-viewport');
@@ -265,14 +264,14 @@ function renderSchedule(monthName) {
 
     const hourMap = { 'A': '8', 'B': '5', 'C': '10' };
 
-    // Генерируем HTML для левой фиксированной колонки (фамилии)
+    // Генерируем фиксированную часть (фамилии)
     let fixedHtml = `<div class="schedule-fixed"><table class="schedule-table"><thead><tr><th class="col-name head-fio">Ф.И.О.</th></tr></thead><tbody>`;
-    data.forEach(p => {
-        fixedHtml += `<tr><td class="col-name text-center font-medium">${p.name}</td></tr>`;
+    data.forEach((p, idx) => {
+        fixedHtml += `<tr onclick="highlightRowByIndex(${idx})"><td class="col-name text-center font-medium">${p.name}</td></tr>`;
     });
     fixedHtml += `</tbody></table></div>`;
 
-    // Генерируем HTML для прокручиваемой части (дни + статистика)
+    // Генерируем прокручиваемую часть (дни + статистика)
     let scrollHtml = `<div class="schedule-scroll"><table class="schedule-table"><thead><tr>`;
     for(let d=1; d<=daysInMonth; d++) {
         const isToday = isCurrent && d === curDay;
@@ -281,9 +280,9 @@ function renderSchedule(monthName) {
     }
     scrollHtml += `<th class="col-stat">СМ.</th><th class="col-stat">ЧАС.</th></tr></thead><tbody>`;
 
-    data.forEach(p => {
+    data.forEach((p, idx) => {
         let shiftsCount = 0, hours = 0;
-        scrollHtml += `<tr onclick="highlightRow(this)">`;
+        scrollHtml += `<tr onclick="highlightRowByIndex(${idx})">`;
         for(let d=1; d<=daysInMonth; d++) {
             const s = p.shifts[d-1] || '';
             const isToday = isCurrent && d === curDay;
@@ -308,7 +307,7 @@ function renderSchedule(monthName) {
 
     viewport.innerHTML = fixedHtml + scrollHtml;
 
-    // Синхронизация высоты строк (важно!)
+    // Синхронизация высоты строк
     const fixedRows = viewport.querySelectorAll('.schedule-fixed tbody tr');
     const scrollRows = viewport.querySelectorAll('.schedule-scroll tbody tr');
     fixedRows.forEach((row, i) => {
@@ -327,16 +326,9 @@ function renderSchedule(monthName) {
     }
 }
 
-// Остальной код app.js остаётся без изменений (виджет, тесты, доступ, sw и т.д.)
-
+// Удаляем старую highlightRow, она больше не используется
 function highlightRow(row) {
-    const rows = document.querySelectorAll('.schedule-table tbody tr');
-    const active = row.classList.contains('highlighted-row');
-    rows.forEach(r => r.classList.remove('highlighted-row', 'blurred-row'));
-    if (!active) {
-        row.classList.add('highlighted-row');
-        rows.forEach(r => { if (r !== row) r.classList.add('blurred-row'); });
-    }
+    // оставлена для совместимости, не вызывается
 }
 
 function openBlockModal(key) {
