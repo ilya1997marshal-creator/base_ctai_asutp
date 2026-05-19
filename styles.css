@@ -133,14 +133,9 @@ body {
     padding-top: 5px;
     padding-bottom: 12px;
     backdrop-filter: blur(10px);
-    -webkit-overflow-scrolling: touch; /* плавная прокрутка на iOS */
 }
 
 .schedule-table { border-collapse: separate; border-spacing: 0; table-layout: fixed; width: max-content; }
-
-.schedule-table thead th {
-    background-color: var(--bg-card); /* чтобы фон заголовка перекрывал прилипший столбец */
-}
 
 .schedule-table th, .schedule-table td {
     font-size: 9px; 
@@ -215,11 +210,8 @@ body {
     font-size: 11px !important;
 }
 
-/* УСИЛЕННЫЙ СТОЛБЕЦ С ФАМИЛИЯМИ – фиксация слева при горизонтальной прокрутке */
+/* Столбец с фамилиями – теперь JS будет фиксировать его через transform */
 .col-name { 
-    position: sticky;
-    left: 0;
-    z-index: 25;                     /* выше, чем обычные ячейки */
     width: 150px !important; 
     background-color: var(--bg-card) !important; 
     font-weight: 800; 
@@ -231,6 +223,13 @@ body {
     white-space: nowrap !important;
     text-overflow: ellipsis;
     box-shadow: 4px 0 8px rgba(0,0,0,0.3); /* лёгкая тень для визуального отделения */
+    position: relative; /* для transform */
+    z-index: 25; /* выше обычных ячеек */
+}
+
+/* фон заголовка таблицы, чтобы не просвечивал сквозь закреплённый столбец */
+.schedule-table thead th {
+    background-color: var(--bg-card);
 }
 
 .col-stat { width: 44px !important; font-weight: 900; background: rgba(59, 130, 246, 0.05); color: var(--accent); }

@@ -32,7 +32,12 @@ function switchTab(index) {
     });
     
     if(index === 0) { updateOnDutyWidget(); updateCurrentDateDisplay(); }
-    if(index === 1) renderSchedule(document.getElementById('month-selector').value);
+    if(index === 1) {
+        renderSchedule(document.getElementById('month-selector').value);
+        // повторно активируем фиксацию после отрисовки
+        const viewport = document.getElementById('schedule-viewport');
+        if (viewport) fixTableFirstColumn(viewport);
+    }
     if(index === 4) renderCredentials(); // заглушка
     if(index === 5) updateVersionNumber(); 
     window.scrollTo({top: 0, behavior: 'smooth'});
@@ -202,6 +207,26 @@ function updateOnDutyWidget() {
     dutyList.innerHTML = html;
 }
 
+// ==================== ФИКСАЦИЯ СТОЛБЦА ФАМИЛИЙ (JS) ====================
+function fixTableFirstColumn(container) {
+    if (!container) return;
+    
+    const updateSticky = () => {
+        const scrollLeft = container.scrollLeft;
+        const cols = container.querySelectorAll('.col-name');
+        cols.forEach(col => {
+            col.style.transform = `translateX(${scrollLeft}px)`;
+        });
+    };
+    
+    // удаляем старый обработчик, чтобы не дублировался
+    container.removeEventListener('scroll', updateSticky);
+    container.addEventListener('scroll', updateSticky);
+    
+    // применяем текущее положение
+    updateSticky();
+}
+
 // ==================== ГРАФИК ====================
 function renderSchedule(monthName) {
     const display = document.getElementById('current-month-display');
@@ -267,6 +292,9 @@ function renderSchedule(monthName) {
     });
     
     viewport.innerHTML = html + `</tbody></table>`;
+
+    // включаем фиксацию первого столбца
+    fixTableFirstColumn(viewport);
 
     if (isCurrent) {
         setTimeout(() => {
@@ -912,7 +940,6 @@ function manualCheckForUpdates() {
         reg.update().then(() => {
             setTimeout(() => {
                 if (reg.waiting) {
-                    // Сразу активируем и перезагружаемся
                     reg.waiting.postMessage({ action: 'skipWaiting' });
                 } else if (reg.installing) {
                     reg.installing.addEventListener('statechange', function onStateChange() {
@@ -949,22 +976,18 @@ if ('serviceWorker' in navigator) {
 
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then(reg => {
-            // каждые 10 минут проверяем обновления
             setInterval(() => reg.update(), 600000);
             
-            // если уже есть ожидающий воркер – сразу активируем
             if (reg.waiting) {
                 reg.waiting.postMessage({ action: 'skipWaiting' });
                 return;
             }
 
-            // когда появляется новый воркер, активируем его немедленно
             reg.addEventListener('updatefound', () => {
                 const newWorker = reg.installing;
                 newWorker.addEventListener('statechange', () => {
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                         newWorker.postMessage({ action: 'skipWaiting' });
-                        // перезагрузка произойдёт через событие controllerchange
                     }
                 });
             });
@@ -976,7 +999,6 @@ if ('serviceWorker' in navigator) {
         }
     });
 
-    // обработчик сообщений от SW
     navigator.serviceWorker.addEventListener('message', event => {
         if (event.data && event.data.action === 'skipWaiting') {
             self.skipWaiting();
