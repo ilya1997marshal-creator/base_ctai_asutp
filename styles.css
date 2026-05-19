@@ -124,9 +124,11 @@ body {
 .action-btn { background-color: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); transition: 0.2s; backdrop-filter: blur(10px); }
 .action-btn:active { transform: scale(0.97); opacity: 0.8; }
 
+/* === ГРАФИК: НОВАЯ СТРУКТУРА (ФИКСИРОВАННАЯ ЛЕВАЯ ЧАСТЬ) === */
 .schedule-container {
-    overflow-x: auto; 
-    border-radius: 24px; 
+    display: flex;
+    overflow: hidden; /* убираем скролл со всего контейнера */
+    border-radius: 24px;
     border: 1px solid var(--border);
     background-color: var(--bg-card);
     width: 100%;
@@ -135,6 +137,21 @@ body {
     backdrop-filter: blur(10px);
 }
 
+/* Левая фиксированная часть (фамилии) */
+.schedule-fixed {
+    flex-shrink: 0;
+    border-right: 2px solid var(--accent);
+    overflow: hidden; /* скрывает всё, что выходит за пределы */
+}
+
+/* Правая прокручиваемая часть (дни + статистика) */
+.schedule-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* плавная прокрутка на iOS */
+    width: 100%;
+}
+
+/* Общие стили таблиц внутри фиксированной и скролл-частей */
 .schedule-table { border-collapse: separate; border-spacing: 0; table-layout: fixed; width: max-content; }
 
 .schedule-table th, .schedule-table td {
@@ -147,9 +164,41 @@ body {
     color: var(--text-main);
     vertical-align: middle;
     transition: background-color 0.2s;
-    position: relative; /* для позиционирования цифры внутри */
+    position: relative;
 }
 
+/* Фиксированная часть: задаём ширину столбца с фамилиями */
+.schedule-fixed .schedule-table th,
+.schedule-fixed .schedule-table td {
+    width: 150px;
+}
+
+/* Заголовок фиксированной части */
+.schedule-fixed thead th {
+    background-color: var(--bg-card);
+    height: 38px;
+}
+
+/* Стили для столбца фамилий (теперь без sticky и box-shadow, просто оформление) */
+.col-name { 
+    width: 150px !important; 
+    background-color: var(--bg-card) !important; 
+    font-weight: 800; 
+    font-size: 11px !important;
+    text-align: center !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis;
+    border-right: 2px solid var(--accent) !important;
+}
+
+/* Фон заголовков в скролл-части */
+.schedule-scroll thead th {
+    background-color: var(--bg-card);
+}
+
+/* === ОСТАЛЬНЫЕ СТИЛИ (БЕЗ ИЗМЕНЕНИЙ) === */
 .shift-D, .shift-N, .shift-S, .shift-О, .shift-K { position: relative; }
 
 .shift-D::after, .shift-N::after, .shift-S::after, .shift-О::after, .shift-K::after {
@@ -162,7 +211,6 @@ body {
 .shift-О::after { background-color: var(--color-vacation); }
 .shift-K::after { background-color: var(--color-trip); }
 
-/* Цифра внутри дневной смены (часы) */
 .hour-num {
     position: absolute;
     top: 50%;
@@ -170,7 +218,7 @@ body {
     transform: translate(-50%, -50%);
     font-weight: 700;
     font-size: 10px;
-    color: #064e3b; /* тёмно-зелёный, хорошо читается */
+    color: #064e3b;
     z-index: 1;
     line-height: 1;
 }
@@ -208,28 +256,6 @@ body {
     border-bottom: 2px solid var(--accent) !important;
     text-align: center !important;
     font-size: 11px !important;
-}
-
-/* Столбец с фамилиями – теперь JS будет фиксировать его через transform */
-.col-name { 
-    width: 150px !important; 
-    background-color: var(--bg-card) !important; 
-    font-weight: 800; 
-    font-size: 11px !important;
-    text-align: center !important;
-    padding-left: 4px !important;
-    padding-right: 4px !important;
-    border-right: 2px solid var(--accent) !important;
-    white-space: nowrap !important;
-    text-overflow: ellipsis;
-    box-shadow: 4px 0 8px rgba(0,0,0,0.3); /* лёгкая тень для визуального отделения */
-    position: relative; /* для transform */
-    z-index: 25; /* выше обычных ячеек */
-}
-
-/* фон заголовка таблицы, чтобы не просвечивал сквозь закреплённый столбец */
-.schedule-table thead th {
-    background-color: var(--bg-card);
 }
 
 .col-stat { width: 44px !important; font-weight: 900; background: rgba(59, 130, 246, 0.05); color: var(--accent); }

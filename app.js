@@ -265,25 +265,33 @@ function renderSchedule(monthName) {
 
     const hourMap = { 'A': '8', 'B': '5', 'C': '10' };
 
-    let html = `<table class="schedule-table"><thead><tr><th class="col-name head-fio">Ф.И.О.</th>`;
+    // Генерируем HTML для левой фиксированной колонки (фамилии)
+    let fixedHtml = `<div class="schedule-fixed"><table class="schedule-table"><thead><tr><th class="col-name head-fio">Ф.И.О.</th></tr></thead><tbody>`;
+    data.forEach(p => {
+        fixedHtml += `<tr><td class="col-name text-center font-medium">${p.name}</td></tr>`;
+    });
+    fixedHtml += `</tbody></table></div>`;
+
+    // Генерируем HTML для прокручиваемой части (дни + статистика)
+    let scrollHtml = `<div class="schedule-scroll"><table class="schedule-table"><thead><tr>`;
     for(let d=1; d<=daysInMonth; d++) {
         const isToday = isCurrent && d === curDay;
         const isHoliday = isWeekendOrHoliday(d);
-        html += `<th class="${isToday ? 'today-header' : ''} ${isHoliday ? 'holiday-header' : ''}">${d}</th>`;
+        scrollHtml += `<th class="${isToday ? 'today-header' : ''} ${isHoliday ? 'holiday-header' : ''}">${d}</th>`;
     }
-    html += `<th class="col-stat">СМ.</th><th class="col-stat">ЧАС.</th></tr></thead><tbody>`;
+    scrollHtml += `<th class="col-stat">СМ.</th><th class="col-stat">ЧАС.</th></tr></thead><tbody>`;
 
     data.forEach(p => {
         let shiftsCount = 0, hours = 0;
-        html += `<tr onclick="highlightRow(this)"><td class="col-name text-center font-medium">${p.name}</td>`;
+        scrollHtml += `<tr onclick="highlightRow(this)">`;
         for(let d=1; d<=daysInMonth; d++) {
             const s = p.shifts[d-1] || '';
             const isToday = isCurrent && d === curDay;
             const isHoliday = isWeekendOrHoliday(d);
             if (hourMap[s]) {
-                html += `<td class="shift-D ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}"><span class="hour-num">${hourMap[s]}</span></td>`;
+                scrollHtml += `<td class="shift-D ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}"><span class="hour-num">${hourMap[s]}</span></td>`;
             } else {
-                html += `<td class="shift-${s} ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}"></td>`;
+                scrollHtml += `<td class="shift-${s} ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}"></td>`;
             }
             if(['D', 'N', 'S', 'A', 'B', 'C'].includes(s)) {
                 shiftsCount++;
@@ -294,23 +302,32 @@ function renderSchedule(monthName) {
                 else hours += 12;
             }
         }
-        html += `<td class="col-stat font-bold">${shiftsCount}</td><td class="col-stat font-bold">${hours}</td></tr>`;
+        scrollHtml += `<td class="col-stat font-bold">${shiftsCount}</td><td class="col-stat font-bold">${hours}</td></tr>`;
     });
-    
-    viewport.innerHTML = html + `</tbody></table>`;
+    scrollHtml += `</tbody></table></div>`;
 
-    // включаем плавную фиксацию первого столбца
-    fixTableFirstColumn(viewport);
+    viewport.innerHTML = fixedHtml + scrollHtml;
+
+    // Синхронизация высоты строк (важно!)
+    const fixedRows = viewport.querySelectorAll('.schedule-fixed tbody tr');
+    const scrollRows = viewport.querySelectorAll('.schedule-scroll tbody tr');
+    fixedRows.forEach((row, i) => {
+        if (scrollRows[i]) {
+            row.style.height = scrollRows[i].offsetHeight + 'px';
+        }
+    });
 
     if (isCurrent) {
         setTimeout(() => {
-            const todayHeader = document.querySelector('.today-header');
+            const todayHeader = viewport.querySelector('.today-header');
             if (todayHeader) {
                 todayHeader.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
             }
         }, 100);
     }
 }
+
+// Остальной код app.js остаётся без изменений (виджет, тесты, доступ, sw и т.д.)
 
 function highlightRow(row) {
     const rows = document.querySelectorAll('.schedule-table tbody tr');
