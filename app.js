@@ -10,7 +10,7 @@ let currentIndex = 0;
 let testFinished = false;
 let selectedTestQuestions = allQuestions;
 let answerRevealed = false;
-let lastExamQuestions = []; // сохраняем вопросы последнего экзамена
+let lastExamQuestions = [];
 
 // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 function toggleTheme() {
@@ -34,11 +34,10 @@ function switchTab(index) {
     if(index === 0) { updateOnDutyWidget(); updateCurrentDateDisplay(); }
     if(index === 1) {
         renderSchedule(document.getElementById('month-selector').value);
-        // повторно активируем фиксацию после отрисовки
         const viewport = document.getElementById('schedule-viewport');
         if (viewport) fixTableFirstColumn(viewport);
     }
-    if(index === 4) renderCredentials(); // заглушка
+    if(index === 4) renderCredentials();
     if(index === 5) updateVersionNumber(); 
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
@@ -207,23 +206,30 @@ function updateOnDutyWidget() {
     dutyList.innerHTML = html;
 }
 
-// ==================== ФИКСАЦИЯ СТОЛБЦА ФАМИЛИЙ (JS) ====================
+// ==================== ФИКСАЦИЯ СТОЛБЦА ФАМИЛИЙ (плавное закрепление) ====================
 function fixTableFirstColumn(container) {
     if (!container) return;
-    
+
+    const cols = container.querySelectorAll('.col-name');
+    if (cols.length === 0) return;
+
+    let rafId = null;
+
     const updateSticky = () => {
-        const scrollLeft = container.scrollLeft;
-        const cols = container.querySelectorAll('.col-name');
-        cols.forEach(col => {
-            col.style.transform = `translateX(${scrollLeft}px)`;
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+            const scrollLeft = container.scrollLeft;
+            cols.forEach(col => {
+                col.style.transform = `translateX(${scrollLeft}px)`;
+            });
         });
     };
-    
-    // удаляем старый обработчик, чтобы не дублировался
+
+    // Снимаем старый обработчик, если был, и вешаем новый с passive для производительности
     container.removeEventListener('scroll', updateSticky);
-    container.addEventListener('scroll', updateSticky);
-    
-    // применяем текущее положение
+    container.addEventListener('scroll', updateSticky, { passive: true });
+
+    // Применяем начальное положение
     updateSticky();
 }
 
@@ -293,7 +299,7 @@ function renderSchedule(monthName) {
     
     viewport.innerHTML = html + `</tbody></table>`;
 
-    // включаем фиксацию первого столбца
+    // включаем плавную фиксацию первого столбца
     fixTableFirstColumn(viewport);
 
     if (isCurrent) {
