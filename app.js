@@ -14,11 +14,19 @@ let lastExamQuestions = [];
 
 // ==================== ПОЛЬЗОВАТЕЛЬ И ПРОГРЕСС ====================
 let currentUser = null;
+let accessGranted = false;
+
+// Исключаем дубликаты из списка выбора
+const EXCLUDED_USERS = ['Куштанов К.А.'];
 
 function getUniqueUsers() {
     const users = new Set();
     for (const month in scheduleData) {
-        scheduleData[month].forEach(p => users.add(p.name));
+        scheduleData[month].forEach(p => {
+            if (!EXCLUDED_USERS.includes(p.name)) {
+                users.add(p.name);
+            }
+        });
     }
     return ['Ученик', ...Array.from(users)];
 }
@@ -45,7 +53,7 @@ function cancelUserSelection() {
     document.getElementById('user-select-modal').classList.add('hidden');
     document.body.style.overflow = '';
     if (!currentUser) {
-        switchTab(0); // возврат на главную, если не выбран
+        switchTab(0);
     }
 }
 
@@ -55,8 +63,12 @@ function openUserSelection() {
     list.innerHTML = '';
     uniqueUsers.forEach(name => {
         const btn = document.createElement('button');
-        btn.className = 'w-full action-btn p-4 rounded-2xl font-bold text-sm uppercase tracking-wider text-left';
         btn.textContent = name;
+        btn.className = 'action-btn py-2.5 px-3 rounded-xl font-bold text-xs uppercase tracking-wider text-left truncate';
+        if (name === 'Ученик') {
+            btn.classList.add('bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-400');
+            btn.innerHTML = '👤 Ученик';
+        }
         btn.onclick = () => selectUser(name);
         list.appendChild(btn);
     });
@@ -117,6 +129,14 @@ function toggleTheme() {
 }
 
 function switchTab(index) {
+    if (index === 4 && !accessGranted) {
+        document.getElementById('access-password-modal').classList.remove('hidden');
+        document.getElementById('access-password-input').value = '';
+        document.getElementById('access-password-error').classList.add('hidden');
+        document.body.style.overflow = 'hidden';
+        return;
+    }
+
     const tabs = ['tab-home', 'tab-schedule', 'tab-tests', 'tab-tools', 'tab-access', 'tab-help'];
     tabs.forEach((id, i) => {
         const el = document.getElementById(id);
@@ -141,6 +161,26 @@ function switchTab(index) {
     if(index === 4) renderCredentials();
     if(index === 5) updateVersionNumber(); 
     window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function checkAccessPassword() {
+    const input = document.getElementById('access-password-input');
+    const error = document.getElementById('access-password-error');
+    if (input.value === '8888') {
+        accessGranted = true;
+        document.getElementById('access-password-modal').classList.add('hidden');
+        document.body.style.overflow = '';
+        switchTab(4);
+    } else {
+        error.classList.remove('hidden');
+        input.value = '';
+    }
+}
+
+function cancelAccessPassword() {
+    document.getElementById('access-password-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+    switchTab(0);
 }
 
 async function updateVersionNumber() {
@@ -307,7 +347,7 @@ function updateOnDutyWidget() {
     dutyList.innerHTML = html;
 }
 
-// ==================== ГРАФИК ====================
+// ==================== ГРАФИК (новая компактная структура) ====================
 function highlightRowByIndex(index) {
     const container = document.getElementById('schedule-viewport');
     if (!container) return;
@@ -421,9 +461,10 @@ function renderSchedule(monthName) {
     }
 }
 
-function highlightRow(row) { /* оставлена для совместимости */ }
+function highlightRow(row) {
+    // оставлена для совместимости, не вызывается
+}
 
-// ==================== БЛОКИ И ДИАГНОСТИКА ====================
 function openBlockModal(key) {
     const mData = blockData[key];
     const list = document.getElementById('instructions-list');
@@ -967,7 +1008,7 @@ function updateProgress() {
     document.getElementById('test-progress').style.width = progress + '%';
 }
 
-// ==================== ДОСТУП ====================
+// ==================== ДОСТУП (КАТЕГОРИИ) ====================
 let currentAccessCategory = null;
 
 function openAccessCategory(category) {
@@ -1034,9 +1075,11 @@ function renderAccessCategoryItems(category, searchQuery) {
     listEl.innerHTML = html;
 }
 
-function renderCredentials() { /* заглушка */ }
+function renderCredentials() {
+    // сохраняем для обратной совместимости, не используется
+}
 
-// ==================== SERVICE WORKER ====================
+// ==================== SERVICE WORKER (АВТООБНОВЛЕНИЕ) ====================
 function manualCheckForUpdates() {
     if (!('serviceWorker' in navigator)) return;
     
@@ -1125,7 +1168,7 @@ if ('serviceWorker' in navigator) {
 
 window.checkForUpdates = manualCheckForUpdates;
 
-// ==================== МОДАЛКА УСТАНОВКИ ====================
+// ==================== МОДАЛКА ИНСТРУКЦИИ УСТАНОВКИ ====================
 function openInstallModal() {
     document.getElementById('install-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -1226,7 +1269,6 @@ function switchInstallGuide(platform) {
     }
 }
 
-// ==================== ЗАГРУЗКА ====================
 window.onload = () => {
     if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
     
@@ -1296,11 +1338,13 @@ window.onload = () => {
     document.getElementById('install-guide-btn').addEventListener('click', openInstallModal);
     document.getElementById('change-user-btn').addEventListener('click', openUserSelection);
 
-    // Скрываем прелоадер
+    // Скрываем прелоадер после полной загрузки
     const loader = document.getElementById('app-loader');
     if (loader) {
         loader.style.transition = 'opacity 0.3s ease';
         loader.style.opacity = '0';
-        setTimeout(() => { loader.style.display = 'none'; }, 300);
+        setTimeout(() => {
+            loader.style.display = 'none';
+        }, 300);
     }
 };

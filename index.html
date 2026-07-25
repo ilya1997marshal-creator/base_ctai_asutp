@@ -181,7 +181,6 @@
                     </button>
                 </div>
             </div>
-            <!-- ... остальные части тестов (mode selector, runner, results) без изменений ... -->
             <div id="test-mode-selector" class="hidden w-full max-w-md mx-auto px-4">
                 <button id="back-to-test-list" class="mb-4 action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1">← Назад к списку</button>
                 <div class="grid grid-cols-1 gap-4">
@@ -194,7 +193,6 @@
                 </div>
             </div>
             <div id="test-runner" class="hidden w-full max-w-xl mx-auto px-2 pb-20">
-                <!-- ... без изменений ... -->
                 <div class="flex items-center justify-between mb-4">
                     <button id="exit-test" class="action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">← Выйти</button>
                     <span class="text-xs font-bold opacity-60 uppercase tracking-wider"><span id="current-q-num">1</span>/<span id="total-q-num">20</span></span>
@@ -214,7 +212,6 @@
                 <button id="finish-test" class="hidden w-full mt-4 action-btn py-4 rounded-2xl font-bold text-sm uppercase tracking-wider bg-emerald-500/20 border-emerald-500/30 text-emerald-500">Завершить тест</button>
             </div>
             <div id="test-results" class="hidden w-full max-w-md mx-auto px-4 pb-20">
-                <!-- ... без изменений ... -->
                 <div class="action-btn p-8 rounded-[2.5rem] flex flex-col items-center">
                     <div id="result-icon" class="text-6xl mb-4"></div>
                     <h2 id="result-title" class="text-2xl font-black uppercase tracking-tight mb-2"></h2>
@@ -241,7 +238,6 @@
                 </div>
             </div>
             <div id="calc-4-20ma-screen" class="hidden w-full max-w-md mx-auto px-4">
-                <!-- ... без изменений ... -->
                 <button id="back-to-tools-list" class="mb-4 action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1">← Назад к списку</button>
                 <div class="action-btn p-6 rounded-3xl">
                     <h3 class="text-lg font-black uppercase tracking-wide mb-4 text-blue-400">Калькулятор 4–20 мА</h3>
@@ -277,7 +273,6 @@
 
         <!-- ДОСТУП -->
         <section id="tab-access" class="tab-content pt-10 pb-20">
-            <!-- ... без изменений ... -->
             <div class="flex flex-col items-center mb-8 text-center">
                 <div class="header-icon-main"><span>🔑</span></div>
                 <h1 class="text-3xl font-extrabold tracking-tight">Доступ</h1>
@@ -313,17 +308,17 @@
             </div>
             <div class="flex flex-col items-center justify-center gap-4 w-full max-w-md mx-auto px-6 mb-4 text-center">
                 <!-- Telegram -->
-                <a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
-                    <div class="text-2xl">🤖</div>
-                    <span class="font-black text-xs uppercase tracking-widest">Telegram</span>
-                    <span class="text-[10px] opacity-40 font-medium">Связь с разработчиком</span>
-                </a>
-                <!-- Email -->
-                <a href="mailto:admin@ctai.ru" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
-                    <div class="text-2xl">📨</div>
-                    <span class="font-black text-xs uppercase tracking-widest">Email</span>
-                    <span class="text-[10px] opacity-40 font-medium">Предложения по улучшению</span>
-                </a>
+<a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
+    <div class="text-2xl">🤖</div>
+    <span class="font-black text-xs uppercase tracking-widest">Telegram</span>
+    <span class="text-[10px] opacity-40 font-medium">Связь с разработчиком</span>
+</a>
+<!-- Email -->
+<a href="mailto:admin@ctai.ru" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
+    <div class="text-2xl">📨</div>
+    <span class="font-black text-xs uppercase tracking-widest">Email</span>
+    <span class="text-[10px] opacity-40 font-medium">Предложения по улучшению</span>
+</a>
                 <!-- Проверить обновления -->
                 <button id="manual-update-check" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-2 active:scale-[0.95]">
                     <div class="text-2xl">📱</div>
@@ -411,8 +406,23 @@
                 <button onclick="cancelUserSelection()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-500/10 font-bold text-lg">✕</button>
             </div>
             <div class="flex-1 overflow-auto p-6 space-y-3">
-                <div id="user-list" class="space-y-2"></div>
+                <div id="user-list" class="grid grid-cols-2 gap-2"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Модалка ввода пароля для доступа -->
+    <div id="access-password-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center z-[350]">
+        <div class="card-bg border-t sm:border rounded-t-[3rem] sm:rounded-[3rem] w-full max-w-md p-8 flex flex-col items-center text-center">
+            <div class="text-4xl mb-4">🔐</div>
+            <h3 class="font-black text-xl uppercase tracking-tighter text-main mb-2">Доступ ограничен</h3>
+            <p class="text-xs opacity-60 mb-6">Введите пароль для просмотра раздела</p>
+            <input type="password" id="access-password-input" placeholder="Введите пароль" class="w-full bg-white/5 border border-white/10 rounded-2xl p-3 text-sm mb-4 focus:outline-none text-center" maxlength="4" inputmode="numeric">
+            <div class="flex gap-3 w-full">
+                <button onclick="checkAccessPassword()" class="flex-1 bg-blue-500 text-white py-3 rounded-xl font-bold text-sm uppercase tracking-wider">Войти</button>
+                <button onclick="cancelAccessPassword()" class="flex-1 action-btn py-3 rounded-xl font-bold text-sm uppercase tracking-wider">Отмена</button>
+            </div>
+            <p id="access-password-error" class="text-red-400 text-xs mt-3 hidden">Неверный пароль</p>
         </div>
     </div>
 
