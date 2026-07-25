@@ -1058,8 +1058,10 @@ function switchInstallGuide(platform) {
                 <div class="flex items-start gap-4">
                     <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">2</div>
                     <div class="text-sm">
-                        <p class="font-semibold">Нажмите кнопку «Поделиться»</p>
-                        <div class="flex items-center gap-2 mt-1 text-2xl opacity-80">↗️</div>
+                        <div class="flex items-center gap-2">
+                            <p class="font-semibold">Нажмите кнопку «Поделиться»</p>
+                            <span class="text-2xl opacity-80">↗️</span>
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-start gap-4">
