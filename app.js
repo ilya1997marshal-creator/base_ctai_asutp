@@ -1181,4 +1181,14 @@ window.onload = () => {
     
     // Обработчик кнопки инструкции установки
     document.getElementById('install-guide-btn').addEventListener('click', openInstallModal);
+
+    // Скрываем прелоадер после полной загрузки
+    const loader = document.getElementById('app-loader');
+    if (loader) {
+        loader.style.transition = 'opacity 0.3s ease';
+        loader.style.opacity = '0';
+        setTimeout(() => {
+            loader.style.display = 'none';
+        }, 300);
+    }
 };
