@@ -12,6 +12,102 @@ let selectedTestQuestions = allQuestions;
 let answerRevealed = false;
 let lastExamQuestions = [];
 
+// ==================== ПОЛЬЗОВАТЕЛЬ И ПРОГРЕСС ====================
+let currentUser = null;
+
+function getUniqueUsers() {
+    const users = new Set();
+    for (const month in scheduleData) {
+        scheduleData[month].forEach(p => users.add(p.name));
+    }
+    return ['Ученик', ...Array.from(users)];
+}
+
+function loadCurrentUser() {
+    const saved = localStorage.getItem('ctai_current_user');
+    if (saved) {
+        currentUser = saved;
+        document.getElementById('current-user-name').textContent = currentUser;
+        updateProgressBars();
+    }
+}
+
+function selectUser(name) {
+    currentUser = name;
+    localStorage.setItem('ctai_current_user', name);
+    document.getElementById('current-user-name').textContent = name;
+    document.getElementById('user-select-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+    updateProgressBars();
+}
+
+function cancelUserSelection() {
+    document.getElementById('user-select-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+    if (!currentUser) {
+        switchTab(0); // возврат на главную, если не выбран
+    }
+}
+
+function openUserSelection() {
+    const list = document.getElementById('user-list');
+    const uniqueUsers = getUniqueUsers();
+    list.innerHTML = '';
+    uniqueUsers.forEach(name => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full action-btn p-4 rounded-2xl font-bold text-sm uppercase tracking-wider text-left';
+        btn.textContent = name;
+        btn.onclick = () => selectUser(name);
+        list.appendChild(btn);
+    });
+    document.getElementById('user-select-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+// Сохранение результата теста
+function saveTestResult(testKey, mode, correct, total) {
+    if (!currentUser || currentUser === 'Ученик') return;
+    const storageKey = `ctai_progress_${currentUser}`;
+    let data = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    if (!data[testKey]) data[testKey] = [];
+    data[testKey].push({
+        date: new Date().toISOString(),
+        mode,
+        correct,
+        total,
+        percent: Math.round((correct / total) * 100)
+    });
+    localStorage.setItem(storageKey, JSON.stringify(data));
+    updateProgressBars();
+}
+
+function getProgressPercent(testKey) {
+    if (!currentUser || currentUser === 'Ученик') return null;
+    const storageKey = `ctai_progress_${currentUser}`;
+    const data = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    const attempts = data[testKey];
+    if (!attempts || attempts.length === 0) return null;
+    const avg = attempts.reduce((sum, a) => sum + a.percent, 0) / attempts.length;
+    return Math.round(avg);
+}
+
+function updateProgressBars() {
+    const tests = ['pte', 'fire', 'labor'];
+    tests.forEach(key => {
+        const bar = document.getElementById(`${key}-progress-bar`);
+        const text = document.getElementById(`${key}-progress-text`);
+        if (!bar || !text) return;
+        const percent = getProgressPercent(key);
+        if (percent !== null) {
+            bar.style.width = percent + '%';
+            text.textContent = percent + '%';
+        } else {
+            bar.style.width = '0%';
+            text.textContent = 'Нет попыток';
+        }
+    });
+}
+
 // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 function toggleTheme() {
     const isLight = document.body.classList.toggle('light-mode');
@@ -34,7 +130,13 @@ function switchTab(index) {
     if(index === 0) { updateOnDutyWidget(); updateCurrentDateDisplay(); }
     if(index === 1) {
         renderSchedule(document.getElementById('month-selector').value);
-        // синхронизация высот и подсветка уже внутри renderSchedule
+    }
+    if(index === 2) {
+        if (!currentUser) {
+            openUserSelection();
+        } else {
+            updateProgressBars();
+        }
     }
     if(index === 4) renderCredentials();
     if(index === 5) updateVersionNumber(); 
@@ -205,12 +307,11 @@ function updateOnDutyWidget() {
     dutyList.innerHTML = html;
 }
 
-// ==================== ГРАФИК (новая компактная структура) ====================
+// ==================== ГРАФИК ====================
 function highlightRowByIndex(index) {
     const container = document.getElementById('schedule-viewport');
     if (!container) return;
     
-    // Строки в фиксированной и прокручиваемой частях
     const fixedRows = container.querySelectorAll('.schedule-fixed tbody tr');
     const scrollRows = container.querySelectorAll('.schedule-scroll tbody tr');
     
@@ -218,16 +319,13 @@ function highlightRowByIndex(index) {
     const targetFixed = fixedRows[index];
     const targetScroll = scrollRows[index];
     
-    // Проверяем, активна ли уже строка
     const isActive = targetFixed && targetFixed.classList.contains('highlighted-row');
     
-    // Снимаем выделение со всех
     allRows.forEach(r => r.classList.remove('highlighted-row', 'blurred-row'));
     
     if (!isActive && targetFixed && targetScroll) {
         targetFixed.classList.add('highlighted-row');
         targetScroll.classList.add('highlighted-row');
-        // Затеняем остальные
         fixedRows.forEach((r, i) => { if (i !== index) r.classList.add('blurred-row'); });
         scrollRows.forEach((r, i) => { if (i !== index) r.classList.add('blurred-row'); });
     }
@@ -264,14 +362,12 @@ function renderSchedule(monthName) {
 
     const hourMap = { 'A': '8', 'B': '5', 'C': '10' };
 
-    // Генерируем фиксированную часть (фамилии)
     let fixedHtml = `<div class="schedule-fixed"><table class="schedule-table"><thead><tr><th class="col-name head-fio">Ф.И.О.</th></tr></thead><tbody>`;
     data.forEach((p, idx) => {
         fixedHtml += `<tr onclick="highlightRowByIndex(${idx})"><td class="col-name text-center font-medium">${p.name}</td></tr>`;
     });
     fixedHtml += `</tbody></table></div>`;
 
-    // Генерируем прокручиваемую часть (дни + статистика)
     let scrollHtml = `<div class="schedule-scroll"><table class="schedule-table"><thead><tr>`;
     for(let d=1; d<=daysInMonth; d++) {
         const isToday = isCurrent && d === curDay;
@@ -307,7 +403,6 @@ function renderSchedule(monthName) {
 
     viewport.innerHTML = fixedHtml + scrollHtml;
 
-    // Синхронизация высоты строк
     const fixedRows = viewport.querySelectorAll('.schedule-fixed tbody tr');
     const scrollRows = viewport.querySelectorAll('.schedule-scroll tbody tr');
     fixedRows.forEach((row, i) => {
@@ -326,11 +421,9 @@ function renderSchedule(monthName) {
     }
 }
 
-// Удаляем старую highlightRow, она больше не используется
-function highlightRow(row) {
-    // оставлена для совместимости, не вызывается
-}
+function highlightRow(row) { /* оставлена для совместимости */ }
 
+// ==================== БЛОКИ И ДИАГНОСТИКА ====================
 function openBlockModal(key) {
     const mData = blockData[key];
     const list = document.getElementById('instructions-list');
@@ -596,6 +689,7 @@ function backToTestList() {
     document.getElementById('test-mode-selector').classList.add('hidden');
     document.getElementById('test-runner').classList.add('hidden');
     document.getElementById('test-results').classList.add('hidden');
+    updateProgressBars();
 }
 
 function startExamMode() {
@@ -797,7 +891,7 @@ function finishTest() {
     saveCurrentAnswer();
     testFinished = true;
     
-    if (testMode === 'exam') {
+    if (testMode === 'exam' || testMode === 'all') {
         let correctCount = 0;
         const mistakes = [];
         currentQuestions.forEach(q => {
@@ -807,10 +901,20 @@ function finishTest() {
             else mistakes.push(q.id);
         });
         const total = currentQuestions.length;
-        const wrongCount = total - correctCount;
-        const passed = wrongCount <= 2;
         
-        showExamResult(passed, correctCount, total, mistakes);
+        let testKey = 'pte';
+        if (selectedTestQuestions === fireSafetyQuestions) testKey = 'fire';
+        else if (selectedTestQuestions === laborProtectionQuestions) testKey = 'labor';
+        
+        saveTestResult(testKey, testMode, correctCount, total);
+        
+        if (testMode === 'exam') {
+            const wrongCount = total - correctCount;
+            const passed = wrongCount <= 2;
+            showExamResult(passed, correctCount, total, mistakes);
+        } else {
+            backToTestList();
+        }
     } else {
         backToTestList();
     }
@@ -863,7 +967,7 @@ function updateProgress() {
     document.getElementById('test-progress').style.width = progress + '%';
 }
 
-// ==================== ДОСТУП (КАТЕГОРИИ) ====================
+// ==================== ДОСТУП ====================
 let currentAccessCategory = null;
 
 function openAccessCategory(category) {
@@ -930,11 +1034,9 @@ function renderAccessCategoryItems(category, searchQuery) {
     listEl.innerHTML = html;
 }
 
-function renderCredentials() {
-    // сохраняем для обратной совместимости, не используется
-}
+function renderCredentials() { /* заглушка */ }
 
-// ==================== SERVICE WORKER (АВТООБНОВЛЕНИЕ) ====================
+// ==================== SERVICE WORKER ====================
 function manualCheckForUpdates() {
     if (!('serviceWorker' in navigator)) return;
     
@@ -1023,11 +1125,11 @@ if ('serviceWorker' in navigator) {
 
 window.checkForUpdates = manualCheckForUpdates;
 
-// ==================== МОДАЛКА ИНСТРУКЦИИ УСТАНОВКИ ====================
+// ==================== МОДАЛКА УСТАНОВКИ ====================
 function openInstallModal() {
     document.getElementById('install-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
-    switchInstallGuide('ios'); // по умолчанию показываем iOS
+    switchInstallGuide('ios');
 }
 
 function closeInstallModal() {
@@ -1124,6 +1226,7 @@ function switchInstallGuide(platform) {
     }
 }
 
+// ==================== ЗАГРУЗКА ====================
 window.onload = () => {
     if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
     
@@ -1139,22 +1242,33 @@ window.onload = () => {
         monthSelector.value = currentMonthName;
     }
     
+    loadCurrentUser();
     switchTab(0);
     
     const checkBtn = document.getElementById('manual-update-check');
-    if (checkBtn) {
-        checkBtn.addEventListener('click', manualCheckForUpdates);
-    }
+    if (checkBtn) checkBtn.addEventListener('click', manualCheckForUpdates);
 
     document.getElementById('pte-test-btn').addEventListener('click', () => {
+        if (!currentUser || currentUser === 'Ученик') {
+            openUserSelection();
+            return;
+        }
         selectedTestQuestions = allQuestions;
         showModeSelector();
     });
     document.getElementById('fire-test-btn').addEventListener('click', () => {
+        if (!currentUser || currentUser === 'Ученик') {
+            openUserSelection();
+            return;
+        }
         selectedTestQuestions = fireSafetyQuestions;
         showModeSelector();
     });
     document.getElementById('labor-test-btn').addEventListener('click', () => {
+        if (!currentUser || currentUser === 'Ученик') {
+            openUserSelection();
+            return;
+        }
         selectedTestQuestions = laborProtectionQuestions;
         showModeSelector();
     });
@@ -1179,16 +1293,14 @@ window.onload = () => {
         updateUnitSelect();
     }
     
-    // Обработчик кнопки инструкции установки
     document.getElementById('install-guide-btn').addEventListener('click', openInstallModal);
+    document.getElementById('change-user-btn').addEventListener('click', openUserSelection);
 
-    // Скрываем прелоадер после полной загрузки
+    // Скрываем прелоадер
     const loader = document.getElementById('app-loader');
     if (loader) {
         loader.style.transition = 'opacity 0.3s ease';
         loader.style.opacity = '0';
-        setTimeout(() => {
-            loader.style.display = 'none';
-        }, 300);
+        setTimeout(() => { loader.style.display = 'none'; }, 300);
     }
 };

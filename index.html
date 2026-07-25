@@ -126,20 +126,62 @@
             <div class="flex flex-col items-center mb-6 text-center">
                 <div class="header-icon-main"><span>🎓</span></div>
                 <h1 class="text-3xl font-extrabold tracking-tight">Тесты</h1>
+                <!-- Отображение текущего пользователя -->
+                <div id="current-user-display" class="mt-3 flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-4 py-1.5">
+                    <span class="text-[11px] font-bold text-blue-400 uppercase tracking-wider" id="current-user-name">Не выбран</span>
+                    <button id="change-user-btn" class="text-[9px] font-black uppercase text-blue-500/60 tracking-widest hover:text-blue-400 transition">Сменить</button>
+                </div>
             </div>
             <div id="test-list-screen" class="w-full max-w-md mx-auto px-4">
                 <div class="grid grid-cols-1 gap-4">
+                    <!-- ПТЭ -->
                     <button id="pte-test-btn" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] border border-blue-500/20 bg-blue-500/5">
-                        <div class="text-4xl">📋</div><span class="font-black text-sm uppercase tracking-widest">Техническая эксплуатация ПТЭ</span><span class="text-[10px] opacity-60 font-medium">166 вопросов</span>
+                        <div class="text-4xl">📋</div>
+                        <span class="font-black text-sm uppercase tracking-widest">Техническая эксплуатация ПТЭ</span>
+                        <span class="text-[10px] opacity-60 font-medium">166 вопросов</span>
+                        <div class="w-full mt-2">
+                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1">
+                                <span class="opacity-50">Прогресс</span>
+                                <span id="pte-progress-text" class="text-blue-400">Нет попыток</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-white/10 rounded-full">
+                                <div id="pte-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </button>
+                    <!-- ППБ -->
                     <button id="fire-test-btn" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] border border-red-500/20 bg-red-500/5">
-                        <div class="text-4xl">🔥</div><span class="font-black text-sm uppercase tracking-widest">Пожарная Безопасность ППБ</span><span class="text-[10px] opacity-60 font-medium">63 вопроса</span>
+                        <div class="text-4xl">🔥</div>
+                        <span class="font-black text-sm uppercase tracking-widest">Пожарная Безопасность ППБ</span>
+                        <span class="text-[10px] opacity-60 font-medium">63 вопроса</span>
+                        <div class="w-full mt-2">
+                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1">
+                                <span class="opacity-50">Прогресс</span>
+                                <span id="fire-progress-text" class="text-blue-400">Нет попыток</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-white/10 rounded-full">
+                                <div id="fire-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </button>
+                    <!-- ПОТ ЭЭ -->
                     <button id="labor-test-btn" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] border border-green-500/20 bg-green-500/5">
-                        <div class="text-4xl">🛡️</div><span class="font-black text-sm uppercase tracking-widest">Охрана труда ПОТ ЭЭ</span><span class="text-[10px] opacity-60 font-medium">181 вопрос</span>
+                        <div class="text-4xl">🛡️</div>
+                        <span class="font-black text-sm uppercase tracking-widest">Охрана труда ПОТ ЭЭ</span>
+                        <span class="text-[10px] opacity-60 font-medium">181 вопрос</span>
+                        <div class="w-full mt-2">
+                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1">
+                                <span class="opacity-50">Прогресс</span>
+                                <span id="labor-progress-text" class="text-blue-400">Нет попыток</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-white/10 rounded-full">
+                                <div id="labor-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </button>
                 </div>
             </div>
+            <!-- ... остальные части тестов (mode selector, runner, results) без изменений ... -->
             <div id="test-mode-selector" class="hidden w-full max-w-md mx-auto px-4">
                 <button id="back-to-test-list" class="mb-4 action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1">← Назад к списку</button>
                 <div class="grid grid-cols-1 gap-4">
@@ -152,6 +194,7 @@
                 </div>
             </div>
             <div id="test-runner" class="hidden w-full max-w-xl mx-auto px-2 pb-20">
+                <!-- ... без изменений ... -->
                 <div class="flex items-center justify-between mb-4">
                     <button id="exit-test" class="action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">← Выйти</button>
                     <span class="text-xs font-bold opacity-60 uppercase tracking-wider"><span id="current-q-num">1</span>/<span id="total-q-num">20</span></span>
@@ -171,6 +214,7 @@
                 <button id="finish-test" class="hidden w-full mt-4 action-btn py-4 rounded-2xl font-bold text-sm uppercase tracking-wider bg-emerald-500/20 border-emerald-500/30 text-emerald-500">Завершить тест</button>
             </div>
             <div id="test-results" class="hidden w-full max-w-md mx-auto px-4 pb-20">
+                <!-- ... без изменений ... -->
                 <div class="action-btn p-8 rounded-[2.5rem] flex flex-col items-center">
                     <div id="result-icon" class="text-6xl mb-4"></div>
                     <h2 id="result-title" class="text-2xl font-black uppercase tracking-tight mb-2"></h2>
@@ -197,6 +241,7 @@
                 </div>
             </div>
             <div id="calc-4-20ma-screen" class="hidden w-full max-w-md mx-auto px-4">
+                <!-- ... без изменений ... -->
                 <button id="back-to-tools-list" class="mb-4 action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1">← Назад к списку</button>
                 <div class="action-btn p-6 rounded-3xl">
                     <h3 class="text-lg font-black uppercase tracking-wide mb-4 text-blue-400">Калькулятор 4–20 мА</h3>
@@ -232,6 +277,7 @@
 
         <!-- ДОСТУП -->
         <section id="tab-access" class="tab-content pt-10 pb-20">
+            <!-- ... без изменений ... -->
             <div class="flex flex-col items-center mb-8 text-center">
                 <div class="header-icon-main"><span>🔑</span></div>
                 <h1 class="text-3xl font-extrabold tracking-tight">Доступ</h1>
@@ -267,17 +313,17 @@
             </div>
             <div class="flex flex-col items-center justify-center gap-4 w-full max-w-md mx-auto px-6 mb-4 text-center">
                 <!-- Telegram -->
-<a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
-    <div class="text-2xl">🤖</div>
-    <span class="font-black text-xs uppercase tracking-widest">Telegram</span>
-    <span class="text-[10px] opacity-40 font-medium">Связь с разработчиком</span>
-</a>
-<!-- Email -->
-<a href="mailto:admin@ctai.ru" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
-    <div class="text-2xl">📨</div>
-    <span class="font-black text-xs uppercase tracking-widest">Email</span>
-    <span class="text-[10px] opacity-40 font-medium">Предложения по улучшению</span>
-</a>
+                <a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
+                    <div class="text-2xl">🤖</div>
+                    <span class="font-black text-xs uppercase tracking-widest">Telegram</span>
+                    <span class="text-[10px] opacity-40 font-medium">Связь с разработчиком</span>
+                </a>
+                <!-- Email -->
+                <a href="mailto:admin@ctai.ru" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
+                    <div class="text-2xl">📨</div>
+                    <span class="font-black text-xs uppercase tracking-widest">Email</span>
+                    <span class="text-[10px] opacity-40 font-medium">Предложения по улучшению</span>
+                </a>
                 <!-- Проверить обновления -->
                 <button id="manual-update-check" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-2 active:scale-[0.95]">
                     <div class="text-2xl">📱</div>
@@ -353,6 +399,19 @@
                 </div>
                 <!-- Контент инструкции -->
                 <div id="install-guide-content" class="space-y-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка выбора пользователя (для тестов) -->
+    <div id="user-select-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center z-[300]">
+        <div class="card-bg border-t sm:border rounded-t-[3rem] sm:rounded-[3rem] w-full max-w-md max-h-[85vh] flex flex-col">
+            <div class="px-8 py-6 border-b flex items-center justify-between">
+                <h3 class="font-black text-xl uppercase tracking-tighter text-main">Выберите пользователя</h3>
+                <button onclick="cancelUserSelection()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-500/10 font-bold text-lg">✕</button>
+            </div>
+            <div class="flex-1 overflow-auto p-6 space-y-3">
+                <div id="user-list" class="space-y-2"></div>
             </div>
         </div>
     </div>
