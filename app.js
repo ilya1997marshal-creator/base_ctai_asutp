@@ -16,7 +16,6 @@ let lastExamQuestions = [];
 let currentUser = null;
 let accessGranted = false;
 
-// Исключаем дубликаты из списка выбора
 const EXCLUDED_USERS = ['Куштанов К.А.'];
 
 function getUniqueUsers() {
@@ -58,20 +57,33 @@ function cancelUserSelection() {
 }
 
 function openUserSelection() {
-    const list = document.getElementById('user-list');
+    const list = document.getElementById('user-list-container');
     const uniqueUsers = getUniqueUsers();
     list.innerHTML = '';
+
+    // Ученик по центру
+    const studentDiv = document.createElement('div');
+    studentDiv.className = 'flex justify-center mb-4';
+    const studentBtn = document.createElement('button');
+    studentBtn.className = 'action-btn py-2.5 px-6 rounded-xl font-bold text-sm uppercase tracking-wider bg-emerald-500/10 border-emerald-500/30 text-emerald-400';
+    studentBtn.innerHTML = '👤 Ученик';
+    studentBtn.onclick = () => selectUser('Ученик');
+    studentDiv.appendChild(studentBtn);
+    list.appendChild(studentDiv);
+
+    // Сетка фамилий (2 столбца)
+    const grid = document.createElement('div');
+    grid.className = 'grid grid-cols-2 gap-2';
     uniqueUsers.forEach(name => {
+        if (name === 'Ученик') return;
         const btn = document.createElement('button');
         btn.textContent = name;
-        btn.className = 'action-btn py-2.5 px-3 rounded-xl font-bold text-xs uppercase tracking-wider text-left truncate';
-        if (name === 'Ученик') {
-            btn.classList.add('bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-400');
-            btn.innerHTML = '👤 Ученик';
-        }
+        btn.className = 'action-btn py-2.5 px-3 rounded-xl font-bold text-xs uppercase tracking-wider text-center';
         btn.onclick = () => selectUser(name);
-        list.appendChild(btn);
+        grid.appendChild(btn);
     });
+    list.appendChild(grid);
+
     document.getElementById('user-select-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
