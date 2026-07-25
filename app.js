@@ -1023,6 +1023,102 @@ if ('serviceWorker' in navigator) {
 
 window.checkForUpdates = manualCheckForUpdates;
 
+// ==================== МОДАЛКА ИНСТРУКЦИИ УСТАНОВКИ ====================
+function openInstallModal() {
+    document.getElementById('install-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    switchInstallGuide('ios'); // по умолчанию показываем iOS
+}
+
+function closeInstallModal() {
+    document.getElementById('install-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+function switchInstallGuide(platform) {
+    const iosBtn = document.getElementById('select-ios');
+    const androidBtn = document.getElementById('select-android');
+    const content = document.getElementById('install-guide-content');
+
+    if (platform === 'ios') {
+        iosBtn.classList.add('bg-blue-500', 'border-blue-500', 'text-white');
+        iosBtn.classList.remove('bg-white/5', 'border-white/10');
+        androidBtn.classList.add('bg-white/5', 'border-white/10');
+        androidBtn.classList.remove('bg-blue-500', 'border-blue-500', 'text-white');
+
+        content.innerHTML = `
+            <div class="space-y-6">
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">1</div>
+                    <div class="text-sm">
+                        <p class="font-semibold">Откройте приложение в Safari</p>
+                        <p class="opacity-60 text-xs mt-1">Скопируйте адрес сайта и откройте в Safari</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">2</div>
+                    <div class="text-sm">
+                        <p class="font-semibold">Нажмите кнопку «Поделиться»</p>
+                        <div class="flex items-center gap-2 mt-1 text-2xl opacity-80">↗️</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">3</div>
+                    <div class="text-sm">
+                        <p class="font-semibold">Выберите «На экран „Домой“»</p>
+                        <p class="opacity-60 text-xs mt-1">Прокрутите меню вниз и найдите эту опцию</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">4</div>
+                    <div class="text-sm">
+                        <p class="font-semibold">Нажмите «Добавить»</p>
+                        <p class="opacity-60 text-xs mt-1">Иконка приложения появится на рабочем столе</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        androidBtn.classList.add('bg-blue-500', 'border-blue-500', 'text-white');
+        androidBtn.classList.remove('bg-white/5', 'border-white/10');
+        iosBtn.classList.add('bg-white/5', 'border-white/10');
+        iosBtn.classList.remove('bg-blue-500', 'border-blue-500', 'text-white');
+
+        content.innerHTML = `
+            <div class="space-y-6">
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">1</div>
+                    <div class="text-sm">
+                        <p class="font-semibold">Откройте приложение в Chrome</p>
+                        <p class="opacity-60 text-xs mt-1">Скопируйте адрес и откройте в Chrome</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">2</div>
+                    <div class="text-sm">
+                        <p class="font-semibold">Нажмите меню (⋮) в правом верхнем углу</p>
+                        <div class="flex items-center gap-2 mt-1 text-2xl opacity-80">⋮</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">3</div>
+                    <div class="text-sm">
+                        <p class="font-semibold">Выберите «Установить приложение» или «Добавить на гл. экран»</p>
+                        <p class="opacity-60 text-xs mt-1">Название пункта может немного отличаться</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">4</div>
+                    <div class="text-sm">
+                        <p class="font-semibold">Подтвердите действие</p>
+                        <p class="opacity-60 text-xs mt-1">Ярлык появится на домашнем экране</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+}
+
 window.onload = () => {
     if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
     
@@ -1077,4 +1173,7 @@ window.onload = () => {
         unitTypeEl.addEventListener('change', updateUnitSelect);
         updateUnitSelect();
     }
+    
+    // Обработчик кнопки инструкции установки
+    document.getElementById('install-guide-btn').addEventListener('click', openInstallModal);
 };
