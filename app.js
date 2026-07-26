@@ -187,7 +187,9 @@ function toggleTheme() {
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
 }
 
+// Переключение вкладок с плавной анимацией
 function switchTab(index) {
+    // Проверка пароля для доступа
     if (index === 4 && !accessGranted) {
         document.getElementById('access-password-modal').classList.remove('hidden');
         document.getElementById('access-password-input').value = '';
@@ -197,15 +199,23 @@ function switchTab(index) {
     }
 
     const tabs = ['tab-home', 'tab-schedule', 'tab-tests', 'tab-tools', 'tab-access', 'tab-help'];
-    tabs.forEach((id, i) => {
+    
+    // Снимаем активный класс со всех вкладок
+    tabs.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.classList.toggle('active', i === index);
+        if (el) el.classList.remove('active');
     });
     
+    // Добавляем активный класс на нужную вкладку
+    const activeTab = document.getElementById(tabs[index]);
+    if (activeTab) activeTab.classList.add('active');
+
+    // Обновляем навигационные кнопки
     document.querySelectorAll('.nav-item').forEach((btn, i) => {
         btn.classList.toggle('active', i === index);
     });
-    
+
+    // Выполняем специфичные для вкладок действия
     if(index === 0) { updateOnDutyWidget(); updateCurrentDateDisplay(); updateSalaryWidget(); }
     if(index === 1) {
         renderSchedule(document.getElementById('month-selector').value);
@@ -222,6 +232,7 @@ function switchTab(index) {
     }
     if(index === 4) renderCredentials();
     if(index === 5) updateVersionNumber(); 
+    
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
@@ -898,8 +909,8 @@ function shuffleArray(arr) {
 }
 
 function showModeSelector() {
-    document.getElementById('test-list-screen').classList.add('hidden');
-    document.getElementById('test-mode-selector').classList.remove('hidden');
+    document.getElementById('test-list-screen').classList.remove('hidden');
+    document.getElementById('test-mode-selector').classList.add('hidden');
     document.getElementById('test-runner').classList.add('hidden');
     document.getElementById('test-results').classList.add('hidden');
 }

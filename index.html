@@ -59,6 +59,20 @@
         .modal-sticky-top button:active {
             background: rgba(59,130,246,0.3);
         }
+        /* Плавные переходы между вкладками */
+        .tab-content {
+            display: flex !important;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(8px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .tab-content.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body class="pb-32">
@@ -259,8 +273,6 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Калькулятор 4-20 мА -->
             <div id="calc-4-20ma-screen" class="hidden w-full max-w-md mx-auto px-4">
                 <button id="back-to-tools-list" class="mb-4 action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1">← Назад к списку</button>
                 <div class="action-btn p-6 rounded-3xl">
@@ -295,8 +307,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Конвертер единиц -->
             <div id="converter-screen" class="hidden w-full max-w-md mx-auto px-4">
                 <button id="back-to-tools-from-converter" class="mb-4 action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1">← Назад к списку</button>
                 <div class="action-btn p-6 rounded-3xl">
