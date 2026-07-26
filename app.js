@@ -619,7 +619,7 @@ function openBlockModal(key) {
         });
     }
 
-    // Добавляем кнопку "Наверх" в начало списка
+    // Добавляем кнопку "Наверх" в блок
     const scrollTopBtn = document.createElement('div');
     scrollTopBtn.className = 'modal-sticky-top';
     scrollTopBtn.innerHTML = '<button>↑</button>';
@@ -629,7 +629,6 @@ function openBlockModal(key) {
     };
     list.insertBefore(scrollTopBtn, list.firstChild);
 
-    // Показываем/скрываем кнопку при прокрутке
     const toggleScrollBtn = () => {
         if (list.scrollTop > 150) {
             scrollTopBtn.classList.add('visible');
@@ -638,8 +637,6 @@ function openBlockModal(key) {
         }
     };
     list.addEventListener('scroll', toggleScrollBtn);
-
-    // Сбрасываем прокрутку и состояние кнопки при открытии
     list.scrollTop = 0;
     toggleScrollBtn();
 
@@ -1090,7 +1087,7 @@ function updateProgress() {
     document.getElementById('test-progress').style.width = progress + '%';
 }
 
-// ==================== ДОСТУП ====================
+// ==================== ДОСТУП (КАТЕГОРИИ) ====================
 let currentAccessCategory = null;
 
 function openAccessCategory(category) {
@@ -1129,32 +1126,59 @@ function renderAccessCategoryItems(category, searchQuery) {
                (item.description && item.description.toLowerCase().includes(q));
     });
     
-    let html = '';
+    // Очищаем список и добавляем кнопку «Наверх»
+    listEl.innerHTML = '';
+    // Кнопка «Наверх»
+    const scrollTopBtn = document.createElement('div');
+    scrollTopBtn.className = 'modal-sticky-top';
+    scrollTopBtn.innerHTML = '<button>↑</button>';
+    scrollTopBtn.onclick = (e) => {
+        e.stopPropagation();
+        listEl.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    listEl.appendChild(scrollTopBtn);
+
+    // Контент
     if (filtered.length === 0) {
-        html = '<div class="text-center py-10 opacity-50 text-xs font-black uppercase">Ничего не найдено</div>';
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'text-center py-10 opacity-50 text-xs font-black uppercase';
+        emptyMsg.textContent = 'Ничего не найдено';
+        listEl.appendChild(emptyMsg);
     } else {
         filtered.forEach(item => {
-            html += `
-                <div class="bg-white/5 rounded-xl border border-white/5 p-3">
-                    <div class="font-bold text-sm mb-2">${item.system || ''}</div>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <div>
-                            <span class="opacity-50">Логин:</span>
-                            <div class="font-mono bg-white/5 px-2 py-0.5 rounded mt-0.5">${item.login || '—'}</div>
-                        </div>
-                        <div>
-                            <span class="opacity-50">Пароль:</span>
-                            <div class="font-mono bg-white/5 px-2 py-0.5 rounded mt-0.5">${item.password || '—'}</div>
-                        </div>
+            const div = document.createElement('div');
+            div.className = 'bg-white/5 rounded-xl border border-white/5 p-3';
+            div.innerHTML = `
+                <div class="font-bold text-sm mb-2">${item.system || ''}</div>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                        <span class="opacity-50">Логин:</span>
+                        <div class="font-mono bg-white/5 px-2 py-0.5 rounded mt-0.5">${item.login || '—'}</div>
                     </div>
-                    ${item.ip ? `<div class="mt-2 text-[10px] opacity-50">IP: ${item.ip}</div>` : ''}
-                    ${item.location ? `<div class="mt-1 text-[10px] opacity-50">📍 ${item.location}</div>` : ''}
-                    ${item.description ? `<div class="mt-1 text-[10px] opacity-50">${item.description}</div>` : ''}
+                    <div>
+                        <span class="opacity-50">Пароль:</span>
+                        <div class="font-mono bg-white/5 px-2 py-0.5 rounded mt-0.5">${item.password || '—'}</div>
+                    </div>
                 </div>
+                ${item.ip ? `<div class="mt-2 text-[10px] opacity-50">IP: ${item.ip}</div>` : ''}
+                ${item.location ? `<div class="mt-1 text-[10px] opacity-50">📍 ${item.location}</div>` : ''}
+                ${item.description ? `<div class="mt-1 text-[10px] opacity-50">${item.description}</div>` : ''}
             `;
+            listEl.appendChild(div);
         });
     }
-    listEl.innerHTML = html;
+
+    // Показываем/скрываем кнопку при прокрутке
+    const toggleScrollBtn = () => {
+        if (listEl.scrollTop > 150) {
+            scrollTopBtn.classList.add('visible');
+        } else {
+            scrollTopBtn.classList.remove('visible');
+        }
+    };
+    listEl.addEventListener('scroll', toggleScrollBtn);
+    listEl.scrollTop = 0;
+    toggleScrollBtn();
 }
 
 function renderCredentials() {}
