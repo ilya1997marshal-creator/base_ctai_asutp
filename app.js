@@ -61,7 +61,6 @@ function openUserSelection() {
     const uniqueUsers = getUniqueUsers();
     list.innerHTML = '';
 
-    // Ученик по центру
     const studentDiv = document.createElement('div');
     studentDiv.className = 'flex justify-center mb-4';
     const studentBtn = document.createElement('button');
@@ -71,7 +70,6 @@ function openUserSelection() {
     studentDiv.appendChild(studentBtn);
     list.appendChild(studentDiv);
 
-    // Сетка фамилий (2 столбца)
     const grid = document.createElement('div');
     grid.className = 'grid grid-cols-2 gap-2';
     uniqueUsers.forEach(name => {
@@ -88,7 +86,6 @@ function openUserSelection() {
     document.body.style.overflow = 'hidden';
 }
 
-// Сохранение результата теста
 function saveTestResult(testKey, mode, correct, total) {
     if (!currentUser || currentUser === 'Ученик') return;
     const storageKey = `ctai_progress_${currentUser}`;
@@ -132,6 +129,62 @@ function updateProgressBars() {
     });
 }
 
+// ==================== ВИДЖЕТ ДНЕЙ ДО ЗАРПЛАТЫ ====================
+function getNearestPayday(dayOfMonth) {
+    const now = getNowKrasnoyarsk();
+    let year = now.getFullYear();
+    let month = now.getMonth();
+
+    let date = new Date(year, month, dayOfMonth);
+    if (date <= now) {
+        month++;
+        if (month > 11) {
+            month = 0;
+            year++;
+        }
+        date = new Date(year, month, dayOfMonth);
+    }
+
+    const dayOfWeek = date.getDay();
+    if (dayOfWeek === 6) {
+        date.setDate(date.getDate() - 1);
+    } else if (dayOfWeek === 0) {
+        date.setDate(date.getDate() - 2);
+    }
+
+    return date;
+}
+
+function updateSalaryWidget() {
+    const salaryDate = getNearestPayday(15);
+    const advanceDate = getNearestPayday(25);
+    const now = getNowKrasnoyarsk();
+
+    const daysToSalary = Math.ceil((salaryDate - now) / (1000 * 60 * 60 * 24));
+    const daysToAdvance = Math.ceil((advanceDate - now) / (1000 * 60 * 60 * 24));
+
+    const salaryStr = daysToSalary === 0 ? 'Сегодня' : `через ${daysToSalary} дн.`;
+    const advanceStr = daysToAdvance === 0 ? 'Сегодня' : `через ${daysToAdvance} дн.`;
+
+    const formatDate = (d) => {
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        return `${day}.${month}`;
+    };
+
+    const widget = document.getElementById('salary-widget');
+    if (widget) {
+        widget.innerHTML = `
+            <div class="bg-white/5 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1">
+                💳 <span class="text-emerald-400 font-bold">Зарплата</span> ${salaryStr} (${formatDate(salaryDate)})
+            </div>
+            <div class="bg-white/5 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1">
+                💰 <span class="text-amber-400 font-bold">Аванс</span> ${advanceStr} (${formatDate(advanceDate)})
+            </div>
+        `;
+    }
+}
+
 // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 function toggleTheme() {
     const isLight = document.body.classList.toggle('light-mode');
@@ -159,7 +212,11 @@ function switchTab(index) {
         btn.classList.toggle('active', i === index);
     });
     
-    if(index === 0) { updateOnDutyWidget(); updateCurrentDateDisplay(); }
+    if(index === 0) { 
+        updateOnDutyWidget(); 
+        updateCurrentDateDisplay(); 
+        updateSalaryWidget(); 
+    }
     if(index === 1) {
         renderSchedule(document.getElementById('month-selector').value);
     }
@@ -359,7 +416,7 @@ function updateOnDutyWidget() {
     dutyList.innerHTML = html;
 }
 
-// ==================== ГРАФИК (новая компактная структура) ====================
+// ==================== ГРАФИК ====================
 function highlightRowByIndex(index) {
     const container = document.getElementById('schedule-viewport');
     if (!container) return;
@@ -473,9 +530,7 @@ function renderSchedule(monthName) {
     }
 }
 
-function highlightRow(row) {
-    // оставлена для совместимости, не вызывается
-}
+function highlightRow(row) {}
 
 function openBlockModal(key) {
     const mData = blockData[key];
@@ -1087,11 +1142,9 @@ function renderAccessCategoryItems(category, searchQuery) {
     listEl.innerHTML = html;
 }
 
-function renderCredentials() {
-    // сохраняем для обратной совместимости, не используется
-}
+function renderCredentials() {}
 
-// ==================== SERVICE WORKER (АВТООБНОВЛЕНИЕ) ====================
+// ==================== SERVICE WORKER ====================
 function manualCheckForUpdates() {
     if (!('serviceWorker' in navigator)) return;
     
@@ -1180,7 +1233,7 @@ if ('serviceWorker' in navigator) {
 
 window.checkForUpdates = manualCheckForUpdates;
 
-// ==================== МОДАЛКА ИНСТРУКЦИИ УСТАНОВКИ ====================
+// ==================== МОДАЛКА УСТАНОВКИ ====================
 function openInstallModal() {
     document.getElementById('install-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -1286,6 +1339,7 @@ window.onload = () => {
     
     updateCurrentDateDisplay();
     updateOnDutyWidget();
+    updateSalaryWidget();
     updateVersionNumber();
     startWeatherUpdates();
     
@@ -1350,11 +1404,9 @@ window.onload = () => {
     document.getElementById('install-guide-btn').addEventListener('click', openInstallModal);
     document.getElementById('change-user-btn').addEventListener('click', openUserSelection);
 
-    // Скрываем прелоадер с задержкой, чтобы он был виден даже в PWA
     const loader = document.getElementById('app-loader');
     if (loader) {
-        // Скрываем не раньше чем через 1000 мс после загрузки страницы
-        const MIN_LOADER_TIME = 1000; // 1 секунда
+        const MIN_LOADER_TIME = 1000;
         const startTime = performance.now();
         const elapsed = performance.now() - startTime;
         const remaining = Math.max(0, MIN_LOADER_TIME - elapsed);
