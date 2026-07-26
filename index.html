@@ -28,9 +28,33 @@
             background-clip: text;
             text-shadow: 0 0 20px rgba(59,130,246,0.5);
         }
-        /* Кнопка "Наверх" */
-        #scroll-to-top {
+        /* Кнопка "Наверх" внутри модалок */
+        .modal-scroll-top {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 50;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(59,130,246,0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(59,130,246,0.3);
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
             transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(10px);
+        }
+        .modal-scroll-top.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -43,13 +67,6 @@
     </div>
 
     <button onclick="toggleTheme()" class="theme-toggle" id="theme-icon">🌙</button>
-
-    <!-- Кнопка "Наверх" -->
-    <button id="scroll-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
-            class="fixed bottom-24 right-6 z-[90] w-12 h-12 rounded-full bg-blue-500/20 backdrop-blur-md border border-blue-500/30 text-blue-400 flex items-center justify-center text-xl shadow-lg opacity-0 translate-y-4 pointer-events-none transition-all duration-300"
-            title="Наверх">
-        ⬆️
-    </button>
 
     <div class="max-w-xl mx-auto min-h-screen relative px-4">
         <!-- Главная -->
@@ -371,7 +388,7 @@
     <div id="block-modal" onclick="if(event.target===this) closeBlockModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center z-[200]">
         <div class="card-bg border-t sm:border rounded-t-[3rem] sm:rounded-[3rem] w-full max-w-md max-h-[85vh] flex flex-col">
             <div class="px-8 py-6 border-b flex items-center justify-between"><h3 id="modal-block-title" class="font-black text-xl uppercase tracking-tighter text-main"></h3><button onclick="closeBlockModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-500/10 font-bold text-lg">✕</button></div>
-            <div id="instructions-list" class="flex-1 overflow-auto p-6 space-y-3"></div>
+            <div id="instructions-list" class="flex-1 overflow-auto p-6 space-y-3" style="position: relative;"></div>
         </div>
     </div>
 
@@ -428,19 +445,5 @@
     <script src="questions-fire.js"></script>
     <script src="questions-labor.js"></script>
     <script src="app.js"></script>
-
-    <script>
-        // Кнопка "Наверх" – логика появления/исчезновения
-        window.addEventListener('scroll', function() {
-            const btn = document.getElementById('scroll-to-top');
-            if (window.scrollY > 200) {
-                btn.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
-                btn.classList.add('opacity-100', 'translate-y-0');
-            } else {
-                btn.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
-                btn.classList.remove('opacity-100', 'translate-y-0');
-            }
-        });
-    </script>
 </body>
 </html>

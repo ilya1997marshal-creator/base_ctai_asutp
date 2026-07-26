@@ -187,7 +187,7 @@ function toggleTheme() {
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
 }
 
-// Переключение вкладок с анимацией
+// Переключение вкладок – мгновенное, без анимации (как раньше)
 function switchTab(index) {
     if (index === 4 && !accessGranted) {
         document.getElementById('access-password-modal').classList.remove('hidden');
@@ -198,37 +198,16 @@ function switchTab(index) {
     }
 
     const tabs = ['tab-home', 'tab-schedule', 'tab-tests', 'tab-tools', 'tab-access', 'tab-help'];
-    const newActive = document.getElementById(tabs[index]);
-    const currentActive = document.querySelector('.tab-content.active');
-
-    // Если уже активна эта вкладка – ничего не делаем
-    if (currentActive === newActive) return;
-
-    // Анимация ухода для текущей вкладки
-    if (currentActive) {
-        currentActive.classList.add('fade-out');
-        currentActive.addEventListener('transitionend', function handler() {
-            currentActive.classList.remove('active', 'fade-out');
-            currentActive.style.display = 'none';
-            currentActive.removeEventListener('transitionend', handler);
-            // Показываем новую вкладку
-            showNewTab(newActive, index);
-        });
-    } else {
-        // Если активной не было (первый запуск) – просто показываем
-        showNewTab(newActive, index);
-    }
-}
-
-function showNewTab(tab, index) {
-    tab.style.display = 'flex';
-    tab.classList.add('active');
-    // Запускаем обновление данных
-    if(index === 0) { 
-        updateOnDutyWidget(); 
-        updateCurrentDateDisplay(); 
-        updateSalaryWidget(); 
-    }
+    tabs.forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('active', i === index);
+    });
+    
+    document.querySelectorAll('.nav-item').forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+    });
+    
+    if(index === 0) { updateOnDutyWidget(); updateCurrentDateDisplay(); updateSalaryWidget(); }
     if(index === 1) {
         renderSchedule(document.getElementById('month-selector').value);
     }
@@ -241,11 +220,6 @@ function showNewTab(tab, index) {
     }
     if(index === 4) renderCredentials();
     if(index === 5) updateVersionNumber(); 
-    
-    // Обновляем активность кнопок навигации
-    document.querySelectorAll('.nav-item').forEach((btn, i) => {
-        btn.classList.toggle('active', i === index);
-    });
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
@@ -645,6 +619,25 @@ function openBlockModal(key) {
             }
         });
     }
+
+    // Добавляем кнопку "Наверх" в модалку
+    const scrollBtn = document.createElement('div');
+    scrollBtn.className = 'modal-scroll-top';
+    scrollBtn.innerHTML = '↑';
+    scrollBtn.onclick = () => {
+        list.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    list.appendChild(scrollBtn);
+
+    // Показываем/прячем кнопку при прокрутке содержимого модалки
+    list.addEventListener('scroll', function() {
+        if (list.scrollTop > 150) {
+            scrollBtn.classList.add('visible');
+        } else {
+            scrollBtn.classList.remove('visible');
+        }
+    });
+
     const modal = document.getElementById('block-modal');
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -1368,11 +1361,7 @@ window.onload = () => {
     }
     
     loadCurrentUser();
-    // Инициализация первой вкладки без анимации
-    const firstTab = document.getElementById('tab-home');
-    firstTab.style.display = 'flex';
-    firstTab.classList.add('active');
-    document.querySelectorAll('.nav-item')[0].classList.add('active');
+    switchTab(0);
     
     const checkBtn = document.getElementById('manual-update-check');
     if (checkBtn) checkBtn.addEventListener('click', manualCheckForUpdates);
