@@ -28,14 +28,13 @@
             background-clip: text;
             text-shadow: 0 0 20px rgba(59,130,246,0.5);
         }
-        /* Кнопка "Наверх" внутри модалок – без фона, только стрелка */
+        /* Кнопка "Наверх" внутри модалок – по центру, без фона */
         .modal-sticky-top {
             position: sticky;
             top: 8px;
             z-index: 10;
             display: flex;
-            justify-content: flex-end;
-            padding-right: 8px;
+            justify-content: center;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s ease;
