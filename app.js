@@ -146,9 +146,9 @@ function getNearestPayday(dayOfMonth) {
     }
 
     const dayOfWeek = date.getDay();
-    if (dayOfWeek === 6) {
+    if (dayOfWeek === 6) { // суббота → пятница
         date.setDate(date.getDate() - 1);
-    } else if (dayOfWeek === 0) {
+    } else if (dayOfWeek === 0) { // воскресенье → пятница
         date.setDate(date.getDate() - 2);
     }
 
@@ -156,7 +156,7 @@ function getNearestPayday(dayOfMonth) {
 }
 
 function updateSalaryWidget() {
-    const salaryDate = getNearestPayday(15);
+    const salaryDate = getNearestPayday(10);
     const advanceDate = getNearestPayday(25);
     const now = getNowKrasnoyarsk();
 
@@ -166,20 +166,14 @@ function updateSalaryWidget() {
     const salaryStr = daysToSalary === 0 ? 'Сегодня' : `через ${daysToSalary} дн.`;
     const advanceStr = daysToAdvance === 0 ? 'Сегодня' : `через ${daysToAdvance} дн.`;
 
-    const formatDate = (d) => {
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        return `${day}.${month}`;
-    };
-
     const widget = document.getElementById('salary-widget');
     if (widget) {
         widget.innerHTML = `
-            <div class="bg-white/5 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1">
-                💳 <span class="text-emerald-400 font-bold">Зарплата</span> ${salaryStr} (${formatDate(salaryDate)})
+            <div class="bg-white/5 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1 animate-pulse">
+                💳 <span class="text-emerald-400 font-bold">Зарплата</span> ${salaryStr}
             </div>
-            <div class="bg-white/5 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1">
-                💰 <span class="text-amber-400 font-bold">Аванс</span> ${advanceStr} (${formatDate(advanceDate)})
+            <div class="bg-white/5 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1 animate-pulse">
+                💰 <span class="text-amber-400 font-bold">Аванс</span> ${advanceStr}
             </div>
         `;
     }
@@ -1075,7 +1069,7 @@ function updateProgress() {
     document.getElementById('test-progress').style.width = progress + '%';
 }
 
-// ==================== ДОСТУП (КАТЕГОРИИ) ====================
+// ==================== ДОСТУП ====================
 let currentAccessCategory = null;
 
 function openAccessCategory(category) {

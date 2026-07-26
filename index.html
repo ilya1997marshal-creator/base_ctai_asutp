@@ -37,8 +37,10 @@
                 <p class="text-zinc-500 text-[9px] mt-1 font-extrabold uppercase tracking-[0.2em] opacity-70">Информационная панель подразделения</p>
                 <div id="current-date-display" class="mt-2 text-[11px] font-bold uppercase tracking-wider text-blue-400/70"></div>
                 <div id="weather-widget" class="mt-1 text-xs font-medium text-zinc-400"></div>
+                <!-- Виджет дней до зарплаты и аванса -->
+                <div id="salary-widget" class="mt-2 flex gap-3 justify-center flex-wrap"></div>
             </div>
-            <div id="salary-widget" class="mt-2 flex gap-3 justify-center flex-wrap"></div>
+
             <div id="on-duty-container" class="mb-6 flex justify-center">
                 <div class="bg-blue-600/5 border border-blue-500/10 rounded-3xl p-5 inline-block w-auto">
                     <div class="flex items-center justify-center gap-2 mb-4">
@@ -126,7 +128,6 @@
             <div class="flex flex-col items-center mb-6 text-center">
                 <div class="header-icon-main"><span>🎓</span></div>
                 <h1 class="text-3xl font-extrabold tracking-tight">Тесты</h1>
-                <!-- Отображение текущего пользователя -->
                 <div id="current-user-display" class="mt-3 flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-4 py-1.5">
                     <span class="text-[11px] font-bold text-blue-400 uppercase tracking-wider" id="current-user-name">Не выбран</span>
                     <button id="change-user-btn" class="text-[9px] font-black uppercase text-blue-500/60 tracking-widest hover:text-blue-400 transition">Сменить</button>
@@ -134,49 +135,25 @@
             </div>
             <div id="test-list-screen" class="w-full max-w-md mx-auto px-4">
                 <div class="grid grid-cols-1 gap-4">
-                    <!-- ПТЭ -->
                     <button id="pte-test-btn" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] border border-blue-500/20 bg-blue-500/5">
-                        <div class="text-4xl">📋</div>
-                        <span class="font-black text-sm uppercase tracking-widest">Техническая эксплуатация ПТЭ</span>
-                        <span class="text-[10px] opacity-60 font-medium">166 вопросов</span>
+                        <div class="text-4xl">📋</div><span class="font-black text-sm uppercase tracking-widest">Техническая эксплуатация ПТЭ</span><span class="text-[10px] opacity-60 font-medium">166 вопросов</span>
                         <div class="w-full mt-2">
-                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1">
-                                <span class="opacity-50">Прогресс</span>
-                                <span id="pte-progress-text" class="text-blue-400">Нет попыток</span>
-                            </div>
-                            <div class="w-full h-1.5 bg-white/10 rounded-full">
-                                <div id="pte-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
-                            </div>
+                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1"><span class="opacity-50">Прогресс</span><span id="pte-progress-text" class="text-blue-400">Нет попыток</span></div>
+                            <div class="w-full h-1.5 bg-white/10 rounded-full"><div id="pte-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div></div>
                         </div>
                     </button>
-                    <!-- ППБ -->
                     <button id="fire-test-btn" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] border border-red-500/20 bg-red-500/5">
-                        <div class="text-4xl">🔥</div>
-                        <span class="font-black text-sm uppercase tracking-widest">Пожарная Безопасность ППБ</span>
-                        <span class="text-[10px] opacity-60 font-medium">63 вопроса</span>
+                        <div class="text-4xl">🔥</div><span class="font-black text-sm uppercase tracking-widest">Пожарная Безопасность ППБ</span><span class="text-[10px] opacity-60 font-medium">63 вопроса</span>
                         <div class="w-full mt-2">
-                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1">
-                                <span class="opacity-50">Прогресс</span>
-                                <span id="fire-progress-text" class="text-blue-400">Нет попыток</span>
-                            </div>
-                            <div class="w-full h-1.5 bg-white/10 rounded-full">
-                                <div id="fire-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
-                            </div>
+                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1"><span class="opacity-50">Прогресс</span><span id="fire-progress-text" class="text-blue-400">Нет попыток</span></div>
+                            <div class="w-full h-1.5 bg-white/10 rounded-full"><div id="fire-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div></div>
                         </div>
                     </button>
-                    <!-- ПОТ ЭЭ -->
                     <button id="labor-test-btn" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] border border-green-500/20 bg-green-500/5">
-                        <div class="text-4xl">🛡️</div>
-                        <span class="font-black text-sm uppercase tracking-widest">Охрана труда ПОТ ЭЭ</span>
-                        <span class="text-[10px] opacity-60 font-medium">181 вопрос</span>
+                        <div class="text-4xl">🛡️</div><span class="font-black text-sm uppercase tracking-widest">Охрана труда ПОТ ЭЭ</span><span class="text-[10px] opacity-60 font-medium">181 вопрос</span>
                         <div class="w-full mt-2">
-                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1">
-                                <span class="opacity-50">Прогресс</span>
-                                <span id="labor-progress-text" class="text-blue-400">Нет попыток</span>
-                            </div>
-                            <div class="w-full h-1.5 bg-white/10 rounded-full">
-                                <div id="labor-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
-                            </div>
+                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1"><span class="opacity-50">Прогресс</span><span id="labor-progress-text" class="text-blue-400">Нет попыток</span></div>
+                            <div class="w-full h-1.5 bg-white/10 rounded-full"><div id="labor-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div></div>
                         </div>
                     </button>
                 </div>
@@ -184,12 +161,8 @@
             <div id="test-mode-selector" class="hidden w-full max-w-md mx-auto px-4">
                 <button id="back-to-test-list" class="mb-4 action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1">← Назад к списку</button>
                 <div class="grid grid-cols-1 gap-4">
-                    <button id="start-exam-mode" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] border border-blue-500/20 bg-blue-500/5">
-                        <div class="text-4xl">📝</div><span class="font-black text-sm uppercase tracking-widest">Пробный экзамен</span><span class="text-[10px] opacity-60 font-medium">20 случайных вопросов, до 2 ошибок</span>
-                    </button>
-                    <button id="start-all-mode" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95]">
-                        <div class="text-4xl">📚</div><span class="font-black text-sm uppercase tracking-widest">Все вопросы</span><span class="text-[10px] opacity-60 font-medium">Обучение с мгновенной проверкой</span>
-                    </button>
+                    <button id="start-exam-mode" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] border border-blue-500/20 bg-blue-500/5"><div class="text-4xl">📝</div><span class="font-black text-sm uppercase tracking-widest">Пробный экзамен</span><span class="text-[10px] opacity-60 font-medium">20 случайных вопросов, до 2 ошибок</span></button>
+                    <button id="start-all-mode" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95]"><div class="text-4xl">📚</div><span class="font-black text-sm uppercase tracking-widest">Все вопросы</span><span class="text-[10px] opacity-60 font-medium">Обучение с мгновенной проверкой</span></button>
                 </div>
             </div>
             <div id="test-runner" class="hidden w-full max-w-xl mx-auto px-2 pb-20">
@@ -383,16 +356,10 @@
                 <button onclick="closeInstallModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-500/10 font-bold text-lg">✕</button>
             </div>
             <div class="flex-1 overflow-auto p-6">
-                <!-- Переключатель платформ -->
                 <div class="flex gap-3 mb-6">
-                    <button id="select-ios" onclick="switchInstallGuide('ios')" class="flex-1 py-3 rounded-full font-bold text-sm uppercase tracking-wide border border-white/10 bg-white/5 hover:bg-white/10 transition">
-                        🍏 iPhone
-                    </button>
-                    <button id="select-android" onclick="switchInstallGuide('android')" class="flex-1 py-3 rounded-full font-bold text-sm uppercase tracking-wide border border-white/10 bg-white/5 hover:bg-white/10 transition">
-                        🤖 Android
-                    </button>
+                    <button id="select-ios" onclick="switchInstallGuide('ios')" class="flex-1 py-3 rounded-full font-bold text-sm uppercase tracking-wide border border-white/10 bg-white/5 hover:bg-white/10 transition">🍏 iPhone</button>
+                    <button id="select-android" onclick="switchInstallGuide('android')" class="flex-1 py-3 rounded-full font-bold text-sm uppercase tracking-wide border border-white/10 bg-white/5 hover:bg-white/10 transition">🤖 Android</button>
                 </div>
-                <!-- Контент инструкции -->
                 <div id="install-guide-content" class="space-y-4"></div>
             </div>
         </div>
