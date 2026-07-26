@@ -146,9 +146,9 @@ function getNearestPayday(dayOfMonth) {
     }
 
     const dayOfWeek = date.getDay();
-    if (dayOfWeek === 6) { // суббота → пятница
+    if (dayOfWeek === 6) {
         date.setDate(date.getDate() - 1);
-    } else if (dayOfWeek === 0) { // воскресенье → пятница
+    } else if (dayOfWeek === 0) {
         date.setDate(date.getDate() - 2);
     }
 

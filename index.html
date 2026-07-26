@@ -14,6 +14,24 @@
     <style>
         .bg-night-custom { background-color: #5d6dfa; }
         .bg-vacation-custom { background-color: #3f3f46; }
+        @keyframes bolt-pulse {
+            0%, 100% { 
+                text-shadow: 0 0 8px rgba(250,204,21,0.6), 0 0 16px rgba(250,204,21,0.3);
+            }
+            50% { 
+                text-shadow: 0 0 18px rgba(250,204,21,0.9), 0 0 32px rgba(250,204,21,0.5);
+            }
+        }
+        .bolt-animate {
+            animation: bolt-pulse 2s ease-in-out infinite;
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(59,130,246,0.5);
+        }
     </style>
 </head>
 <body class="pb-32">
@@ -30,9 +48,11 @@
         <!-- Главная -->
         <section id="tab-home" class="tab-content active pt-10">
             <div class="flex flex-col items-center mb-6 text-center">
-                <div class="flex items-center justify-center gap-2">
-                    <span class="text-2xl text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]">⚡</span>
-                    <h1 class="text-2xl font-black tracking-tight text-glow" style="font-family: 'Inter', 'Manrope', sans-serif;">ЦТАИ АСУ ТП</h1>
+                <div class="flex items-center justify-center gap-3">
+                    <span class="text-3xl text-yellow-400 bolt-animate drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]">⚡</span>
+                    <h1 class="text-3xl font-black tracking-tight" style="font-family: 'Inter', 'Manrope', sans-serif;">
+                        <span class="text-gradient">ЦТАИ АСУ ТП</span>
+                    </h1>
                 </div>
                 <p class="text-zinc-500 text-[9px] mt-1 font-extrabold uppercase tracking-[0.2em] opacity-70">Информационная панель подразделения</p>
                 <div id="current-date-display" class="mt-2 text-[11px] font-bold uppercase tracking-wider text-blue-400/70"></div>
