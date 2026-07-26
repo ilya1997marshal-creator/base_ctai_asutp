@@ -187,7 +187,6 @@ function toggleTheme() {
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
 }
 
-// Переключение вкладок – мгновенное, без анимации (как раньше)
 function switchTab(index) {
     if (index === 4 && !accessGranted) {
         document.getElementById('access-password-modal').classList.remove('hidden');
@@ -620,23 +619,29 @@ function openBlockModal(key) {
         });
     }
 
-    // Добавляем кнопку "Наверх" в модалку
-    const scrollBtn = document.createElement('div');
-    scrollBtn.className = 'modal-scroll-top';
-    scrollBtn.innerHTML = '↑';
-    scrollBtn.onclick = () => {
+    // Добавляем кнопку "Наверх" в начало списка
+    const scrollTopBtn = document.createElement('div');
+    scrollTopBtn.className = 'modal-sticky-top';
+    scrollTopBtn.innerHTML = '<button>↑</button>';
+    scrollTopBtn.onclick = (e) => {
+        e.stopPropagation();
         list.scrollTo({ top: 0, behavior: 'smooth' });
     };
-    list.appendChild(scrollBtn);
+    list.insertBefore(scrollTopBtn, list.firstChild);
 
-    // Показываем/прячем кнопку при прокрутке содержимого модалки
-    list.addEventListener('scroll', function() {
+    // Показываем/скрываем кнопку при прокрутке
+    const toggleScrollBtn = () => {
         if (list.scrollTop > 150) {
-            scrollBtn.classList.add('visible');
+            scrollTopBtn.classList.add('visible');
         } else {
-            scrollBtn.classList.remove('visible');
+            scrollTopBtn.classList.remove('visible');
         }
-    });
+    };
+    list.addEventListener('scroll', toggleScrollBtn);
+
+    // Сбрасываем прокрутку и состояние кнопки при открытии
+    list.scrollTop = 0;
+    toggleScrollBtn();
 
     const modal = document.getElementById('block-modal');
     modal.classList.remove('hidden');
