@@ -1350,13 +1350,20 @@ window.onload = () => {
     document.getElementById('install-guide-btn').addEventListener('click', openInstallModal);
     document.getElementById('change-user-btn').addEventListener('click', openUserSelection);
 
-    // Скрываем прелоадер после полной загрузки
+    // Скрываем прелоадер с задержкой, чтобы он был виден даже в PWA
     const loader = document.getElementById('app-loader');
     if (loader) {
-        loader.style.transition = 'opacity 0.3s ease';
-        loader.style.opacity = '0';
+        // Скрываем не раньше чем через 1000 мс после загрузки страницы
+        const MIN_LOADER_TIME = 1000; // 1 секунда
+        const startTime = performance.now();
+        const elapsed = performance.now() - startTime;
+        const remaining = Math.max(0, MIN_LOADER_TIME - elapsed);
         setTimeout(() => {
-            loader.style.display = 'none';
-        }, 300);
+            loader.style.transition = 'opacity 0.3s ease';
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 300);
+        }, remaining);
     }
 };
