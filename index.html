@@ -59,20 +59,6 @@
         .modal-sticky-top button:active {
             background: rgba(59,130,246,0.3);
         }
-        /* Плавные переходы между вкладками */
-        .tab-content {
-            display: flex !important;
-            flex-direction: column;
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(8px);
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-        .tab-content.active {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateY(0);
-        }
     </style>
 </head>
 <body class="pb-32">

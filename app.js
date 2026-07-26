@@ -187,9 +187,7 @@ function toggleTheme() {
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
 }
 
-// Переключение вкладок с плавной анимацией
 function switchTab(index) {
-    // Проверка пароля для доступа
     if (index === 4 && !accessGranted) {
         document.getElementById('access-password-modal').classList.remove('hidden');
         document.getElementById('access-password-input').value = '';
@@ -909,8 +907,8 @@ function shuffleArray(arr) {
 }
 
 function showModeSelector() {
-    document.getElementById('test-list-screen').classList.remove('hidden');
-    document.getElementById('test-mode-selector').classList.add('hidden');
+    document.getElementById('test-list-screen').classList.add('hidden');
+    document.getElementById('test-mode-selector').classList.remove('hidden');
     document.getElementById('test-runner').classList.add('hidden');
     document.getElementById('test-results').classList.add('hidden');
 }

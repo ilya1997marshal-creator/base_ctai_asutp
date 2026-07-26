@@ -19,7 +19,6 @@
     --color-vacation: #3f3f46;
     --color-trip: #a855f7;
     
-    /* Фон в стиле Telegram (тёмная тема) */
     --bg-pattern: repeating-linear-gradient(
         45deg,
         rgba(255, 255, 255, 0.01) 0px,
@@ -52,7 +51,6 @@
     --color-vacation: #d4d4d8;
     --color-trip: #7e22ce;
     
-    /* Фон в стиле Telegram (светлая тема) */
     --bg-pattern: repeating-linear-gradient(
         45deg,
         rgba(0, 0, 0, 0.01) 0px,
@@ -83,11 +81,12 @@ body {
     overflow-x: hidden;
 }
 
+/* ИСПРАВЛЕННЫЕ СТИЛИ ВКЛАДОК */
 .tab-content {
     display: none !important;
     opacity: 0;
-    transition: opacity 0.25s ease, transform 0.25s ease;
-    transform: translateY(5px);
+    transform: translateY(8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 .tab-content.active {
     display: flex !important;
@@ -96,6 +95,7 @@ body {
     transform: translateY(0);
 }
 
+/* Остальные стили */
 #block-modal {
     transition: opacity 0.2s ease;
     opacity: 0;
@@ -124,7 +124,7 @@ body {
 .action-btn { background-color: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); transition: 0.2s; backdrop-filter: blur(10px); }
 .action-btn:active { transform: scale(0.97); opacity: 0.8; }
 
-/* === ГРАФИК: ФИКСИРОВАННАЯ ЛЕВАЯ + ПРОКРУТКА === */
+/* ГРАФИК: ФИКСИРОВАННАЯ ЛЕВАЯ + ПРОКРУТКА */
 .schedule-container {
     display: flex;
     overflow: hidden;
@@ -137,27 +137,24 @@ body {
     backdrop-filter: blur(10px);
 }
 
-/* Левая фиксированная часть (фамилии) */
 .schedule-fixed {
     flex-shrink: 0;
     border-right: 2px solid var(--accent);
     overflow: hidden;
 }
 
-/* Правая прокручиваемая часть (дни + статистика) */
 .schedule-scroll {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     width: 100%;
 }
 
-/* Общие стили таблиц */
 .schedule-table { border-collapse: separate; border-spacing: 0; table-layout: fixed; width: max-content; }
 
 .schedule-table th, .schedule-table td {
-    font-size: 8px;          /* Уменьшено с 9px */
-    width: 28px;             /* Уменьшено с 34px */
-    height: 34px;            /* Уменьшено с 38px */
+    font-size: 8px;
+    width: 28px;
+    height: 34px;
     text-align: center;
     border-right: 1px solid var(--table-border);
     border-bottom: 1px solid var(--table-border);
@@ -167,24 +164,21 @@ body {
     position: relative;
 }
 
-/* Ширина столбца фамилий */
 .schedule-fixed .schedule-table th,
 .schedule-fixed .schedule-table td {
-    width: 110px;            /* Уменьшено со 150px */
+    width: 110px;
 }
 
-/* Заголовок фиксированной части */
 .schedule-fixed thead th {
     background-color: var(--bg-card);
-    height: 34px;            /* Синхронизировано с td */
+    height: 34px;
 }
 
-/* Столбец фамилий */
 .col-name { 
     width: 110px !important; 
     background-color: var(--bg-card) !important; 
     font-weight: 800; 
-    font-size: 10px !important;  /* Уменьшено с 11px */
+    font-size: 10px !important;
     text-align: center !important;
     padding-left: 2px !important;
     padding-right: 2px !important;
@@ -193,7 +187,6 @@ body {
     border-right: 2px solid var(--accent) !important;
 }
 
-/* Фон заголовков в скролл-части */
 .schedule-scroll thead th {
     background-color: var(--bg-card);
 }
@@ -216,7 +209,7 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: 700;
-    font-size: 9px;          /* Уменьшено с 10px */
+    font-size: 9px;
     color: #064e3b;
     z-index: 1;
     line-height: 1;
@@ -254,11 +247,11 @@ body {
     font-weight: 900 !important;
     border-bottom: 2px solid var(--accent) !important;
     text-align: center !important;
-    font-size: 9px !important;   /* Уменьшено с 11px */
+    font-size: 9px !important;
 }
 
 .col-stat { 
-    width: 38px !important;       /* Уменьшено с 44px */ 
+    width: 38px !important;
     font-weight: 900; 
     background: rgba(59, 130, 246, 0.05); 
     color: var(--accent); 
@@ -403,21 +396,6 @@ body {
     border-color: rgba(239, 68, 68, 0.4) !important;
 }
 
-#block-modal {
-    transition: opacity 0.2s ease;
-    opacity: 0;
-    pointer-events: none;
-    display: flex !important;
-}
-#block-modal.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-#block-modal:not(.hidden) {
-    opacity: 1;
-    pointer-events: auto;
-}
-
 #weather-widget {
     transition: opacity 0.3s ease;
 }
@@ -434,7 +412,7 @@ body {
     color: #1e293b;
     text-shadow: 0 0 10px rgba(37, 99, 235, 0.3), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-/* Улучшенная видимость полей калькулятора в светлой теме */
+
 .calc-input {
     background-color: var(--bg-item) !important;
     border: 1px solid var(--border) !important;
