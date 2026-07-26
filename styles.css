@@ -81,21 +81,15 @@ body {
     overflow-x: hidden;
 }
 
-/* ИСПРАВЛЕННЫЕ СТИЛИ ВКЛАДОК */
+/* ЖЁСТКИЕ ПРАВИЛА ДЛЯ ВКЛАДОК */
 .tab-content {
     display: none !important;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 .tab-content.active {
     display: flex !important;
     flex-direction: column;
-    opacity: 1;
-    transform: translateY(0);
 }
 
-/* Остальные стили */
 #block-modal {
     transition: opacity 0.2s ease;
     opacity: 0;

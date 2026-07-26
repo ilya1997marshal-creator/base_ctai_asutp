@@ -197,23 +197,15 @@ function switchTab(index) {
     }
 
     const tabs = ['tab-home', 'tab-schedule', 'tab-tests', 'tab-tools', 'tab-access', 'tab-help'];
-    
-    // Снимаем активный класс со всех вкладок
-    tabs.forEach(id => {
+    tabs.forEach((id, i) => {
         const el = document.getElementById(id);
-        if (el) el.classList.remove('active');
+        if (el) el.classList.toggle('active', i === index);
     });
     
-    // Добавляем активный класс на нужную вкладку
-    const activeTab = document.getElementById(tabs[index]);
-    if (activeTab) activeTab.classList.add('active');
-
-    // Обновляем навигационные кнопки
     document.querySelectorAll('.nav-item').forEach((btn, i) => {
         btn.classList.toggle('active', i === index);
     });
-
-    // Выполняем специфичные для вкладок действия
+    
     if(index === 0) { updateOnDutyWidget(); updateCurrentDateDisplay(); updateSalaryWidget(); }
     if(index === 1) {
         renderSchedule(document.getElementById('month-selector').value);
@@ -230,7 +222,6 @@ function switchTab(index) {
     }
     if(index === 4) renderCredentials();
     if(index === 5) updateVersionNumber(); 
-    
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
