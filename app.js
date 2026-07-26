@@ -619,7 +619,7 @@ function openBlockModal(key) {
         });
     }
 
-    // Кнопка «Наверх» для модалки блоков
+    // Кнопка «Наверх»
     const scrollTopBtn = document.createElement('div');
     scrollTopBtn.className = 'modal-sticky-top';
     scrollTopBtn.innerHTML = '<button>↑</button>';
@@ -679,20 +679,56 @@ function openCalc4_20mA() {
     document.getElementById('tools-list-screen').classList.add('hidden');
     document.getElementById('calc-4-20ma-screen').classList.remove('hidden');
     updateUnitSelect();
+    updateConverterUnits();
     calcCurrentToValue();
+    convertUnits();
 }
 
 const unitMap = {
-    pressure: ['бар', 'МПа', 'кПа', 'кгс/см²', 'атм', 'Па'],
+    pressure: ['бар', 'МПа', 'кПа', 'кгс/см²', 'атм', 'Па', 'psi'],
     temperature: ['°C', '°F', 'K'],
     level: ['м', 'см', 'мм', '%'],
     flow: ['м³/ч', 'л/мин', 'л/с'],
     custom: ['ед.']
 };
 
+// Коэффициенты для конвертации (в базовую единицу)
+const unitConversion = {
+    pressure: {
+        'бар': 1,
+        'МПа': 10,
+        'кПа': 0.01,
+        'кгс/см²': 0.980665,
+        'атм': 1.01325,
+        'Па': 0.00001,
+        'psi': 0.0689476
+    },
+    temperature: {
+        '°C': { toBase: (v) => v, fromBase: (v) => v, base: '°C' },
+        '°F': { toBase: (v) => (v - 32) * 5/9, fromBase: (v) => v * 9/5 + 32, base: '°C' },
+        'K': { toBase: (v) => v - 273.15, fromBase: (v) => v + 273.15, base: '°C' }
+    },
+    level: {
+        'м': 1,
+        'см': 0.01,
+        'мм': 0.001,
+        '%': 0.01
+    },
+    flow: {
+        'м³/ч': 1,
+        'л/мин': 0.06,
+        'л/с': 3.6
+    },
+    custom: {
+        'ед.': 1
+    }
+};
+
 function onCalcUnitTypeChange() {
     updateUnitSelect();
+    updateConverterUnits();
     calcCurrentToValue();
+    convertUnits();
 }
 
 function updateUnitSelect() {
@@ -706,6 +742,52 @@ function updateUnitSelect() {
         option.textContent = unit;
         select.appendChild(option);
     });
+}
+
+function updateConverterUnits() {
+    const type = document.getElementById('calc-unit-type').value;
+    const units = unitMap[type] || unitMap.custom;
+    const fromSelect = document.getElementById('conv-from-unit');
+    const toSelect = document.getElementById('conv-to-unit');
+    fromSelect.innerHTML = '';
+    toSelect.innerHTML = '';
+    units.forEach(unit => {
+        const opt1 = document.createElement('option');
+        opt1.value = unit;
+        opt1.textContent = unit;
+        const opt2 = opt1.cloneNode(true);
+        fromSelect.appendChild(opt1);
+        toSelect.appendChild(opt2);
+    });
+    if (units.length > 1) {
+        toSelect.selectedIndex = 1;
+    }
+}
+
+function convertUnits() {
+    const type = document.getElementById('calc-unit-type').value;
+    const value = parseFloat(document.getElementById('conv-value').value) || 0;
+    const fromUnit = document.getElementById('conv-from-unit').value;
+    const toUnit = document.getElementById('conv-to-unit').value;
+    const resultInput = document.getElementById('conv-result');
+    
+    if (!fromUnit || !toUnit) {
+        resultInput.value = '';
+        return;
+    }
+
+    let result;
+    const conversion = unitConversion[type];
+
+    if (type === 'temperature') {
+        const base = conversion[fromUnit].toBase(value);
+        result = conversion[toUnit].fromBase(base);
+    } else {
+        const baseValue = value * (conversion[fromUnit] || 1);
+        result = baseValue / (conversion[toUnit] || 1);
+    }
+
+    resultInput.value = parseFloat(result.toFixed(6));
 }
 
 function calcCurrentToValue() {
@@ -1132,7 +1214,7 @@ function renderAccessCategoryItems(category, searchQuery) {
     
     listEl.innerHTML = '';
     
-    // Кнопка «Наверх» для категорий доступа
+    // Кнопка «Наверх» для категорий
     const scrollTopBtn = document.createElement('div');
     scrollTopBtn.className = 'modal-sticky-top';
     scrollTopBtn.innerHTML = '<button>↑</button>';

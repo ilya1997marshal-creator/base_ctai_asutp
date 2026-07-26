@@ -28,7 +28,6 @@
             background-clip: text;
             text-shadow: 0 0 20px rgba(59,130,246,0.5);
         }
-        /* Кнопка "Наверх" внутри модалок – по центру, без фона */
         .modal-sticky-top {
             position: sticky;
             top: 8px;
@@ -85,7 +84,6 @@
                 <p class="text-zinc-500 text-[9px] mt-1 font-extrabold uppercase tracking-[0.2em] opacity-70">Информационная панель подразделения</p>
                 <div id="current-date-display" class="mt-2 text-[11px] font-bold uppercase tracking-wider text-blue-400/70"></div>
                 <div id="weather-widget" class="mt-1 text-xs font-medium text-zinc-400"></div>
-                <!-- Виджет дней до зарплаты и аванса -->
                 <div id="salary-widget" class="mt-2 flex gap-3 justify-center flex-wrap"></div>
             </div>
 
@@ -261,7 +259,9 @@
             <div id="calc-4-20ma-screen" class="hidden w-full max-w-md mx-auto px-4">
                 <button id="back-to-tools-list" class="mb-4 action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1">← Назад к списку</button>
                 <div class="action-btn p-6 rounded-3xl">
-                    <h3 class="text-lg font-black uppercase tracking-wide mb-4 text-blue-400">Калькулятор 4–20 мА</h3>
+                    <h3 class="text-xl font-black uppercase tracking-wide mb-6 text-center text-blue-400">Калькулятор 4–20 мА</h3>
+                    
+                    <!-- Основной калькулятор -->
                     <div class="space-y-4">
                         <div>
                             <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Тип величины</label>
@@ -274,8 +274,8 @@
                             </select>
                         </div>
                         <div class="flex gap-4">
-                            <div class="flex-1"><label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Мин. значение</label><input type="number" id="calc-min-val" value="0" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none"></div>
-                            <div class="flex-1"><label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Макс. значение</label><input type="number" id="calc-max-val" value="100" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none"></div>
+                            <div class="flex-1"><label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Мин. значение</label><input type="number" id="calc-min-val" value="0" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="calcCurrentToValue()"></div>
+                            <div class="flex-1"><label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Макс. значение</label><input type="number" id="calc-max-val" value="100" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="calcCurrentToValue()"></div>
                         </div>
                         <div>
                             <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Единицы измерения</label>
@@ -285,11 +285,40 @@
                             <div class="flex-1"><label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Ток (мА)</label><input type="number" id="calc-current" value="12" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="calcCurrentToValue()"></div>
                             <div class="flex-1"><label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Значение</label><input type="number" id="calc-value" value="50" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="calcValueToCurrent()"></div>
                         </div>
-                        <div id="calc-result" class="text-center text-xs font-bold opacity-60 py-2"></div>
-                        <div class="flex gap-3">
-                            <button onclick="calcCurrentToValue()" class="flex-1 bg-blue-500 text-white py-3 rounded-xl font-bold text-sm uppercase tracking-wider">Рассчитать</button>
-                            <button onclick="copyCalcResult()" class="flex-1 action-btn py-3 rounded-xl font-bold text-sm uppercase tracking-wider">Копировать</button>
+                        <div id="calc-result" class="text-center text-sm font-black py-3 bg-blue-500/10 rounded-xl text-blue-300"></div>
+                    </div>
+
+                    <!-- Разделитель -->
+                    <div class="border-t border-white/10 my-6"></div>
+
+                    <!-- Конвертер единиц -->
+                    <h3 class="text-lg font-black uppercase tracking-wide mb-4 text-center text-amber-400">Конвертер единиц</h3>
+                    <div class="space-y-4">
+                        <div class="flex gap-4">
+                            <div class="flex-1">
+                                <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Величина</label>
+                                <input type="number" id="conv-value" value="1" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="convertUnits()">
+                            </div>
+                            <div class="flex-1">
+                                <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Из</label>
+                                <select id="conv-from-unit" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" onchange="convertUnits()"></select>
+                            </div>
                         </div>
+                        <div class="flex gap-4 items-end">
+                            <div class="flex-1">
+                                <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Результат</label>
+                                <input type="text" id="conv-result" readonly class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm opacity-60 font-mono">
+                            </div>
+                            <div class="flex-1">
+                                <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">В</label>
+                                <select id="conv-to-unit" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" onchange="convertUnits()"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопка копирования результата 4-20 мА -->
+                    <div class="mt-6 flex justify-center">
+                        <button onclick="copyCalcResult()" class="action-btn py-3 px-8 rounded-xl font-bold text-sm uppercase tracking-wider">Копировать</button>
                     </div>
                 </div>
             </div>
@@ -331,29 +360,24 @@
                 <h1 class="text-3xl font-extrabold tracking-tight">Поддержка</h1>
             </div>
             <div class="flex flex-col items-center justify-center gap-4 w-full max-w-md mx-auto px-6 mb-4 text-center">
-                <!-- Telegram -->
-<a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
-    <div class="text-2xl">🤖</div>
-    <span class="font-black text-xs uppercase tracking-widest">Telegram</span>
-    <span class="text-[10px] opacity-40 font-medium">Связь с разработчиком</span>
-</a>
-<!-- Email -->
-<a href="mailto:admin@ctai.ru" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
-    <div class="text-2xl">📨</div>
-    <span class="font-black text-xs uppercase tracking-widest">Email</span>
-    <span class="text-[10px] opacity-40 font-medium">Предложения по улучшению</span>
-</a>
-                <!-- Проверить обновления -->
+                <a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
+                    <div class="text-2xl">🤖</div>
+                    <span class="font-black text-xs uppercase tracking-widest">Telegram</span>
+                    <span class="text-[10px] opacity-40 font-medium">Связь с разработчиком</span>
+                </a>
+                <a href="mailto:admin@ctai.ru" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
+                    <div class="text-2xl">📨</div>
+                    <span class="font-black text-xs uppercase tracking-widest">Email</span>
+                    <span class="text-[10px] opacity-40 font-medium">Предложения по улучшению</span>
+                </a>
                 <button id="manual-update-check" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-2 active:scale-[0.95]">
                     <div class="text-2xl">📱</div>
                     <span class="font-black text-xs uppercase tracking-widest">Проверить обновления</span>
                 </button>
-                <!-- На экран телефона (инструкция) -->
                 <button id="install-guide-btn" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-2 active:scale-[0.95]">
                     <div class="text-2xl">📲</div>
                     <span class="font-black text-xs uppercase tracking-widest">На экран телефона</span>
                 </button>
-                <!-- Скачать APK -->
                 <a href="apk/ctai-asutp.apk" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-2 active:scale-[0.95] bg-blue-500/10 border-blue-500/20">
                     <div class="text-2xl">📦</div>
                     <span class="font-black text-xs uppercase tracking-widest">Скачать приложение (APK)</span>
@@ -416,20 +440,18 @@
         </div>
     </div>
 
-    <!-- Модалка выбора пользователя (для тестов) -->
+    <!-- Модалка выбора пользователя -->
     <div id="user-select-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center z-[300]">
         <div class="card-bg border-t sm:border rounded-t-[3rem] sm:rounded-[3rem] w-full max-w-md max-h-[85vh] flex flex-col">
             <div class="px-8 py-6 border-b flex items-center justify-between">
                 <h3 class="font-black text-xl uppercase tracking-tighter text-main">Выберите пользователя</h3>
                 <button onclick="cancelUserSelection()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-500/10 font-bold text-lg">✕</button>
             </div>
-            <div class="flex-1 overflow-auto p-6" id="user-list-container">
-                <!-- динамически заполняется -->
-            </div>
+            <div class="flex-1 overflow-auto p-6" id="user-list-container"></div>
         </div>
     </div>
 
-    <!-- Модалка ввода пароля для доступа -->
+    <!-- Модалка ввода пароля -->
     <div id="access-password-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center z-[350]">
         <div class="card-bg border-t sm:border rounded-t-[3rem] sm:rounded-[3rem] w-full max-w-md p-8 flex flex-col items-center text-center">
             <div class="text-4xl mb-4">🔐</div>
