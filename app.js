@@ -217,6 +217,9 @@ function switchTab(index) {
             updateProgressBars();
         }
     }
+    if(index === 3) {
+        showToolsList(); // всегда возвращаемся к списку инструментов
+    }
     if(index === 4) renderCredentials();
     if(index === 5) updateVersionNumber(); 
     window.scrollTo({top: 0, behavior: 'smooth'});
@@ -673,14 +676,22 @@ function closeBlockModal() {
 function showToolsList() {
     document.getElementById('tools-list-screen').classList.remove('hidden');
     document.getElementById('calc-4-20ma-screen').classList.add('hidden');
+    document.getElementById('converter-screen').classList.add('hidden');
 }
 
 function openCalc4_20mA() {
     document.getElementById('tools-list-screen').classList.add('hidden');
     document.getElementById('calc-4-20ma-screen').classList.remove('hidden');
+    document.getElementById('converter-screen').classList.add('hidden');
     updateUnitSelect();
-    updateConverterUnits();
     calcCurrentToValue();
+}
+
+function openConverter() {
+    document.getElementById('tools-list-screen').classList.add('hidden');
+    document.getElementById('calc-4-20ma-screen').classList.add('hidden');
+    document.getElementById('converter-screen').classList.remove('hidden');
+    updateConverterUnits();
     convertUnits();
 }
 
@@ -688,11 +699,9 @@ const unitMap = {
     pressure: ['бар', 'МПа', 'кПа', 'кгс/см²', 'атм', 'Па', 'psi'],
     temperature: ['°C', '°F', 'K'],
     level: ['м', 'см', 'мм', '%'],
-    flow: ['м³/ч', 'л/мин', 'л/с'],
-    custom: ['ед.']
+    flow: ['м³/ч', 'л/мин', 'л/с']
 };
 
-// Коэффициенты для конвертации (в базовую единицу)
 const unitConversion = {
     pressure: {
         'бар': 1,
@@ -718,22 +727,17 @@ const unitConversion = {
         'м³/ч': 1,
         'л/мин': 0.06,
         'л/с': 3.6
-    },
-    custom: {
-        'ед.': 1
     }
 };
 
 function onCalcUnitTypeChange() {
     updateUnitSelect();
-    updateConverterUnits();
     calcCurrentToValue();
-    convertUnits();
 }
 
 function updateUnitSelect() {
     const type = document.getElementById('calc-unit-type').value;
-    const units = unitMap[type] || unitMap.custom;
+    const units = unitMap[type] || ['ед.'];
     const select = document.getElementById('calc-unit-select');
     select.innerHTML = '';
     units.forEach(unit => {
@@ -745,8 +749,8 @@ function updateUnitSelect() {
 }
 
 function updateConverterUnits() {
-    const type = document.getElementById('calc-unit-type').value;
-    const units = unitMap[type] || unitMap.custom;
+    const type = document.getElementById('conv-unit-type').value;
+    const units = unitMap[type] || ['ед.'];
     const fromSelect = document.getElementById('conv-from-unit');
     const toSelect = document.getElementById('conv-to-unit');
     fromSelect.innerHTML = '';
@@ -762,10 +766,11 @@ function updateConverterUnits() {
     if (units.length > 1) {
         toSelect.selectedIndex = 1;
     }
+    convertUnits();
 }
 
 function convertUnits() {
-    const type = document.getElementById('calc-unit-type').value;
+    const type = document.getElementById('conv-unit-type').value;
     const value = parseFloat(document.getElementById('conv-value').value) || 0;
     const fromUnit = document.getElementById('conv-from-unit').value;
     const toUnit = document.getElementById('conv-to-unit').value;
@@ -825,6 +830,15 @@ function copyCalcResult() {
     if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => alert('Результат скопирован'));
     } else {
+        alert('Буфер обмена недоступен');
+    }
+}
+
+function copyConvResult() {
+    const result = document.getElementById('conv-result').value;
+    if (result && navigator.clipboard) {
+        navigator.clipboard.writeText(result).then(() => alert('Результат скопирован'));
+    } else if (result) {
         alert('Буфер обмена недоступен');
     }
 }
@@ -1214,7 +1228,6 @@ function renderAccessCategoryItems(category, searchQuery) {
     
     listEl.innerHTML = '';
     
-    // Кнопка «Наверх» для категорий
     const scrollTopBtn = document.createElement('div');
     scrollTopBtn.className = 'modal-sticky-top';
     scrollTopBtn.innerHTML = '<button>↑</button>';
@@ -1514,7 +1527,9 @@ window.onload = () => {
     });
 
     document.getElementById('calc-4-20ma-btn').addEventListener('click', openCalc4_20mA);
+    document.getElementById('converter-btn').addEventListener('click', openConverter);
     document.getElementById('back-to-tools-list').addEventListener('click', showToolsList);
+    document.getElementById('back-to-tools-from-converter').addEventListener('click', showToolsList);
     
     showToolsList();
     

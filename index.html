@@ -254,14 +254,17 @@
                     <button id="calc-4-20ma-btn" class="w-full action-btn p-5 rounded-2xl flex items-center justify-between active:scale-[0.97]">
                         <div class="flex items-center gap-4"><div class="w-10 h-10 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center text-xl">📊</div><span class="font-bold text-sm uppercase tracking-wide">Калькулятор 4–20 мА</span></div><span class="opacity-30">›</span>
                     </button>
+                    <button id="converter-btn" class="w-full action-btn p-5 rounded-2xl flex items-center justify-between active:scale-[0.97]">
+                        <div class="flex items-center gap-4"><div class="w-10 h-10 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center text-xl">🔄</div><span class="font-bold text-sm uppercase tracking-wide">Конвертер единиц</span></div><span class="opacity-30">›</span>
+                    </button>
                 </div>
             </div>
+
+            <!-- Калькулятор 4-20 мА -->
             <div id="calc-4-20ma-screen" class="hidden w-full max-w-md mx-auto px-4">
                 <button id="back-to-tools-list" class="mb-4 action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1">← Назад к списку</button>
                 <div class="action-btn p-6 rounded-3xl">
                     <h3 class="text-xl font-black uppercase tracking-wide mb-6 text-center text-blue-400">Калькулятор 4–20 мА</h3>
-                    
-                    <!-- Основной калькулятор -->
                     <div class="space-y-4">
                         <div>
                             <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Тип величины</label>
@@ -286,17 +289,31 @@
                             <div class="flex-1"><label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Значение</label><input type="number" id="calc-value" value="50" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="calcValueToCurrent()"></div>
                         </div>
                         <div id="calc-result" class="text-center text-sm font-black py-3 bg-blue-500/10 rounded-xl text-blue-300"></div>
+                        <div class="mt-6 flex justify-center">
+                            <button onclick="copyCalcResult()" class="action-btn py-3 px-8 rounded-xl font-bold text-sm uppercase tracking-wider">Копировать</button>
+                        </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Разделитель -->
-                    <div class="border-t border-white/10 my-6"></div>
-
-                    <!-- Конвертер единиц -->
-                    <h3 class="text-lg font-black uppercase tracking-wide mb-4 text-center text-amber-400">Конвертер единиц</h3>
+            <!-- Конвертер единиц -->
+            <div id="converter-screen" class="hidden w-full max-w-md mx-auto px-4">
+                <button id="back-to-tools-from-converter" class="mb-4 action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1">← Назад к списку</button>
+                <div class="action-btn p-6 rounded-3xl">
+                    <h3 class="text-xl font-black uppercase tracking-wide mb-6 text-center text-amber-400">Конвертер единиц</h3>
                     <div class="space-y-4">
+                        <div>
+                            <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Тип величины</label>
+                            <select id="conv-unit-type" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" onchange="updateConverterUnits()">
+                                <option value="pressure">Давление</option>
+                                <option value="temperature">Температура</option>
+                                <option value="level">Уровень</option>
+                                <option value="flow">Расход</option>
+                            </select>
+                        </div>
                         <div class="flex gap-4">
                             <div class="flex-1">
-                                <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Величина</label>
+                                <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Значение</label>
                                 <input type="number" id="conv-value" value="1" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="convertUnits()">
                             </div>
                             <div class="flex-1">
@@ -314,11 +331,9 @@
                                 <select id="conv-to-unit" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" onchange="convertUnits()"></select>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Кнопка копирования результата 4-20 мА -->
-                    <div class="mt-6 flex justify-center">
-                        <button onclick="copyCalcResult()" class="action-btn py-3 px-8 rounded-xl font-bold text-sm uppercase tracking-wider">Копировать</button>
+                        <div class="mt-6 flex justify-center">
+                            <button onclick="copyConvResult()" class="action-btn py-3 px-8 rounded-xl font-bold text-sm uppercase tracking-wider">Копировать</button>
+                        </div>
                     </div>
                 </div>
             </div>
