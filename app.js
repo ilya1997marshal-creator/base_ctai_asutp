@@ -187,6 +187,7 @@ function toggleTheme() {
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
 }
 
+// Переключение вкладок с анимацией
 function switchTab(index) {
     if (index === 4 && !accessGranted) {
         document.getElementById('access-password-modal').classList.remove('hidden');
@@ -197,15 +198,32 @@ function switchTab(index) {
     }
 
     const tabs = ['tab-home', 'tab-schedule', 'tab-tests', 'tab-tools', 'tab-access', 'tab-help'];
-    tabs.forEach((id, i) => {
-        const el = document.getElementById(id);
-        if (el) el.classList.toggle('active', i === index);
-    });
-    
-    document.querySelectorAll('.nav-item').forEach((btn, i) => {
-        btn.classList.toggle('active', i === index);
-    });
-    
+    const newActive = document.getElementById(tabs[index]);
+    const currentActive = document.querySelector('.tab-content.active');
+
+    // Если уже активна эта вкладка – ничего не делаем
+    if (currentActive === newActive) return;
+
+    // Анимация ухода для текущей вкладки
+    if (currentActive) {
+        currentActive.classList.add('fade-out');
+        currentActive.addEventListener('transitionend', function handler() {
+            currentActive.classList.remove('active', 'fade-out');
+            currentActive.style.display = 'none';
+            currentActive.removeEventListener('transitionend', handler);
+            // Показываем новую вкладку
+            showNewTab(newActive, index);
+        });
+    } else {
+        // Если активной не было (первый запуск) – просто показываем
+        showNewTab(newActive, index);
+    }
+}
+
+function showNewTab(tab, index) {
+    tab.style.display = 'flex';
+    tab.classList.add('active');
+    // Запускаем обновление данных
     if(index === 0) { 
         updateOnDutyWidget(); 
         updateCurrentDateDisplay(); 
@@ -223,6 +241,11 @@ function switchTab(index) {
     }
     if(index === 4) renderCredentials();
     if(index === 5) updateVersionNumber(); 
+    
+    // Обновляем активность кнопок навигации
+    document.querySelectorAll('.nav-item').forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+    });
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
@@ -1345,7 +1368,11 @@ window.onload = () => {
     }
     
     loadCurrentUser();
-    switchTab(0);
+    // Инициализация первой вкладки без анимации
+    const firstTab = document.getElementById('tab-home');
+    firstTab.style.display = 'flex';
+    firstTab.classList.add('active');
+    document.querySelectorAll('.nav-item')[0].classList.add('active');
     
     const checkBtn = document.getElementById('manual-update-check');
     if (checkBtn) checkBtn.addEventListener('click', manualCheckForUpdates);
