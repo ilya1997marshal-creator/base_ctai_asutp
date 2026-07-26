@@ -265,7 +265,7 @@
                     <div class="space-y-4">
                         <div>
                             <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Тип величины</label>
-                            <select id="calc-unit-type" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none">
+                            <select id="calc-unit-type" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" onchange="onCalcUnitTypeChange()">
                                 <option value="pressure">Давление</option>
                                 <option value="temperature">Температура</option>
                                 <option value="level">Уровень</option>
@@ -279,14 +279,17 @@
                         </div>
                         <div>
                             <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Единицы измерения</label>
-                            <select id="calc-unit-select" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none"></select>
+                            <select id="calc-unit-select" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" onchange="calcCurrentToValue()"></select>
                         </div>
                         <div class="flex gap-4">
                             <div class="flex-1"><label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Ток (мА)</label><input type="number" id="calc-current" value="12" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="calcCurrentToValue()"></div>
                             <div class="flex-1"><label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Значение</label><input type="number" id="calc-value" value="50" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="calcValueToCurrent()"></div>
                         </div>
                         <div id="calc-result" class="text-center text-xs font-bold opacity-60 py-2"></div>
-                        <button onclick="copyCalcResult()" class="w-full action-btn py-3 rounded-xl text-xs font-bold uppercase tracking-wider">Копировать результат</button>
+                        <div class="flex gap-3">
+                            <button onclick="calcCurrentToValue()" class="flex-1 bg-blue-500 text-white py-3 rounded-xl font-bold text-sm uppercase tracking-wider">Рассчитать</button>
+                            <button onclick="copyCalcResult()" class="flex-1 action-btn py-3 rounded-xl font-bold text-sm uppercase tracking-wider">Копировать</button>
+                        </div>
                     </div>
                 </div>
             </div>

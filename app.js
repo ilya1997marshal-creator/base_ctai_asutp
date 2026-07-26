@@ -619,7 +619,7 @@ function openBlockModal(key) {
         });
     }
 
-    // Добавляем кнопку "Наверх" в блок
+    // Кнопка «Наверх» для модалки блоков
     const scrollTopBtn = document.createElement('div');
     scrollTopBtn.className = 'modal-sticky-top';
     scrollTopBtn.innerHTML = '<button>↑</button>';
@@ -690,6 +690,11 @@ const unitMap = {
     custom: ['ед.']
 };
 
+function onCalcUnitTypeChange() {
+    updateUnitSelect();
+    calcCurrentToValue();
+}
+
 function updateUnitSelect() {
     const type = document.getElementById('calc-unit-type').value;
     const units = unitMap[type] || unitMap.custom;
@@ -701,7 +706,6 @@ function updateUnitSelect() {
         option.textContent = unit;
         select.appendChild(option);
     });
-    calcCurrentToValue();
 }
 
 function calcCurrentToValue() {
@@ -1126,9 +1130,9 @@ function renderAccessCategoryItems(category, searchQuery) {
                (item.description && item.description.toLowerCase().includes(q));
     });
     
-    // Очищаем список и добавляем кнопку «Наверх»
     listEl.innerHTML = '';
-    // Кнопка «Наверх»
+    
+    // Кнопка «Наверх» для категорий доступа
     const scrollTopBtn = document.createElement('div');
     scrollTopBtn.className = 'modal-sticky-top';
     scrollTopBtn.innerHTML = '<button>↑</button>';
@@ -1138,7 +1142,6 @@ function renderAccessCategoryItems(category, searchQuery) {
     };
     listEl.appendChild(scrollTopBtn);
 
-    // Контент
     if (filtered.length === 0) {
         const emptyMsg = document.createElement('div');
         emptyMsg.className = 'text-center py-10 opacity-50 text-xs font-black uppercase';
@@ -1168,7 +1171,6 @@ function renderAccessCategoryItems(category, searchQuery) {
         });
     }
 
-    // Показываем/скрываем кнопку при прокрутке
     const toggleScrollBtn = () => {
         if (listEl.scrollTop > 150) {
             scrollTopBtn.classList.add('visible');
