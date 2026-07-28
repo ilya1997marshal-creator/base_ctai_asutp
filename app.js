@@ -414,13 +414,10 @@ let selectedRows = new Set();
 let selectedCols = new Set();
 
 function toggleRow(index) {
-    console.log('toggleRow вызван с index =', index, 'текущий selectedRows:', [...selectedRows]);
     if (selectedRows.has(index)) {
         selectedRows.delete(index);
-        console.log('  удалён, теперь размер Set =', selectedRows.size);
     } else {
         selectedRows.add(index);
-        console.log('  добавлен, теперь размер Set =', selectedRows.size);
     }
     applySelectionStyles();
     updateClearButton();
@@ -502,7 +499,6 @@ function applySelectionStyles() {
             });
         });
     }
-    console.log('applySelectionStyles: выделено строк =', selectedRows.size, 'столбцов =', selectedCols.size);
 }
 
 function attachScheduleEvents() {
@@ -517,7 +513,6 @@ function attachScheduleEvents() {
         if (isNaN(idx)) return;
         row.addEventListener('click', (e) => {
             if (e.target.tagName === 'TH') return;
-            console.log('Клик по строке, индекс:', idx);
             toggleRow(idx);
         });
     }
@@ -532,7 +527,6 @@ function attachScheduleEvents() {
         if (index >= daysCount) return;
         const day = index + 1;
         th.addEventListener('click', (e) => {
-            console.log('Клик по заголовку столбца, день:', day);
             toggleCol(day);
         });
     });

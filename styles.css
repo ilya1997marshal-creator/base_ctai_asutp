@@ -268,7 +268,8 @@ body {
 }
 
 .highlighted-row { background-color: rgba(59, 130, 246, 0.05) !important; }
-.blurred-row { opacity: 0.15 !important; filter: blur(2px); pointer-events: none; }
+/* ИСПРАВЛЕНИЕ: убрано pointer-events: none, чтобы можно было кликать по размытым строкам */
+.blurred-row { opacity: 0.15 !important; filter: blur(2px); }
 
 .custom-nav {
     height: 72px; border-radius: 24px; background-color: var(--nav-bg); border: 1px solid var(--border);

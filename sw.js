@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ctai-base-v8'; // увеличили версию для принудительного обновления кэша
+const CACHE_NAME = 'ctai-base-v6'; // актуальная версия кэша
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -15,7 +15,6 @@ const STATIC_ASSETS = [
   'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap'
 ];
 
-// Установка: кэшируем статику
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -30,7 +29,6 @@ self.addEventListener('install', event => {
   );
 });
 
-// Активация: удаляем старые кэши и захватываем контроль
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => {
@@ -41,7 +39,6 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Основная стратегия: Network First, при неудаче – кэш
 self.addEventListener('fetch', event => {
   event.respondWith(
     fetch(event.request)
@@ -54,7 +51,6 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// Разрешаем принудительный skipWaiting по сообщению
 self.addEventListener('message', event => {
   if (event.data && event.data.action === 'skipWaiting') {
     self.skipWaiting();
