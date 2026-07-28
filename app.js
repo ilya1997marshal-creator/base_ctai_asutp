@@ -504,6 +504,41 @@ function applySelectionStyles() {
     }
 }
 
+// Навешиваем обработчики событий после рендера таблицы
+function attachScheduleEvents() {
+    const viewport = document.getElementById('schedule-viewport');
+    if (!viewport) return;
+
+    // Обработчики на строки (выделение строки)
+    const fixedRows = viewport.querySelectorAll('.schedule-fixed tbody tr');
+    const scrollRows = viewport.querySelectorAll('.schedule-scroll tbody tr');
+
+    function addRowClick(row) {
+        const idx = parseInt(row.dataset.rowIndex, 10);
+        if (isNaN(idx)) return;
+        row.addEventListener('click', (e) => {
+            // Не срабатываем при клике на заголовок столбца (если вдруг промах)
+            if (e.target.tagName === 'TH') return;
+            toggleRow(idx);
+        });
+    }
+
+    fixedRows.forEach(addRowClick);
+    scrollRows.forEach(addRowClick);
+
+    // Обработчики на заголовки столбцов (выделение дат)
+    const headerCells = viewport.querySelectorAll('.schedule-scroll thead th');
+    const daysCount = headerCells.length - 2; // последние два – СМ. и ЧАС.
+
+    headerCells.forEach((th, index) => {
+        if (index >= daysCount) return; // пропускаем столбцы статистики
+        const day = index + 1;
+        th.addEventListener('click', (e) => {
+            toggleCol(day);
+        });
+    });
+}
+
 function renderSchedule(monthName) {
     const display = document.getElementById('current-month-display');
     const viewport = document.getElementById('schedule-viewport');
@@ -539,7 +574,7 @@ function renderSchedule(monthName) {
 
     let fixedHtml = `<div class="schedule-fixed"><table class="schedule-table"><thead><tr><th class="col-name head-fio">Ф.И.О.</th></tr></thead><tbody>`;
     data.forEach((p, idx) => {
-        fixedHtml += `<tr data-row-index="${idx}"><td class="col-name text-center font-medium" onclick="toggleRow(${idx});event.stopPropagation()">${p.name}</td></tr>`;
+        fixedHtml += `<tr data-row-index="${idx}"><td class="col-name text-center font-medium">${p.name}</td></tr>`;
     });
     fixedHtml += `</tbody></table></div>`;
 
@@ -547,7 +582,7 @@ function renderSchedule(monthName) {
     for(let d=1; d<=daysInMonth; d++) {
         const isToday = isCurrent && d === curDay;
         const isHoliday = isWeekendOrHoliday(d);
-        scrollHtml += `<th class="${isToday ? 'today-header' : ''} ${isHoliday ? 'holiday-header' : ''}" onclick="toggleCol(${d});event.stopPropagation()">${d}</th>`;
+        scrollHtml += `<th class="${isToday ? 'today-header' : ''} ${isHoliday ? 'holiday-header' : ''}">${d}</th>`;
     }
     scrollHtml += `<th class="col-stat">СМ.</th><th class="col-stat">ЧАС.</th></tr></thead><tbody>`;
 
@@ -559,9 +594,9 @@ function renderSchedule(monthName) {
             const isToday = isCurrent && d === curDay;
             const isHoliday = isWeekendOrHoliday(d);
             if (hourMap[s]) {
-                scrollHtml += `<td class="shift-D ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}" onclick="toggleRow(${idx});event.stopPropagation()"><span class="hour-num">${hourMap[s]}</span></td>`;
+                scrollHtml += `<td class="shift-D ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}"><span class="hour-num">${hourMap[s]}</span></td>`;
             } else {
-                scrollHtml += `<td class="shift-${s} ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}" onclick="toggleRow(${idx});event.stopPropagation()"></td>`;
+                scrollHtml += `<td class="shift-${s} ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}"></td>`;
             }
             if(['D', 'N', 'S', 'A', 'B', 'C'].includes(s)) {
                 shiftsCount++;
@@ -572,11 +607,14 @@ function renderSchedule(monthName) {
                 else hours += 12;
             }
         }
-        scrollHtml += `<td class="col-stat font-bold" onclick="toggleRow(${idx});event.stopPropagation()">${shiftsCount}</td><td class="col-stat font-bold" onclick="toggleRow(${idx});event.stopPropagation()">${hours}</td></tr>`;
+        scrollHtml += `<td class="col-stat font-bold">${shiftsCount}</td><td class="col-stat font-bold">${hours}</td></tr>`;
     });
     scrollHtml += `</tbody></table></div>`;
 
     viewport.innerHTML = fixedHtml + scrollHtml;
+
+    // Важно: навешиваем обработчики после вставки HTML
+    attachScheduleEvents();
 
     const fixedRows = viewport.querySelectorAll('.schedule-fixed tbody tr');
     const scrollRows = viewport.querySelectorAll('.schedule-scroll tbody tr');
