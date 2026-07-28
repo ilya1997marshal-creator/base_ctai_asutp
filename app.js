@@ -409,7 +409,7 @@ function updateOnDutyWidget() {
     dutyList.innerHTML = html;
 }
 
-// ==================== ГРАФИК С ВЫДЕЛЕНИЕМ СТРОК И СТОЛБЦОВ ====================
+// ==================== ГРАФИК С ВЫДЕЛЕНИЕМ ====================
 let selectedRows = new Set();
 let selectedCols = new Set();
 
@@ -547,7 +547,7 @@ function renderSchedule(monthName) {
 
     let fixedHtml = `<div class="schedule-fixed"><table class="schedule-table"><thead><tr><th class="col-name head-fio">Ф.И.О.</th></tr></thead><tbody>`;
     data.forEach((p, idx) => {
-        fixedHtml += `<tr data-row-index="${idx}" onclick="toggleRow(${idx})"><td class="col-name text-center font-medium">${p.name}</td></tr>`;
+        fixedHtml += `<tr data-row-index="${idx}"><td class="col-name text-center font-medium" onclick="toggleRow(${idx});event.stopPropagation()">${p.name}</td></tr>`;
     });
     fixedHtml += `</tbody></table></div>`;
 
@@ -555,21 +555,21 @@ function renderSchedule(monthName) {
     for(let d=1; d<=daysInMonth; d++) {
         const isToday = isCurrent && d === curDay;
         const isHoliday = isWeekendOrHoliday(d);
-        scrollHtml += `<th class="${isToday ? 'today-header' : ''} ${isHoliday ? 'holiday-header' : ''}" onclick="toggleCol(${d})">${d}</th>`;
+        scrollHtml += `<th class="${isToday ? 'today-header' : ''} ${isHoliday ? 'holiday-header' : ''}" onclick="toggleCol(${d});event.stopPropagation()">${d}</th>`;
     }
     scrollHtml += `<th class="col-stat">СМ.</th><th class="col-stat">ЧАС.</th></tr></thead><tbody>`;
 
     data.forEach((p, idx) => {
         let shiftsCount = 0, hours = 0;
-        scrollHtml += `<tr data-row-index="${idx}" onclick="toggleRow(${idx})">`;
+        scrollHtml += `<tr data-row-index="${idx}">`;
         for(let d=1; d<=daysInMonth; d++) {
             const s = p.shifts[d-1] || '';
             const isToday = isCurrent && d === curDay;
             const isHoliday = isWeekendOrHoliday(d);
             if (hourMap[s]) {
-                scrollHtml += `<td class="shift-D ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}"><span class="hour-num">${hourMap[s]}</span></td>`;
+                scrollHtml += `<td class="shift-D ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}" onclick="toggleCol(${d});event.stopPropagation()"><span class="hour-num">${hourMap[s]}</span></td>`;
             } else {
-                scrollHtml += `<td class="shift-${s} ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}"></td>`;
+                scrollHtml += `<td class="shift-${s} ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}" onclick="toggleCol(${d});event.stopPropagation()"></td>`;
             }
             if(['D', 'N', 'S', 'A', 'B', 'C'].includes(s)) {
                 shiftsCount++;
