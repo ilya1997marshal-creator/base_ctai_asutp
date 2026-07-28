@@ -559,9 +559,9 @@ function renderSchedule(monthName) {
             const isToday = isCurrent && d === curDay;
             const isHoliday = isWeekendOrHoliday(d);
             if (hourMap[s]) {
-                scrollHtml += `<td class="shift-D ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}" onclick="toggleCol(${d});event.stopPropagation()"><span class="hour-num">${hourMap[s]}</span></td>`;
+                scrollHtml += `<td class="shift-D ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}" onclick="toggleRow(${idx});event.stopPropagation()"><span class="hour-num">${hourMap[s]}</span></td>`;
             } else {
-                scrollHtml += `<td class="shift-${s} ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}" onclick="toggleCol(${d});event.stopPropagation()"></td>`;
+                scrollHtml += `<td class="shift-${s} ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}" onclick="toggleRow(${idx});event.stopPropagation()"></td>`;
             }
             if(['D', 'N', 'S', 'A', 'B', 'C'].includes(s)) {
                 shiftsCount++;
@@ -572,7 +572,7 @@ function renderSchedule(monthName) {
                 else hours += 12;
             }
         }
-        scrollHtml += `<td class="col-stat font-bold">${shiftsCount}</td><td class="col-stat font-bold">${hours}</td></tr>`;
+        scrollHtml += `<td class="col-stat font-bold" onclick="toggleRow(${idx});event.stopPropagation()">${shiftsCount}</td><td class="col-stat font-bold" onclick="toggleRow(${idx});event.stopPropagation()">${hours}</td></tr>`;
     });
     scrollHtml += `</tbody></table></div>`;
 
