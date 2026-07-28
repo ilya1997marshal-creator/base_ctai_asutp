@@ -409,7 +409,7 @@ function updateOnDutyWidget() {
     dutyList.innerHTML = html;
 }
 
-// ==================== ГРАФИК С ВЫДЕЛЕНИЕМ ====================
+// ==================== ГРАФИК С ВЫДЕЛЕНИЕМ СТРОК И СТОЛБЦОВ ====================
 let selectedRows = new Set();
 let selectedCols = new Set();
 
@@ -459,12 +459,21 @@ function applySelectionStyles() {
     const scrollRows = container.querySelectorAll('.schedule-scroll tbody tr');
     const headerCells = container.querySelectorAll('.schedule-scroll thead th');
     
+    // Сброс всех классов выделения
     fixedRows.forEach(row => row.classList.remove('highlighted-row', 'blurred-row'));
     scrollRows.forEach(row => row.classList.remove('highlighted-row', 'blurred-row'));
     headerCells.forEach(th => th.classList.remove('highlighted-col', 'blurred-col'));
+    // Убираем с ячеек данных
+    scrollRows.forEach(row => {
+        row.querySelectorAll('td').forEach(td => {
+            td.classList.remove('highlighted-col', 'blurred-col');
+        });
+    });
     
     const allRows = [...fixedRows, ...scrollRows];
+    const daysCount = headerCells.length - 2; // минус СМ. и ЧАС.
     
+    // Применяем выделение строк
     allRows.forEach(row => {
         const idx = parseInt(row.dataset.rowIndex, 10);
         if (isNaN(idx)) return;
@@ -475,38 +484,21 @@ function applySelectionStyles() {
         }
     });
     
-    const daysCount = headerCells.length - 2;
-    headerCells.forEach((th, index) => {
-        if (index >= daysCount) return;
-        const colIdx = index;
-        if (selectedCols.has(colIdx)) {
-            th.classList.add('highlighted-col');
-        } else if (selectedCols.size > 0) {
-            th.classList.add('blurred-col');
-        }
-    });
-    
-    scrollRows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        cells.forEach((td, cellIndex) => {
-            if (cellIndex >= daysCount) return;
-            const colIdx = cellIndex;
-            if (selectedCols.has(colIdx)) {
-                td.classList.add('highlighted-col');
-            } else if (selectedCols.size > 0) {
-                td.classList.add('blurred-col');
-            }
+    // Применяем выделение столбцов
+    if (selectedCols.size > 0) {
+        // Заголовки
+        headerCells.forEach((th, index) => {
+            if (index >= daysCount) return;
+            const colIdx = index;
+            th.classList.add(selectedCols.has(colIdx) ? 'highlighted-col' : 'blurred-col');
         });
-    });
-    
-    if (selectedRows.size === 0) {
-        allRows.forEach(row => row.classList.remove('blurred-row'));
-    }
-    if (selectedCols.size === 0) {
-        headerCells.forEach(th => th.classList.remove('blurred-col'));
+        // Ячейки данных
         scrollRows.forEach(row => {
-            row.querySelectorAll('td').forEach(td => {
-                if (td.classList.contains('blurred-col')) td.classList.remove('blurred-col');
+            const cells = row.querySelectorAll('td');
+            cells.forEach((td, cellIndex) => {
+                if (cellIndex >= daysCount) return;
+                const colIdx = cellIndex;
+                td.classList.add(selectedCols.has(colIdx) ? 'highlighted-col' : 'blurred-col');
             });
         });
     }
