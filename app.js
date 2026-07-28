@@ -459,14 +459,12 @@ function applySelectionStyles() {
     const scrollRows = container.querySelectorAll('.schedule-scroll tbody tr');
     const headerCells = container.querySelectorAll('.schedule-scroll thead th');
     
-    // Сброс всех классов выделения
     fixedRows.forEach(row => row.classList.remove('highlighted-row', 'blurred-row'));
     scrollRows.forEach(row => row.classList.remove('highlighted-row', 'blurred-row'));
     headerCells.forEach(th => th.classList.remove('highlighted-col', 'blurred-col'));
     
     const allRows = [...fixedRows, ...scrollRows];
     
-    // Обработка строк
     allRows.forEach(row => {
         const idx = parseInt(row.dataset.rowIndex, 10);
         if (isNaN(idx)) return;
@@ -477,8 +475,7 @@ function applySelectionStyles() {
         }
     });
     
-    // Обработка столбцов: заголовки и ячейки
-    const daysCount = headerCells.length - 2; // минус СМ. и ЧАС.
+    const daysCount = headerCells.length - 2;
     headerCells.forEach((th, index) => {
         if (index >= daysCount) return;
         const colIdx = index;
@@ -489,11 +486,10 @@ function applySelectionStyles() {
         }
     });
     
-    // Ячейки данных в scrollRows
     scrollRows.forEach(row => {
         const cells = row.querySelectorAll('td');
         cells.forEach((td, cellIndex) => {
-            if (cellIndex >= daysCount) return; // пропускаем последние два столбца (СМ., ЧАС.)
+            if (cellIndex >= daysCount) return;
             const colIdx = cellIndex;
             if (selectedCols.has(colIdx)) {
                 td.classList.add('highlighted-col');
@@ -503,11 +499,9 @@ function applySelectionStyles() {
         });
     });
     
-    // Если нет выделенных строк, убираем размытие строк
     if (selectedRows.size === 0) {
         allRows.forEach(row => row.classList.remove('blurred-row'));
     }
-    // Если нет выделенных столбцов, убираем размытие столбцов
     if (selectedCols.size === 0) {
         headerCells.forEach(th => th.classList.remove('blurred-col'));
         scrollRows.forEach(row => {
