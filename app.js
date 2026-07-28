@@ -218,7 +218,7 @@ function switchTab(index) {
         }
     }
     if(index === 3) {
-        showToolsList(); // всегда возвращаемся к списку инструментов
+        showToolsList();
     }
     if(index === 4) renderCredentials();
     if(index === 5) updateVersionNumber(); 
@@ -409,27 +409,112 @@ function updateOnDutyWidget() {
     dutyList.innerHTML = html;
 }
 
-// ==================== ГРАФИК ====================
-function highlightRowByIndex(index) {
+// ==================== ГРАФИК С ВЫДЕЛЕНИЕМ ====================
+let selectedRows = new Set();
+let selectedCols = new Set();
+
+function toggleRow(index) {
+    if (selectedRows.has(index)) {
+        selectedRows.delete(index);
+    } else {
+        selectedRows.add(index);
+    }
+    applySelectionStyles();
+    updateClearButton();
+}
+
+function toggleCol(day) {
+    const colIndex = day - 1;
+    if (selectedCols.has(colIndex)) {
+        selectedCols.delete(colIndex);
+    } else {
+        selectedCols.add(colIndex);
+    }
+    applySelectionStyles();
+    updateClearButton();
+}
+
+function clearSelection() {
+    selectedRows.clear();
+    selectedCols.clear();
+    applySelectionStyles();
+    updateClearButton();
+}
+
+function updateClearButton() {
+    const btn = document.getElementById('clear-selection-btn');
+    if (!btn) return;
+    if (selectedRows.size > 0 || selectedCols.size > 0) {
+        btn.classList.add('show');
+    } else {
+        btn.classList.remove('show');
+    }
+}
+
+function applySelectionStyles() {
     const container = document.getElementById('schedule-viewport');
     if (!container) return;
     
     const fixedRows = container.querySelectorAll('.schedule-fixed tbody tr');
     const scrollRows = container.querySelectorAll('.schedule-scroll tbody tr');
+    const headerCells = container.querySelectorAll('.schedule-scroll thead th');
+    
+    // Сброс всех классов выделения
+    fixedRows.forEach(row => row.classList.remove('highlighted-row', 'blurred-row'));
+    scrollRows.forEach(row => row.classList.remove('highlighted-row', 'blurred-row'));
+    headerCells.forEach(th => th.classList.remove('highlighted-col', 'blurred-col'));
     
     const allRows = [...fixedRows, ...scrollRows];
-    const targetFixed = fixedRows[index];
-    const targetScroll = scrollRows[index];
     
-    const isActive = targetFixed && targetFixed.classList.contains('highlighted-row');
+    // Обработка строк
+    allRows.forEach(row => {
+        const idx = parseInt(row.dataset.rowIndex, 10);
+        if (isNaN(idx)) return;
+        if (selectedRows.has(idx)) {
+            row.classList.add('highlighted-row');
+        } else if (selectedRows.size > 0) {
+            row.classList.add('blurred-row');
+        }
+    });
     
-    allRows.forEach(r => r.classList.remove('highlighted-row', 'blurred-row'));
+    // Обработка столбцов: заголовки и ячейки
+    const daysCount = headerCells.length - 2; // минус СМ. и ЧАС.
+    headerCells.forEach((th, index) => {
+        if (index >= daysCount) return;
+        const colIdx = index;
+        if (selectedCols.has(colIdx)) {
+            th.classList.add('highlighted-col');
+        } else if (selectedCols.size > 0) {
+            th.classList.add('blurred-col');
+        }
+    });
     
-    if (!isActive && targetFixed && targetScroll) {
-        targetFixed.classList.add('highlighted-row');
-        targetScroll.classList.add('highlighted-row');
-        fixedRows.forEach((r, i) => { if (i !== index) r.classList.add('blurred-row'); });
-        scrollRows.forEach((r, i) => { if (i !== index) r.classList.add('blurred-row'); });
+    // Ячейки данных в scrollRows
+    scrollRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        cells.forEach((td, cellIndex) => {
+            if (cellIndex >= daysCount) return; // пропускаем последние два столбца
+            const colIdx = cellIndex;
+            if (selectedCols.has(colIdx)) {
+                td.classList.add('highlighted-col');
+            } else if (selectedCols.size > 0) {
+                td.classList.add('blurred-col');
+            }
+        });
+    });
+    
+    // Если нет выделенных строк, убираем размытие строк
+    if (selectedRows.size === 0) {
+        allRows.forEach(row => row.classList.remove('blurred-row'));
+    }
+    // Если нет выделенных столбцов, убираем размытие столбцов
+    if (selectedCols.size === 0) {
+        headerCells.forEach(th => th.classList.remove('blurred-col'));
+        scrollRows.forEach(row => {
+            row.querySelectorAll('td').forEach(td => {
+                if (td.classList.contains('blurred-col')) td.classList.remove('blurred-col');
+            });
+        });
     }
 }
 
@@ -464,9 +549,11 @@ function renderSchedule(monthName) {
 
     const hourMap = { 'A': '8', 'B': '5', 'C': '10' };
 
+    clearSelection();
+
     let fixedHtml = `<div class="schedule-fixed"><table class="schedule-table"><thead><tr><th class="col-name head-fio">Ф.И.О.</th></tr></thead><tbody>`;
     data.forEach((p, idx) => {
-        fixedHtml += `<tr onclick="highlightRowByIndex(${idx})"><td class="col-name text-center font-medium">${p.name}</td></tr>`;
+        fixedHtml += `<tr data-row-index="${idx}" onclick="toggleRow(${idx})"><td class="col-name text-center font-medium">${p.name}</td></tr>`;
     });
     fixedHtml += `</tbody></table></div>`;
 
@@ -474,13 +561,13 @@ function renderSchedule(monthName) {
     for(let d=1; d<=daysInMonth; d++) {
         const isToday = isCurrent && d === curDay;
         const isHoliday = isWeekendOrHoliday(d);
-        scrollHtml += `<th class="${isToday ? 'today-header' : ''} ${isHoliday ? 'holiday-header' : ''}">${d}</th>`;
+        scrollHtml += `<th class="${isToday ? 'today-header' : ''} ${isHoliday ? 'holiday-header' : ''}" onclick="toggleCol(${d})">${d}</th>`;
     }
     scrollHtml += `<th class="col-stat">СМ.</th><th class="col-stat">ЧАС.</th></tr></thead><tbody>`;
 
     data.forEach((p, idx) => {
         let shiftsCount = 0, hours = 0;
-        scrollHtml += `<tr onclick="highlightRowByIndex(${idx})">`;
+        scrollHtml += `<tr data-row-index="${idx}" onclick="toggleRow(${idx})">`;
         for(let d=1; d<=daysInMonth; d++) {
             const s = p.shifts[d-1] || '';
             const isToday = isCurrent && d === curDay;
@@ -521,10 +608,11 @@ function renderSchedule(monthName) {
             }
         }, 100);
     }
+    
+    applySelectionStyles();
 }
 
-function highlightRow(row) {}
-
+// ==================== БЛОКИ И ДИАГНОСТИКА ====================
 function openBlockModal(key) {
     const mData = blockData[key];
     const list = document.getElementById('instructions-list');

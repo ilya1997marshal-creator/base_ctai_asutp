@@ -18,9 +18,7 @@
             0%, 100% { text-shadow: 0 0 8px rgba(250,204,21,0.6), 0 0 16px rgba(250,204,21,0.3); }
             50% { text-shadow: 0 0 18px rgba(250,204,21,0.9), 0 0 32px rgba(250,204,21,0.5); }
         }
-        .bolt-animate {
-            animation: bolt-pulse 2s ease-in-out infinite;
-        }
+        .bolt-animate { animation: bolt-pulse 2s ease-in-out infinite; }
         .text-gradient {
             background: linear-gradient(135deg, #60a5fa, #3b82f6);
             -webkit-background-clip: text;
@@ -29,36 +27,39 @@
             text-shadow: 0 0 20px rgba(59,130,246,0.5);
         }
         .modal-sticky-top {
-            position: sticky;
-            top: 8px;
-            z-index: 10;
-            display: flex;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
+            position: sticky; top: 8px; z-index: 10;
+            display: flex; justify-content: center;
+            opacity: 0; pointer-events: none;
             transition: opacity 0.2s ease;
         }
-        .modal-sticky-top.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .modal-sticky-top.visible { opacity: 1; pointer-events: auto; }
         .modal-sticky-top button {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(59,130,246,0.15);
-            border: 1px solid rgba(59,130,246,0.2);
-            color: rgba(96,165,250,0.8);
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(8px);
-            transition: background 0.2s;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.2);
+            color: rgba(96,165,250,0.8); font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(8px); transition: background 0.2s;
         }
-        .modal-sticky-top button:active {
-            background: rgba(59,130,246,0.3);
+        .modal-sticky-top button:active { background: rgba(59,130,246,0.3); }
+        /* Кнопка сброса выделения */
+        #clear-selection-btn {
+            display: none;
+            margin-left: 8px;
+            padding: 4px 12px;
+            border-radius: 100px;
+            background: rgba(239,68,68,0.15);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #ef4444;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity 0.2s;
         }
+        #clear-selection-btn.show { display: inline-block; }
+        /* Выделение столбцов */
+        .highlighted-col { background-color: rgba(59,130,246,0.1) !important; }
+        .blurred-col { opacity: 0.2; pointer-events: none; }
     </style>
 </head>
 <body class="pb-32">
@@ -137,7 +138,7 @@
             <div class="flex flex-col items-center mb-6 text-center">
                 <div class="header-icon-main"><span>📅</span></div>
                 <h1 class="text-3xl font-extrabold tracking-tight">График</h1>
-                <div class="mt-4 relative z-[50]">
+                <div class="mt-4 relative z-[50] flex items-center justify-center">
                     <div class="month-picker-wrapper">
                         <span id="current-month-display">Май 2026</span>
                         <select id="month-selector" onchange="renderSchedule(this.value)">
@@ -156,6 +157,8 @@
                         </select>
                         <span class="ml-2 text-[10px] opacity-40">▼</span>
                     </div>
+                    <!-- Кнопка сброса выделения -->
+                    <button id="clear-selection-btn" onclick="clearSelection()">✕ Сброс</button>
                 </div>
             </div>
             <div id="schedule-viewport" class="schedule-container shadow-2xl relative z-[10]"></div>
