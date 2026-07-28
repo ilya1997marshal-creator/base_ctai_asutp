@@ -409,7 +409,7 @@ function updateOnDutyWidget() {
     dutyList.innerHTML = html;
 }
 
-// ==================== ГРАФИК С ВЫДЕЛЕНИЕМ ====================
+// ==================== ГРАФИК С ВЫДЕЛЕНИЕМ СТРОК И СТОЛБЦОВ ====================
 let selectedRows = new Set();
 let selectedCols = new Set();
 
@@ -493,7 +493,7 @@ function applySelectionStyles() {
     scrollRows.forEach(row => {
         const cells = row.querySelectorAll('td');
         cells.forEach((td, cellIndex) => {
-            if (cellIndex >= daysCount) return; // пропускаем последние два столбца
+            if (cellIndex >= daysCount) return; // пропускаем последние два столбца (СМ., ЧАС.)
             const colIdx = cellIndex;
             if (selectedCols.has(colIdx)) {
                 td.classList.add('highlighted-col');
