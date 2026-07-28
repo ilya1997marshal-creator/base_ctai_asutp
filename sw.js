@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ctai-base-v6'; // увеличивайте при каждом важном деплое
+const CACHE_NAME = 'ctai-base-v8'; // увеличили версию для принудительного обновления кэша
 const STATIC_ASSETS = [
   './',
   './index.html',

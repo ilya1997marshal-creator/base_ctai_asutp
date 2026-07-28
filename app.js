@@ -414,10 +414,13 @@ let selectedRows = new Set();
 let selectedCols = new Set();
 
 function toggleRow(index) {
+    console.log('toggleRow вызван с index =', index, 'текущий selectedRows:', [...selectedRows]);
     if (selectedRows.has(index)) {
         selectedRows.delete(index);
+        console.log('  удалён, теперь размер Set =', selectedRows.size);
     } else {
         selectedRows.add(index);
+        console.log('  добавлен, теперь размер Set =', selectedRows.size);
     }
     applySelectionStyles();
     updateClearButton();
@@ -463,7 +466,6 @@ function applySelectionStyles() {
     fixedRows.forEach(row => row.classList.remove('highlighted-row', 'blurred-row'));
     scrollRows.forEach(row => row.classList.remove('highlighted-row', 'blurred-row'));
     headerCells.forEach(th => th.classList.remove('highlighted-col', 'blurred-col'));
-    // Убираем с ячеек данных
     scrollRows.forEach(row => {
         row.querySelectorAll('td').forEach(td => {
             td.classList.remove('highlighted-col', 'blurred-col');
@@ -471,7 +473,7 @@ function applySelectionStyles() {
     });
     
     const allRows = [...fixedRows, ...scrollRows];
-    const daysCount = headerCells.length - 2; // минус СМ. и ЧАС.
+    const daysCount = headerCells.length - 2;
     
     // Применяем выделение строк
     allRows.forEach(row => {
@@ -486,13 +488,11 @@ function applySelectionStyles() {
     
     // Применяем выделение столбцов
     if (selectedCols.size > 0) {
-        // Заголовки
         headerCells.forEach((th, index) => {
             if (index >= daysCount) return;
             const colIdx = index;
             th.classList.add(selectedCols.has(colIdx) ? 'highlighted-col' : 'blurred-col');
         });
-        // Ячейки данных
         scrollRows.forEach(row => {
             const cells = row.querySelectorAll('td');
             cells.forEach((td, cellIndex) => {
@@ -502,14 +502,13 @@ function applySelectionStyles() {
             });
         });
     }
+    console.log('applySelectionStyles: выделено строк =', selectedRows.size, 'столбцов =', selectedCols.size);
 }
 
-// Навешиваем обработчики событий после рендера таблицы
 function attachScheduleEvents() {
     const viewport = document.getElementById('schedule-viewport');
     if (!viewport) return;
 
-    // Обработчики на строки (выделение строки)
     const fixedRows = viewport.querySelectorAll('.schedule-fixed tbody tr');
     const scrollRows = viewport.querySelectorAll('.schedule-scroll tbody tr');
 
@@ -517,8 +516,8 @@ function attachScheduleEvents() {
         const idx = parseInt(row.dataset.rowIndex, 10);
         if (isNaN(idx)) return;
         row.addEventListener('click', (e) => {
-            // Не срабатываем при клике на заголовок столбца (если вдруг промах)
             if (e.target.tagName === 'TH') return;
+            console.log('Клик по строке, индекс:', idx);
             toggleRow(idx);
         });
     }
@@ -526,14 +525,14 @@ function attachScheduleEvents() {
     fixedRows.forEach(addRowClick);
     scrollRows.forEach(addRowClick);
 
-    // Обработчики на заголовки столбцов (выделение дат)
     const headerCells = viewport.querySelectorAll('.schedule-scroll thead th');
-    const daysCount = headerCells.length - 2; // последние два – СМ. и ЧАС.
+    const daysCount = headerCells.length - 2;
 
     headerCells.forEach((th, index) => {
-        if (index >= daysCount) return; // пропускаем столбцы статистики
+        if (index >= daysCount) return;
         const day = index + 1;
         th.addEventListener('click', (e) => {
+            console.log('Клик по заголовку столбца, день:', day);
             toggleCol(day);
         });
     });
@@ -613,7 +612,6 @@ function renderSchedule(monthName) {
 
     viewport.innerHTML = fixedHtml + scrollHtml;
 
-    // Важно: навешиваем обработчики после вставки HTML
     attachScheduleEvents();
 
     const fixedRows = viewport.querySelectorAll('.schedule-fixed tbody tr');
@@ -734,7 +732,6 @@ function openBlockModal(key) {
         });
     }
 
-    // Кнопка «Наверх»
     const scrollTopBtn = document.createElement('div');
     scrollTopBtn.className = 'modal-sticky-top';
     scrollTopBtn.innerHTML = '<button>↑</button>';
