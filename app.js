@@ -586,11 +586,16 @@ function renderSchedule(monthName) {
             const s = p.shifts[d-1] || '';
             const isToday = isCurrent && d === curDay;
             const isHoliday = isWeekendOrHoliday(d);
-            if (hourMap[s]) {
+
+            // === НОВЫЙ БЛОК: обработка больничного ===
+            if (s === 'Б') {
+                scrollHtml += `<td class="shift-Б ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}">Б</td>`;
+            } else if (hourMap[s]) {
                 scrollHtml += `<td class="shift-D ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}"><span class="hour-num">${hourMap[s]}</span></td>`;
             } else {
                 scrollHtml += `<td class="shift-${s} ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}"></td>`;
             }
+
             if(['D', 'N', 'S', 'A', 'B', 'C'].includes(s)) {
                 shiftsCount++;
                 if (s === 'S') hours += 12;

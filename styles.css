@@ -417,3 +417,14 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.15) !important;
     color: #000000 !important;
 }
+
+/* === НОВЫЙ СТИЛЬ ДЛЯ БОЛЬНИЧНОГО === */
+.shift-Б {
+    background-color: rgba(248, 113, 113, 0.15) !important;
+    color: #ef4444 !important;
+    font-weight: 700;
+}
+.light-mode .shift-Б {
+    background-color: rgba(248, 113, 113, 0.2) !important;
+    color: #b91c1c !important;
+}
