@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ctai-base-v8'; // актуальная версия кэша
+const CACHE_NAME = 'ctai-base-v9'; // актуальная версия кэша
 const STATIC_ASSETS = [
   './',
   './index.html',
