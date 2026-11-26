@@ -67,7 +67,13 @@
             <div id="duty-list" class="duty-list"></div>
         </div>
 
-                <div class="group-label">Энергоблоки</div>
+                <button class="row" onclick="openTroubles()" style="margin-top:12px">
+            <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 3.5 19h17z"/><path d="M12 10v4.2M12 17.2h.01"/></svg></span>
+            <span class="row-main"><span class="row-title">Если что-то не работает</span><span class="row-meta">ПЛК, клапаны, АРМ — что делать</span></span>
+            <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+        </button>
+
+        <div class="group-label">Энергоблоки</div>
         <div class="grid-2">
             <button onclick="openBlockModal('block_1')" class="tile-btn">
                 <span class="row-num">01</span>
@@ -497,6 +503,11 @@
         </div>
 
         <div class="stack">
+            <button onclick="openTroubles()" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 3.5 19h17z"/><path d="M12 10v4.2M12 17.2h.01"/></svg></span>
+                <span class="row-main"><span class="row-title">Если что-то не работает</span><span class="row-meta">ПЛК, клапаны, АРМ — что делать</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </button>
             <a href="https://t.me/IlyaMar5hal" target="_blank" class="row">
                 <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m20.5 4.5-3 15-6-4.5-3 3v-5l9-7-11 6-3.5-1z"/></svg></span>
                 <span class="row-main"><span class="row-title">Telegram</span><span class="row-meta">Связь с разработчиком</span></span>
@@ -528,7 +539,7 @@
             </a>
         </div>
 
-        <div class="version">Версия <span id="app-version">V98</span></div>
+        <div class="version">Версия <span id="app-version">V99</span></div>
     </section>
 </main>
 
@@ -596,6 +607,22 @@
     </div>
 </div>
 
+<!-- Что делать, если не работает -->
+<div id="trouble-modal" class="modal hidden" onclick="if(event.target===this) closeTroubles()">
+    <div class="sheet">
+        <div class="sheet-head">
+            <div class="sheet-title">Если что-то не работает</div>
+            <button class="icon-btn" onclick="closeTroubles()" aria-label="Закрыть">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+        </div>
+        <div class="search-wrap">
+            <input type="text" id="trouble-search" class="input" placeholder="ПЛК, клапан, АРМ, связь" oninput="renderTroubles()" autocomplete="off" spellcheck="false">
+        </div>
+        <div id="trouble-list" class="sheet-body"></div>
+    </div>
+</div>
+
 <!-- Выбор пользователя -->
 <div id="user-select-modal" class="modal hidden">
     <div class="sheet">
@@ -637,6 +664,7 @@
 
 <script src="credentials.js"></script>
 <script src="data.js"></script>
+<script src="troubles.js"></script>
 <script src="questions.js"></script>
 <script src="questions-fire.js"></script>
 <script src="questions-labor.js"></script>

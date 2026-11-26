@@ -1782,6 +1782,91 @@ select.input {
     transform: translate(-50%, 0);
 }
 
+/* ---------- «что делать, если» ---------- */
+
+.tr-item {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+
+.tr-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 13px;
+    text-align: left;
+}
+
+.tr-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.tr-title {
+    font-size: 13.5px;
+    font-weight: 500;
+    letter-spacing: -.005em;
+}
+
+.tr-sum {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 3px;
+}
+
+.tr-chev {
+    flex: none;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1;
+    transition: transform .2s ease;
+}
+
+.tr-item.open .tr-chev {
+    transform: rotate(90deg);
+}
+
+.tr-body {
+    padding: 0 13px 13px;
+    border-top: 1px solid var(--line);
+    margin-top: -1px;
+    padding-top: 12px;
+}
+
+.tr-steps {
+    margin: 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--text-2);
+}
+
+.tr-steps li::marker {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+}
+
+.tr-caution {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 9px;
+    background: rgba(211, 160, 65, .09);
+    border: 1px solid rgba(211, 160, 65, .24);
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--text-2);
+}
+
 /* ---------- модальные окна ---------- */
 
 .modal {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ctai-base-v19'; // актуальная версия кэша
+const CACHE_NAME = 'ctai-base-v20'; // актуальная версия кэша
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -11,6 +11,7 @@ const STATIC_ASSETS = [
   './questions-fire.js',
   './questions-labor.js',
   './credentials.js',
+  './troubles.js',
   './manifest.json',
   './apple-touch-icon.png',
   'https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Unbounded:wght@400;600&display=swap'

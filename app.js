@@ -1733,6 +1733,78 @@ function renderCredentials() {
     renderAccess();
 }
 
+// ==================== ЧТО ДЕЛАТЬ, ЕСЛИ НЕ РАБОТАЕТ ====================
+let troubleOpen = '';
+
+function troubleItem(t) {
+    const wrap = accessEl('div', 'tr-item' + (troubleOpen === t.id ? ' open' : ''));
+
+    const head = accessEl('button', 'tr-head');
+    const main = accessEl('span', 'tr-main');
+    main.appendChild(accessEl('span', 'tr-title', t.title));
+    if (t.summary) main.appendChild(accessEl('span', 'tr-sum', t.summary));
+    head.appendChild(main);
+    head.appendChild(accessEl('span', 'tr-chev', '›'));
+    head.onclick = function () {
+        troubleOpen = troubleOpen === t.id ? '' : t.id;
+        renderTroubles();
+    };
+    wrap.appendChild(head);
+
+    if (troubleOpen === t.id) {
+        const body = accessEl('div', 'tr-body');
+        const ol = accessEl('ol', 'tr-steps');
+        (t.steps || []).forEach(function (s) {
+            ol.appendChild(accessEl('li', '', s));
+        });
+        body.appendChild(ol);
+        if (t.caution) body.appendChild(accessEl('div', 'tr-caution', t.caution));
+        wrap.appendChild(body);
+    }
+    return wrap;
+}
+
+function renderTroubles() {
+    const list = document.getElementById('trouble-list');
+    if (!list) return;
+
+    const qEl = document.getElementById('trouble-search');
+    const q = ((qEl && qEl.value) || '').trim().toLowerCase();
+    const all = (typeof troublesData !== 'undefined') ? troublesData : [];
+
+    const items = all.filter(function (t) {
+        if (!q) return true;
+        const hay = [t.title, t.summary, t.tags, (t.steps || []).join(' '), t.caution].join(' ').toLowerCase();
+        return hay.indexOf(q) >= 0;
+    });
+
+    list.innerHTML = '';
+    if (!items.length) {
+        const e = accessEl('div', 'duty-empty', 'Ничего не найдено');
+        e.style.padding = '20px 0';
+        list.appendChild(e);
+        return;
+    }
+    items.forEach(function (t) {
+        list.appendChild(troubleItem(t));
+    });
+}
+
+function openTroubles() {
+    const m = document.getElementById('trouble-modal');
+    if (!m) return;
+    m.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    renderTroubles();
+}
+
+function closeTroubles() {
+    const m = document.getElementById('trouble-modal');
+    if (!m) return;
+    m.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
 // ==================== SERVICE WORKER ====================
 function manualCheckForUpdates() {
     if (!('serviceWorker' in navigator)) return;
