@@ -302,6 +302,11 @@
                     <span class="row-main"><span class="row-title">Конвертер единиц</span><span class="row-meta">Давление, температура, уровень, расход</span></span>
                     <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
                 </button>
+                <button id="s7calc-btn" class="row">
+                    <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 4 7.8 20M16.2 4l-1.7 16M4 9h16M3.4 15h16"/></svg></span>
+                    <span class="row-main"><span class="row-title">Калькулятор S7</span><span class="row-meta">W#16#00E1, B#16#, DW#16# — в десятичное и обратно</span></span>
+                    <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+                </button>
             </div>
         </div>
 
@@ -392,6 +397,40 @@
                 </div>
             </div>
         </div>
+
+        <div id="s7calc-screen" class="hidden">
+            <button id="back-to-tools-from-s7" class="ghost-btn" style="margin-bottom:14px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="m15 5-7 7 7 7"/></svg>
+                К инструментам
+            </button>
+            <div class="card card-pad">
+                <div class="stack stack-16">
+                    <div class="field">
+                        <label class="field-label" for="s7-input">Значение</label>
+                        <input type="text" id="s7-input" class="input input-mono" placeholder="W#16#00E1"
+                               autocomplete="off" autocapitalize="off" spellcheck="false" oninput="s7Update()">
+                    </div>
+
+                    <div id="s7-out"></div>
+
+                    <div id="s7-bits-wrap">
+                        <div class="field-label" style="margin-bottom:8px">Биты</div>
+                        <div id="s7-bits" class="s7-bits"></div>
+                    </div>
+
+                    <div class="btn-row">
+                        <button id="s7-copy-dec" class="btn" onclick="s7Copy('dec')">Копировать Dec</button>
+                        <button id="s7-copy-hex" class="btn" onclick="s7Copy('hex')">Копировать Hex</button>
+                    </div>
+
+                    <div class="hint" style="padding:0">
+                        Понимает <span class="mono">B#16#</span>, <span class="mono">W#16#</span>, <span class="mono">DW#16#</span>,
+                        а также <span class="mono">16#00E1</span>, <span class="mono">2#1010</span>, <span class="mono">0x00E1</span>
+                        и просто число — тогда покажет S7-запись.
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- ================= ДОСТУП ================= -->
@@ -472,7 +511,7 @@
             </a>
         </div>
 
-        <div class="version">Версия <span id="app-version">V93</span></div>
+        <div class="version">Версия <span id="app-version">V94</span></div>
     </section>
 </main>
 

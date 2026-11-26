@@ -744,12 +744,14 @@ function showToolsList() {
     document.getElementById('tools-list-screen').classList.remove('hidden');
     document.getElementById('calc-4-20ma-screen').classList.add('hidden');
     document.getElementById('converter-screen').classList.add('hidden');
+    document.getElementById('s7calc-screen').classList.add('hidden');
 }
 
 function openCalc4_20mA() {
     document.getElementById('tools-list-screen').classList.add('hidden');
     document.getElementById('calc-4-20ma-screen').classList.remove('hidden');
     document.getElementById('converter-screen').classList.add('hidden');
+    document.getElementById('s7calc-screen').classList.add('hidden');
     updateUnitSelect();
     calcCurrentToValue();
 }
@@ -758,6 +760,7 @@ function openConverter() {
     document.getElementById('tools-list-screen').classList.add('hidden');
     document.getElementById('calc-4-20ma-screen').classList.add('hidden');
     document.getElementById('converter-screen').classList.remove('hidden');
+    document.getElementById('s7calc-screen').classList.add('hidden');
     updateConverterUnits();
     convertUnits();
 }
@@ -908,6 +911,181 @@ function copyConvResult() {
     } else if (result) {
         alert('Буфер обмена недоступен');
     }
+}
+
+// ==================== КАЛЬКУЛЯТОР S7 ====================
+let s7Last = null;
+
+function s7ValidDigits(digits, radix) {
+    const allowed = {
+        2: /^[01]+$/,
+        8: /^[0-7]+$/,
+        10: /^\d+$/,
+        16: /^[0-9a-f]+$/i
+    };
+    return allowed[radix] ? allowed[radix].test(digits) : false;
+}
+
+/**
+ * Разбирает запись вида W#16#00E1, B#16#FF, DW#16#..., 16#00E1,
+ * 2#1010, 0x00E1, а также обычное число.
+ */
+function s7Parse(raw) {
+    const s = String(raw || '').trim().replace(/[\s_]/g, '');
+    if (!s) return null;
+
+    // B#16#FF / W#16#00E1 / DW#16#00E1_0000
+    let m = s.match(/^(B|W|DW)#(\d+)#([0-9A-Fa-f]+)$/i);
+    if (m) {
+        const type = m[1].toUpperCase();
+        const width = type === 'B' ? 8 : (type === 'W' ? 16 : 32);
+        const radix = parseInt(m[2], 10);
+        if ([2, 8, 10, 16].indexOf(radix) < 0) return { error: 'Основание — 2, 8, 10 или 16' };
+        if (!s7ValidDigits(m[3], radix)) return { error: 'Недопустимые цифры для основания ' + radix };
+        const v = parseInt(m[3], radix);
+        if (v >= Math.pow(2, width)) return { error: 'Не влезает в ' + width + ' бит' };
+        return { value: v, width: width };
+    }
+
+    // 16#00E1 / 2#1010 / 8#17
+    m = s.match(/^(16|2|8)#([0-9A-Fa-f]+)$/i);
+    if (m) {
+        const radix = parseInt(m[1], 10);
+        if (!s7ValidDigits(m[2], radix)) return { error: 'Недопустимые цифры для основания ' + radix };
+        const n = m[2].length;
+        let width;
+        if (radix === 16) width = n <= 2 ? 8 : (n <= 4 ? 16 : 32);
+        else if (radix === 2) width = n <= 8 ? 8 : (n <= 16 ? 16 : 32);
+        else width = n <= 3 ? 8 : (n <= 6 ? 16 : 32);
+        const v = parseInt(m[2], radix);
+        // если по числу цифр не влезает — берём следующий разряд
+        while (v >= Math.pow(2, width) && width < 32) width *= 2;
+        if (v >= Math.pow(2, width)) return { error: 'Слишком большое число' };
+        return { value: v, width: width };
+    }
+
+    // 0x00E1
+    m = s.match(/^0x([0-9a-f]+)$/i);
+    if (m) {
+        const digits = m[1].length;
+        const width = digits <= 2 ? 8 : (digits <= 4 ? 16 : 32);
+        return { value: parseInt(m[1], 16), width: width };
+    }
+
+    // десятичное, в том числе отрицательное
+    if (/^-?\d+$/.test(s)) {
+        const n = parseInt(s, 10);
+        if (n < 0) {
+            const width = n >= -32768 ? 16 : 32;
+            return { value: (n + Math.pow(2, width)) % Math.pow(2, width), width: width, signedIn: n };
+        }
+        const width = n <= 255 ? 8 : (n <= 65535 ? 16 : 32);
+        if (n >= Math.pow(2, width)) return { error: 'Слишком большое число' };
+        return { value: n, width: width };
+    }
+
+    // голый шестнадцатеричный вид, если есть буквы a-f
+    if (/^[0-9a-f]{1,8}$/i.test(s) && /[a-f]/i.test(s)) {
+        const width = s.length <= 2 ? 8 : (s.length <= 4 ? 16 : 32);
+        return { value: parseInt(s, 16), width: width };
+    }
+
+    return { error: 'Не понял формат записи' };
+}
+
+function s7TypeLetter(width) {
+    return width === 8 ? 'B' : (width === 16 ? 'W' : 'DW');
+}
+
+function s7Pad(hex, width) {
+    return '0'.repeat(Math.max(0, width / 4 - hex.length)) + hex;
+}
+
+function s7RenderBits(value, width) {
+    const el = document.getElementById('s7-bits');
+    if (!el) return;
+    let html = '';
+    const perRow = 16;
+    for (let start = width - 1; start >= 0; start -= perRow) {
+        html += '<div class="s7-bit-row">';
+        for (let bit = start; bit > start - perRow && bit >= 0; bit--) {
+            const on = (value >>> bit) & 1;
+            html += '<span class="s7-bit' + (on ? ' on' : '') + '"><i>' + bit + '</i><b>' + on + '</b></span>';
+        }
+        html += '</div>';
+    }
+    el.innerHTML = html;
+}
+
+function s7Update() {
+    const input = document.getElementById('s7-input');
+    const out = document.getElementById('s7-out');
+    if (!input || !out) return;
+
+    const res = s7Parse(input.value);
+    s7Last = null;
+
+    if (!res) {
+        out.innerHTML = '<div class="s7-empty">Введите значение, например W#16#00E1</div>';
+        s7RenderBits(0, 0);
+        return;
+    }
+    if (res.error) {
+        out.innerHTML = '<div class="s7-err">' + res.error + '</div>';
+        s7RenderBits(0, 0);
+        return;
+    }
+
+    const width = res.width;
+    const value = res.value;
+    const hex = value.toString(16).toUpperCase();
+    const bin = value.toString(2);
+    const oct = value.toString(8);
+    const signed = value >= Math.pow(2, width - 1) ? value - Math.pow(2, width) : value;
+    const type = s7TypeLetter(width);
+    const s7hex = type + '#16#' + s7Pad(hex, width);
+    // двоичное — по ширине разряда, сгруппировано по полубайту для чтения
+    const binPadded = '0'.repeat(Math.max(0, width - bin.length)) + bin;
+    const s7bin = type + '#2#' + binPadded.replace(/(.{4})(?=.)/g, '$1 ');
+    const s7dec = type + '#' + value;
+
+    s7Last = { dec: String(value), hex: s7hex };
+
+    const line = (k, v, extra) =>
+        '<div class="s7-line' + (extra ? ' ' + extra : '') + '"><span class="s7-k">' + k + '</span><span class="s7-v">' + v + '</span></div>';
+
+    out.innerHTML =
+        line('Десятичное', String(value), 'big') +
+        line('Знаковое ' + width + ' бит', String(signed)) +
+        line('S7, hex', s7hex) +
+        line('S7, двоичное', s7bin) +
+        line('S7, десятичное', s7dec) +
+        line('Восьмеричное', '8#' + oct);
+
+    s7RenderBits(value, width);
+}
+
+function s7Copy(kind) {
+    if (!s7Last) {
+        alert('Сначала введите значение');
+        return;
+    }
+    const text = kind === 'hex' ? s7Last.hex : s7Last.dec;
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () { alert('Скопировано: ' + text); });
+    } else {
+        alert('Буфер обмена недоступен');
+    }
+}
+
+function openS7Calc() {
+    document.getElementById('tools-list-screen').classList.add('hidden');
+    document.getElementById('calc-4-20ma-screen').classList.add('hidden');
+    document.getElementById('converter-screen').classList.add('hidden');
+    document.getElementById('s7calc-screen').classList.remove('hidden');
+    const input = document.getElementById('s7-input');
+    if (input && !input.value) input.value = 'W#16#00E1';
+    s7Update();
 }
 
 // ==================== ПОГОДА ====================
@@ -1529,8 +1707,10 @@ window.onload = () => {
 
     document.getElementById('calc-4-20ma-btn').addEventListener('click', openCalc4_20mA);
     document.getElementById('converter-btn').addEventListener('click', openConverter);
+    document.getElementById('s7calc-btn').addEventListener('click', openS7Calc);
     document.getElementById('back-to-tools-list').addEventListener('click', showToolsList);
     document.getElementById('back-to-tools-from-converter').addEventListener('click', showToolsList);
+    document.getElementById('back-to-tools-from-s7').addEventListener('click', showToolsList);
     
     showToolsList();
     
