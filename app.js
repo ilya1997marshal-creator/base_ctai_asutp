@@ -753,7 +753,7 @@ function openCalc4_20mA() {
     document.getElementById('converter-screen').classList.add('hidden');
     document.getElementById('s7calc-screen').classList.add('hidden');
     updateUnitSelect();
-    calcCurrentToValue();
+    sigRecalc('raw');
 }
 
 function openConverter() {
@@ -800,107 +800,142 @@ const unitConversion = {
     }
 };
 
-function onCalcUnitTypeChange() {
-    updateUnitSelect();
-    calcCurrentToValue();
+
+// ==================== КАЛЬКУЛЯТОР СИГНАЛОВ ====================
+const SIGNAL_FULL_SCALE = 27648;
+
+const SIGNAL_TYPES = {
+    '4-20': { lo: 4, hi: 20, label: 'Ток, мА' },
+    '0-20': { lo: 0, hi: 20, label: 'Ток, мА' },
+    '0-10': { lo: 0, hi: 10, label: 'Напряжение, В' }
+};
+
+const UNIT_PRESETS = {
+    pressure: { units: ['бар', 'кгс/см²', 'МПа', 'кПа'], min: 0, max: 100 },
+    temperature: { units: ['°C'], min: 0, max: 600 },
+    level: { units: ['мм', 'м', '%'], min: 0, max: 1000 },
+    flow: { units: ['т/ч', 'м³/ч', '%'], min: 0, max: 500 },
+    custom: { units: ['ед.'], min: 0, max: 100 }
+};
+
+function sigEl(id) {
+    return document.getElementById(id);
+}
+
+function sigNum(id, def) {
+    const el = sigEl(id);
+    if (!el) return def;
+    const v = parseFloat(el.value);
+    return isFinite(v) ? v : def;
+}
+
+function sigFmt(n) {
+    if (!isFinite(n)) return '0';
+    const r = Math.round(n * 100) / 100;
+    return String(r);
+}
+
+function sigType() {
+    const el = sigEl('sig-type');
+    return (el && SIGNAL_TYPES[el.value]) ? el.value : '4-20';
 }
 
 function updateUnitSelect() {
-    const type = document.getElementById('calc-unit-type').value;
-    const units = unitMap[type] || ['ед.'];
-    const select = document.getElementById('calc-unit-select');
-    select.innerHTML = '';
-    units.forEach(unit => {
-        const option = document.createElement('option');
-        option.value = unit;
-        option.textContent = unit;
-        select.appendChild(option);
-    });
+    const el = sigEl('calc-unit-type');
+    const sel = sigEl('calc-unit-select');
+    if (!el || !sel) return;
+    const preset = UNIT_PRESETS[el.value] || UNIT_PRESETS.custom;
+    const prev = sel.value;
+    sel.innerHTML = preset.units.map(function (u) { return '<option>' + u + '</option>'; }).join('');
+    if (preset.units.indexOf(prev) >= 0) sel.value = prev;
 }
 
-function updateConverterUnits() {
-    const type = document.getElementById('conv-unit-type').value;
-    const units = unitMap[type] || ['ед.'];
-    const fromSelect = document.getElementById('conv-from-unit');
-    const toSelect = document.getElementById('conv-to-unit');
-    fromSelect.innerHTML = '';
-    toSelect.innerHTML = '';
-    units.forEach(unit => {
-        const opt1 = document.createElement('option');
-        opt1.value = unit;
-        opt1.textContent = unit;
-        const opt2 = opt1.cloneNode(true);
-        fromSelect.appendChild(opt1);
-        toSelect.appendChild(opt2);
-    });
-    if (units.length > 1) {
-        toSelect.selectedIndex = 1;
-    }
-    convertUnits();
+function onCalcUnitTypeChange() {
+    const el = sigEl('calc-unit-type');
+    const preset = (el && UNIT_PRESETS[el.value]) || UNIT_PRESETS.custom;
+    const minEl = sigEl('calc-min-val');
+    const maxEl = sigEl('calc-max-val');
+    if (minEl) minEl.value = preset.min;
+    if (maxEl) maxEl.value = preset.max;
+    updateUnitSelect();
+    sigRecalc('raw');
 }
 
-function convertUnits() {
-    const type = document.getElementById('conv-unit-type').value;
-    const value = parseFloat(document.getElementById('conv-value').value) || 0;
-    const fromUnit = document.getElementById('conv-from-unit').value;
-    const toUnit = document.getElementById('conv-to-unit').value;
-    const resultInput = document.getElementById('conv-result');
-    
-    if (!fromUnit || !toUnit) {
-        resultInput.value = '';
-        return;
-    }
+function sigOnTypeChange() {
+    const cfg = SIGNAL_TYPES[sigType()];
+    const label = sigEl('sig-cur-label');
+    if (label) label.textContent = cfg.label;
+    sigRecalc('raw');
+}
 
-    let result;
-    const conversion = unitConversion[type];
+/**
+ * Пересчёт между кодом АЦП (0…27648), током/напряжением и инженерной величиной.
+ * source — поле, которое правит пользователь; остальные два обновляются.
+ */
+function sigRecalc(source) {
+    const cfg = SIGNAL_TYPES[sigType()];
+    const min = sigNum('calc-min-val', 0);
+    const max = sigNum('calc-max-val', 100);
+    let pct = 0;
 
-    if (type === 'temperature') {
-        const base = conversion[fromUnit].toBase(value);
-        result = conversion[toUnit].fromBase(base);
+    if (source === 'cur') {
+        const cur = sigNum('sig-cur', cfg.lo);
+        pct = (cur - cfg.lo) / (cfg.hi - cfg.lo);
+    } else if (source === 'val') {
+        const val = sigNum('sig-val', min);
+        pct = (max === min) ? 0 : (val - min) / (max - min);
     } else {
-        const baseValue = value * (conversion[fromUnit] || 1);
-        result = baseValue / (conversion[toUnit] || 1);
+        pct = sigNum('sig-raw', 0) / SIGNAL_FULL_SCALE;
     }
 
-    resultInput.value = parseFloat(result.toFixed(6));
+    const raw = Math.round(pct * SIGNAL_FULL_SCALE);
+    const cur = cfg.lo + pct * (cfg.hi - cfg.lo);
+    const val = min + pct * (max - min);
+
+    if (source !== 'raw' && sigEl('sig-raw')) sigEl('sig-raw').value = raw;
+    if (source !== 'cur' && sigEl('sig-cur')) sigEl('sig-cur').value = sigFmt(cur);
+    if (source !== 'val' && sigEl('sig-val')) sigEl('sig-val').value = sigFmt(val);
+
+    const label = sigEl('sig-cur-label');
+    if (label) label.textContent = cfg.label;
+
+    sigInfo(pct, raw);
 }
 
-function calcCurrentToValue() {
-    const minVal = parseFloat(document.getElementById('calc-min-val').value) || 0;
-    const maxVal = parseFloat(document.getElementById('calc-max-val').value) || 100;
-    const current = parseFloat(document.getElementById('calc-current').value) || 4;
-    const clampedCurrent = Math.min(20, Math.max(4, current));
-    const value = minVal + (maxVal - minVal) * (clampedCurrent - 4) / 16;
-    document.getElementById('calc-value').value = Math.round(value * 100) / 100;
-    updateCalcResult();
+function sigInfo(pct, raw) {
+    const el = sigEl('sig-info');
+    if (!el) return;
+
+    let status = 'В пределах диапазона';
+    let cls = '';
+    if (raw < 0) {
+        status = 'Ниже диапазона — недобор линии (8000)';
+        cls = 'sig-err';
+    } else if (raw > SIGNAL_FULL_SCALE) {
+        status = 'Выше диапазона — переполнение (7FFF)';
+        cls = 'sig-err';
+    } else if (raw === 0) {
+        status = 'Нижняя граница сигнала';
+    } else if (raw === SIGNAL_FULL_SCALE) {
+        status = 'Верхняя граница сигнала';
+    }
+
+    el.innerHTML = '<span class="sig-pct">' + (pct * 100).toFixed(1) + ' % диапазона</span>' +
+        '<span class="' + cls + '">' + status + '</span>';
 }
 
-function calcValueToCurrent() {
-    const minVal = parseFloat(document.getElementById('calc-min-val').value) || 0;
-    const maxVal = parseFloat(document.getElementById('calc-max-val').value) || 100;
-    const value = parseFloat(document.getElementById('calc-value').value) || 0;
-    const current = 4 + (16 * (value - minVal)) / (maxVal - minVal);
-    document.getElementById('calc-current').value = Math.round(current * 100) / 100;
-    updateCalcResult();
-}
-
-function updateCalcResult() {
-    const current = parseFloat(document.getElementById('calc-current').value) || 0;
-    const value = parseFloat(document.getElementById('calc-value').value) || 0;
-    const unit = document.getElementById('calc-unit-select').value || '';
-    const resEl = document.getElementById('calc-result');
-    resEl.textContent = `${current.toFixed(2)} мА ↔ ${value.toFixed(2)} ${unit}`;
-}
-
-function copyCalcResult() {
-    const current = parseFloat(document.getElementById('calc-current').value) || 0;
-    const value = parseFloat(document.getElementById('calc-value').value) || 0;
-    const unit = document.getElementById('calc-unit-select').value || '';
-    const text = `${current.toFixed(2)} мА ↔ ${value.toFixed(2)} ${unit}`;
+function sigCopy(what) {
+    const el = what === 'raw' ? sigEl('sig-raw') : sigEl('sig-val');
+    if (!el) return;
+    const v = el.value;
     if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(() => alert('Результат скопирован'));
+        navigator.clipboard.writeText(v).then(function () {
+            showCopyToast('Скопировано: ' + v);
+        }).catch(function () {
+            showCopyToast('Не удалось скопировать');
+        });
     } else {
-        alert('Буфер обмена недоступен');
+        showCopyToast('Буфер обмена недоступен');
     }
 }
 

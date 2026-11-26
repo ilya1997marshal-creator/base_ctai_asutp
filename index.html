@@ -294,7 +294,7 @@
             <div class="stack">
                 <button id="calc-4-20ma-btn" class="row">
                     <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18V6M4 18h16"/><path d="m7 15 4-4 3 2 5-6"/></svg></span>
-                    <span class="row-main"><span class="row-title">Калькулятор 4–20 мА</span><span class="row-meta">Ток в значение и обратно</span></span>
+                    <span class="row-main"><span class="row-title">Калькулятор сигналов</span><span class="row-meta">Код АЦП ↔ мА ↔ величина</span></span>
                     <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
                 </button>
                 <button id="converter-btn" class="row">
@@ -310,13 +310,21 @@
             </div>
         </div>
 
-        <div id="calc-4-20ma-screen" class="hidden">
+                <div id="calc-4-20ma-screen" class="hidden">
             <button id="back-to-tools-list" class="ghost-btn" style="margin-bottom:14px">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="m15 5-7 7 7 7"/></svg>
                 К инструментам
             </button>
             <div class="card card-pad">
                 <div class="stack stack-16">
+                    <div class="field">
+                        <label class="field-label" for="sig-type">Тип сигнала</label>
+                        <select id="sig-type" class="input" onchange="sigOnTypeChange()">
+                            <option value="4-20">4–20 мА</option>
+                            <option value="0-20">0–20 мА</option>
+                            <option value="0-10">0–10 В</option>
+                        </select>
+                    </div>
                     <div class="field">
                         <label class="field-label" for="calc-unit-type">Тип величины</label>
                         <select id="calc-unit-type" class="input" onchange="onCalcUnitTypeChange()">
@@ -330,34 +338,41 @@
                     <div class="field-row">
                         <div class="field">
                             <label class="field-label" for="calc-min-val">Мин.</label>
-                            <input type="number" id="calc-min-val" value="0" step="any" class="input input-mono" oninput="calcCurrentToValue()">
+                            <input type="number" id="calc-min-val" value="0" step="any" class="input input-mono" oninput="sigRecalc('raw')">
                         </div>
                         <div class="field">
                             <label class="field-label" for="calc-max-val">Макс.</label>
-                            <input type="number" id="calc-max-val" value="100" step="any" class="input input-mono" oninput="calcCurrentToValue()">
+                            <input type="number" id="calc-max-val" value="100" step="any" class="input input-mono" oninput="sigRecalc('raw')">
                         </div>
                     </div>
                     <div class="field">
                         <label class="field-label" for="calc-unit-select">Единицы</label>
-                        <select id="calc-unit-select" class="input" onchange="calcCurrentToValue()"></select>
+                        <select id="calc-unit-select" class="input" onchange="sigRecalc('raw')"></select>
+                    </div>
+                    <div class="field">
+                        <label class="field-label" for="sig-raw">Код АЦП, 0…27648</label>
+                        <input type="number" id="sig-raw" value="13824" step="1" class="input input-mono" oninput="sigRecalc('raw')">
                     </div>
                     <div class="field-row">
                         <div class="field">
-                            <label class="field-label" for="calc-current">Ток, мА</label>
-                            <input type="number" id="calc-current" value="12" step="any" class="input input-mono" oninput="calcCurrentToValue()">
+                            <label class="field-label" for="sig-cur" id="sig-cur-label">Ток, мА</label>
+                            <input type="number" id="sig-cur" value="12" step="any" class="input input-mono" oninput="sigRecalc('cur')">
                         </div>
                         <div class="field">
-                            <label class="field-label" for="calc-value">Значение</label>
-                            <input type="number" id="calc-value" value="50" step="any" class="input input-mono" oninput="calcValueToCurrent()">
+                            <label class="field-label" for="sig-val">Значение</label>
+                            <input type="number" id="sig-val" value="50" step="any" class="input input-mono" oninput="sigRecalc('val')">
                         </div>
                     </div>
-                    <div id="calc-result" class="calc-result"></div>
-                    <button onclick="copyCalcResult()" class="btn">Копировать</button>
+                    <div id="sig-info" class="sig-info"></div>
+                    <div class="btn-row">
+                        <button onclick="sigCopy('value')" class="btn">Копировать значение</button>
+                        <button onclick="sigCopy('raw')" class="btn">Копировать код</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div id="converter-screen" class="hidden">
+<div id="converter-screen" class="hidden">
             <button id="back-to-tools-from-converter" class="ghost-btn" style="margin-bottom:14px">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="m15 5-7 7 7 7"/></svg>
                 К инструментам
@@ -513,7 +528,7 @@
             </a>
         </div>
 
-        <div class="version">Версия <span id="app-version">V97</span></div>
+        <div class="version">Версия <span id="app-version">V98</span></div>
     </section>
 </main>
 
