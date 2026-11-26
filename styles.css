@@ -4,7 +4,7 @@
    Одна нейтральная графитовая шкала, один стальной акцент, моно-цифры.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 :root {
     color-scheme: dark;
@@ -200,8 +200,8 @@ svg {
 }
 
 .mark-sm {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     color: var(--acc);
     flex: none;
 }
@@ -481,8 +481,8 @@ svg {
 }
 
 .hero-mark svg {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
 }
 
 @keyframes markIn {
@@ -491,15 +491,36 @@ svg {
 }
 
 .hero-title {
-    font-size: 30px;
+    font-family: var(--mono);
+    font-size: 28px;
     font-weight: 600;
-    letter-spacing: -.03em;
-    line-height: 1.1;
+    letter-spacing: -.01em;
+    line-height: 1.15;
+    white-space: nowrap;
+    cursor: default;
 }
 
-.hero-title span {
-    font-weight: 400;
+.t-line {
+    display: inline-block;
+}
+
+.t-line .c {
+    color: var(--muted);
+}
+
+.t-line .c.sp {
+    display: inline-block;
+    width: .32em;
+}
+
+.t-line .c.ok {
     color: var(--text-2);
+    font-weight: 500;
+}
+
+.t-line .c.lead.ok {
+    color: var(--text);
+    font-weight: 600;
 }
 
 .hero-sub {
