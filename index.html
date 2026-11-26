@@ -443,30 +443,22 @@
             <div class="scale"></div>
         </div>
 
-        <div class="stack">
-            <button onclick="openAccessCategory('Windows')" class="row">
-                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 20h8"/></svg></span>
-                <span class="row-main"><span class="row-title">Windows</span><span class="row-meta">АРМ, серверы, службы</span></span>
-                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
-            </button>
-            <button onclick="openAccessCategory('SCADA/HMI')" class="row">
-                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="12" rx="2"/><path d="M7.5 9h4M7.5 12h6"/><path d="M9 20h6"/></svg></span>
-                <span class="row-main"><span class="row-title">SCADA и HMI</span><span class="row-meta">WinCC, панели оператора</span></span>
-                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
-            </button>
-            <button onclick="openAccessCategory('ПЛК')" class="row">
-                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/><path d="M10 3v3.5M14 3v3.5M10 17.5V21M14 17.5V21"/></svg></span>
-                <span class="row-main"><span class="row-title">ПЛК</span><span class="row-meta">S7-400, пароли доступа</span></span>
-                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
-            </button>
-            <button onclick="openAccessCategory('Коммутаторы')" class="row">
-                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="2"/><path d="M7 12h.01M11 12h.01M15 12h.01M18 12h.01"/></svg></span>
-                <span class="row-main"><span class="row-title">Коммутаторы</span><span class="row-meta">Moxa, Scalance, Mikrotik</span></span>
-                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+                <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg>
+            <input id="access-search" class="search-input" placeholder="Система, логин, IP, блок" autocomplete="off" spellcheck="false" oninput="renderAccess()">
+            <button class="search-clear" onclick="clearAccessSearch()" aria-label="Очистить">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
             </button>
         </div>
 
-        <div class="hint">Раздел содержит служебные пароли. Не передавайте их за пределы подразделения.</div>
+        <div class="chips-row" id="access-blocks"></div>
+        <div class="chips-row" id="access-kinds"></div>
+
+        <div class="hint" id="access-count" style="padding:2px 4px 8px"></div>
+
+        <div id="access-list" class="stack"></div>
+
+<div class="hint">Раздел содержит служебные пароли. Не передавайте их за пределы подразделения.</div>
     </section>
 
     <!-- ================= ПОМОЩЬ ================= -->
@@ -511,7 +503,7 @@
             </a>
         </div>
 
-        <div class="version">Версия <span id="app-version">V94</span></div>
+        <div class="version">Версия <span id="app-version">V95</span></div>
     </section>
 </main>
 
@@ -559,22 +551,6 @@
             </button>
         </div>
         <div id="instructions-list" class="sheet-body"></div>
-    </div>
-</div>
-
-<!-- Категория доступа -->
-<div id="access-modal" class="modal hidden" onclick="if(event.target===this) closeAccessModal()">
-    <div class="sheet">
-        <div class="sheet-head">
-            <div class="sheet-title" id="access-modal-title"></div>
-            <button class="icon-btn" onclick="closeAccessModal()" aria-label="Закрыть">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
-            </button>
-        </div>
-        <div class="search-wrap">
-            <input type="text" id="access-search" oninput="filterAccessCategory()" placeholder="Поиск: система, логин, IP" class="input">
-        </div>
-        <div id="access-category-list" class="sheet-body"></div>
     </div>
 </div>
 

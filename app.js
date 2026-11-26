@@ -1423,103 +1423,201 @@ function updateProgress() {
 }
 
 // ==================== ДОСТУП (КАТЕГОРИИ) ====================
-let currentAccessCategory = null;
+// ==================== ДОСТУП (учётные данные) ====================
+let accessBlock = 'all';
+let accessKind = 'all';
+let accessQuery = '';
+let accessIndex = null;
 
-function openAccessCategory(category) {
-    currentAccessCategory = category;
-    document.getElementById('access-modal-title').textContent = category;
-    document.getElementById('access-search').value = '';
-    document.getElementById('access-modal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    renderAccessCategoryItems(category, '');
-}
-
-function closeAccessModal() {
-    document.getElementById('access-modal').classList.add('hidden');
-    document.body.style.overflow = '';
-    currentAccessCategory = null;
-}
-
-function filterAccessCategory() {
-    const searchQuery = document.getElementById('access-search').value.toLowerCase();
-    renderAccessCategoryItems(currentAccessCategory, searchQuery);
-}
-
-function renderAccessCategoryItems(category, searchQuery) {
-    const listEl = document.getElementById('access-category-list');
-    if (!listEl) return;
-    
-    const allItems = credentialsData[category] || [];
-    const filtered = allItems.filter(item => {
-        if (!searchQuery) return true;
-        const q = searchQuery;
-        return (item.system && item.system.toLowerCase().includes(q)) ||
-               (item.login && item.login.toLowerCase().includes(q)) ||
-               (item.password && item.password.toLowerCase().includes(q)) ||
-               (item.ip && item.ip.includes(q)) ||
-               (item.location && item.location.toLowerCase().includes(q)) ||
-               (item.description && item.description.toLowerCase().includes(q));
-    });
-    
-    listEl.innerHTML = '';
-    
-    const scrollTopBtn = document.createElement('div');
-    scrollTopBtn.className = 'modal-sticky-top';
-    scrollTopBtn.innerHTML = '<button aria-label="Наверх"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 6-6 6 6"/></svg></button>';
-    scrollTopBtn.onclick = (e) => {
-        e.stopPropagation();
-        listEl.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-    listEl.appendChild(scrollTopBtn);
-
-    if (filtered.length === 0) {
-        const emptyMsg = document.createElement('div');
-        emptyMsg.className = 'duty-empty';
-        emptyMsg.style.padding = '28px 0';
-        emptyMsg.style.textAlign = 'center';
-        emptyMsg.textContent = 'Ничего не найдено';
-        listEl.appendChild(emptyMsg);
-    } else {
-        filtered.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'card access-item';
-            div.style.marginBottom = '8px';
-            const meta = [
-                item.ip ? 'IP ' + item.ip : '',
-                item.location || '',
-                item.description || ''
-            ].filter(Boolean).join(' · ');
-            div.innerHTML = `
-                <div class="access-title">${item.system || ''}</div>
-                <div class="access-grid">
-                    <div>
-                        <div class="access-k">Логин</div>
-                        <div class="access-v">${item.login || '—'}</div>
-                    </div>
-                    <div>
-                        <div class="access-k">Пароль</div>
-                        <div class="access-v">${item.password || '—'}</div>
-                    </div>
-                </div>
-                ${meta ? `<div class="access-note">${meta}</div>` : ''}
-            `;
-            listEl.appendChild(div);
+function accessAllItems() {
+    if (accessIndex) return accessIndex;
+    const out = [];
+    (credentialsData.blocks || []).forEach(function (b) {
+        (b.items || []).forEach(function (it) {
+            out.push({
+                block: b.id,
+                blockTitle: b.title,
+                k: it.k || 'Прочее',
+                s: it.s || '',
+                l: it.l || '',
+                p: it.p || '',
+                i: it.i || '',
+                g: it.g || '',
+                n: it.n || ''
+            });
         });
+    });
+    accessIndex = out;
+    return out;
+}
+
+function accessKinds() {
+    const set = [];
+    accessAllItems().forEach(function (it) {
+        if (set.indexOf(it.k) < 0) set.push(it.k);
+    });
+    return set;
+}
+
+function accessChip(label, active, onclick) {
+    const b = document.createElement('button');
+    b.className = 'chip-btn' + (active ? ' on' : '');
+    b.textContent = label;
+    b.onclick = onclick;
+    return b;
+}
+
+function renderAccessFilters() {
+    const blocksEl = document.getElementById('access-blocks');
+    const kindsEl = document.getElementById('access-kinds');
+    if (!blocksEl || !kindsEl) return;
+
+    blocksEl.innerHTML = '';
+    blocksEl.appendChild(accessChip('Все', accessBlock === 'all', function () {
+        accessBlock = 'all';
+        renderAccess();
+    }));
+    (credentialsData.blocks || []).forEach(function (b) {
+        const n = (b.items || []).length;
+        blocksEl.appendChild(accessChip(b.title + ' · ' + n, accessBlock === b.id, function () {
+            accessBlock = b.id;
+            renderAccess();
+        }));
+    });
+
+    kindsEl.innerHTML = '';
+    const kinds = accessKinds();
+    if (kinds.length < 2) return;
+    kindsEl.appendChild(accessChip('Все типы', accessKind === 'all', function () {
+        accessKind = 'all';
+        renderAccess();
+    }));
+    kinds.forEach(function (k) {
+        kindsEl.appendChild(accessChip(k, accessKind === k, function () {
+            accessKind = k;
+            renderAccess();
+        }));
+    });
+}
+
+function accessCard(it) {
+    const card = document.createElement('div');
+    card.className = 'cred';
+
+    const top = document.createElement('div');
+    top.className = 'cred-top';
+    const sys = document.createElement('span');
+    sys.className = 'cred-sys';
+    sys.textContent = it.s || 'Без названия';
+    const kind = document.createElement('span');
+    kind.className = 'cred-kind';
+    kind.textContent = it.k;
+    top.appendChild(sys);
+    top.appendChild(kind);
+    card.appendChild(top);
+
+    function line(label, value, copyable) {
+        const row = document.createElement('div');
+        row.className = 'cred-line';
+        const k = document.createElement('span');
+        k.className = 'cred-k';
+        k.textContent = label;
+        row.appendChild(k);
+        if (copyable) {
+            const b = document.createElement('button');
+            b.className = 'cred-v cred-copy';
+            b.textContent = value;
+            b.onclick = function () { copyCred(value); };
+            row.appendChild(b);
+        } else {
+            const v = document.createElement('span');
+            v.className = 'cred-v';
+            v.textContent = value;
+            row.appendChild(v);
+        }
+        return row;
     }
 
-    const toggleScrollBtn = () => {
-        if (listEl.scrollTop > 150) {
-            scrollTopBtn.classList.add('visible');
-        } else {
-            scrollTopBtn.classList.remove('visible');
-        }
-    };
-    listEl.addEventListener('scroll', toggleScrollBtn);
-    listEl.scrollTop = 0;
-    toggleScrollBtn();
+    card.appendChild(line('Логин', it.l || '—', !!it.l));
+    card.appendChild(line('Пароль', it.p || '—', !!it.p));
+    if (it.i) card.appendChild(line('IP', it.i, true));
+
+    const meta = [it.g, it.n].filter(Boolean).join(' · ');
+    if (meta) {
+        const note = document.createElement('div');
+        note.className = 'cred-note';
+        note.textContent = meta;
+        card.appendChild(note);
+    }
+    return card;
 }
 
-function renderCredentials() {}
+function copyCred(text) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () { alert('Скопировано: ' + text); });
+    } else {
+        alert('Буфер обмена недоступен');
+    }
+}
+
+function clearAccessSearch() {
+    const el = document.getElementById('access-search');
+    if (el) el.value = '';
+    accessQuery = '';
+    renderAccess();
+}
+
+function renderAccess() {
+    renderAccessFilters();
+
+    const listEl = document.getElementById('access-list');
+    const countEl = document.getElementById('access-count');
+    if (!listEl) return;
+
+    const searchEl = document.getElementById('access-search');
+    if (searchEl) accessQuery = searchEl.value || '';
+
+    const q = accessQuery.trim().toLowerCase();
+    const items = accessAllItems().filter(function (it) {
+        if (accessBlock !== 'all' && it.block !== accessBlock) return false;
+        if (accessKind !== 'all' && it.k !== accessKind) return false;
+        if (!q) return true;
+        const hay = [it.s, it.l, it.p, it.i, it.n, it.g, it.blockTitle].join(' ').toLowerCase();
+        return hay.indexOf(q) >= 0;
+    });
+
+    listEl.innerHTML = '';
+    let lastBlock = null;
+    items.forEach(function (it) {
+        if (accessBlock === 'all' && it.block !== lastBlock) {
+            const h = document.createElement('div');
+            h.className = 'group-label';
+            h.textContent = it.blockTitle;
+            listEl.appendChild(h);
+            lastBlock = it.block;
+        }
+        listEl.appendChild(accessCard(it));
+    });
+
+    if (!items.length) {
+        const e = document.createElement('div');
+        e.className = 'duty-empty';
+        e.style.padding = '20px 0';
+        e.textContent = 'Ничего не найдено';
+        listEl.appendChild(e);
+    }
+
+    if (countEl) {
+        const filtered = q || accessBlock !== 'all' || accessKind !== 'all';
+        countEl.textContent = filtered
+            ? 'Найдено: ' + items.length + ' из ' + accessAllItems().length
+            : 'Всего записей: ' + items.length + ' · сверено ' + (credentialsData.updated || '');
+    }
+}
+
+function renderCredentials() {
+    renderAccess();
+}
 
 // ==================== SERVICE WORKER ====================
 function manualCheckForUpdates() {

@@ -1474,44 +1474,173 @@ select.input {
     color: var(--text-2);
 }
 
-/* ---------- доступ ---------- */
+/* ---------- доступ: поиск, фильтры, карточки ---------- */
 
-.access-item {
-    padding: 14px;
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 42px;
+    padding: 0 8px 0 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-ctl);
+    margin-bottom: 12px;
 }
 
-.access-title {
+.search-box > svg {
+    width: 16px;
+    height: 16px;
+    color: var(--muted);
+    flex: none;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: none;
+    outline: none;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+}
+
+.search-input::placeholder {
+    color: var(--muted);
+}
+
+.search-clear {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    color: var(--muted);
+}
+
+.search-clear svg {
+    width: 14px;
+    height: 14px;
+}
+
+.search-clear:hover {
+    background: var(--surface-2);
+    color: var(--text-2);
+}
+
+.chips-row {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 2px;
+    scrollbar-width: none;
+}
+
+.chips-row::-webkit-scrollbar {
+    display: none;
+}
+
+.chip-btn {
+    flex: none;
+    height: 30px;
+    padding: 0 11px;
+    border-radius: var(--r-pill);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--text-2);
+    font-size: 12.5px;
+    white-space: nowrap;
+    transition: background-color .16s ease, color .16s ease, border-color .16s ease;
+}
+
+.chip-btn:hover {
+    background: var(--surface-2);
+}
+
+.chip-btn.on {
+    background: var(--acc-soft);
+    border-color: rgba(134, 182, 232, .38);
+    color: var(--text);
+}
+
+.cred {
+    padding: 13px 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+}
+
+.cred-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 7px;
+}
+
+.cred-sys {
     font-size: 14px;
     font-weight: 500;
+    letter-spacing: -.005em;
 }
 
-.access-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px 16px;
-    margin-top: 10px;
-}
-
-.access-k {
+.cred-kind {
+    flex: none;
     font-family: var(--mono);
-    font-size: 10.5px;
+    font-size: 9.5px;
     letter-spacing: .02em;
     color: var(--muted);
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
 }
 
-.access-v {
-    font-family: var(--mono);
-    font-size: 12.5px;
-    color: var(--text);
-    margin-top: 2px;
-    word-break: break-all;
-    user-select: all;
+.cred-line {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 4px 0;
 }
 
-.access-note {
+.cred-k {
+    flex: none;
     font-size: 12px;
     color: var(--muted);
-    margin-top: 8px;
+}
+
+.cred-v {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    text-align: right;
+    word-break: break-all;
+}
+
+.cred-copy {
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    color: var(--acc);
+}
+
+.cred-copy:active {
+    opacity: .6;
+}
+
+.cred-note {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 7px;
+    padding-top: 7px;
+    border-top: 1px solid var(--line);
 }
 
 /* ---------- модальные окна ---------- */
