@@ -428,3 +428,15 @@ body {
     background-color: rgba(248, 113, 113, 0.2) !important;
     color: #b91c1c !important;
 }
+
+/* === ПХ (не смена, справочная отметка из графика) === */
+.shift-ПХ {
+    background-color: rgba(161, 161, 170, 0.12) !important;
+    color: rgba(212, 212, 216, 0.75) !important;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+.light-mode .shift-ПХ {
+    background-color: rgba(113, 113, 122, 0.12) !important;
+    color: #52525b !important;
+}

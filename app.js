@@ -590,6 +590,9 @@ function renderSchedule(monthName) {
             // === НОВЫЙ БЛОК: обработка больничного ===
             if (s === 'Б') {
                 scrollHtml += `<td class="shift-Б ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}">Б</td>`;
+            } else if (s === 'ПХ') {
+                // ПХ из графика: не смена, в кол-во смен и часы не входит
+                scrollHtml += `<td class="shift-ПХ ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}">ПХ</td>`;
             } else if (hourMap[s]) {
                 scrollHtml += `<td class="shift-D ${isToday ? 'today-column' : ''} ${isHoliday ? 'holiday-column' : ''}"><span class="hour-num">${hourMap[s]}</span></td>`;
             } else {
