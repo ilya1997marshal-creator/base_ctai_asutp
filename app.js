@@ -1491,6 +1491,7 @@ function renderAccessBlocks() {
         btn.onclick = function () {
             accessBlock = b.id;
             accessKind = 'all';
+            try { history.pushState({ accessBlock: b.id }, ''); } catch (e) {}
             renderAccess();
         };
         list.appendChild(btn);
@@ -1645,10 +1646,23 @@ function renderAccess() {
 }
 
 function accessBack() {
+    if (history.state && history.state.accessBlock) {
+        history.back();
+        return;
+    }
     accessBlock = null;
     accessKind = 'all';
     renderAccess();
 }
+
+// системная кнопка «назад» на телефоне возвращает из блока к списку блоков
+window.addEventListener('popstate', function () {
+    if (accessBlock !== null) {
+        accessBlock = null;
+        accessKind = 'all';
+        renderAccess();
+    }
+});
 
 function clearAccessSearch() {
     const el = document.getElementById('access-search');
