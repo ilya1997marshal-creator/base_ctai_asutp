@@ -199,13 +199,6 @@ svg {
     min-width: 0;
 }
 
-.mark-sm {
-    width: 20px;
-    height: 20px;
-    color: var(--acc);
-    flex: none;
-}
-
 .brand-sub {
     font-family: var(--mono);
     font-size: 10.5px;
@@ -468,21 +461,18 @@ svg {
 }
 
 .hero-mark {
-    width: 54px;
-    height: 54px;
+    width: 44px;
+    height: 44px;
     display: grid;
     place-items: center;
-    border-radius: 17px;
-    background: var(--surface);
-    border: 1px solid var(--line);
     color: var(--acc);
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     animation: markIn .55s cubic-bezier(.22, .61, .36, 1) both;
 }
 
 .hero-mark svg {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
 }
 
 @keyframes markIn {
@@ -504,21 +494,19 @@ svg {
     display: inline-block;
 }
 
-.t-line .c {
-    color: var(--muted);
-}
-
-.t-line .c.sp {
+.t-line .g {
     display: inline-block;
-    width: .32em;
-}
-
-.t-line .c.ok {
+    transform-origin: 50% 80%;
+    will-change: transform, opacity;
     color: var(--text-2);
     font-weight: 500;
 }
 
-.t-line .c.lead.ok {
+.t-line .g.sp {
+    width: .32em;
+}
+
+.t-line .g.lead {
     color: var(--text);
     font-weight: 600;
 }
