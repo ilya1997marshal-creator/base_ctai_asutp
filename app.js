@@ -62,21 +62,22 @@ function openUserSelection() {
     list.innerHTML = '';
 
     const studentDiv = document.createElement('div');
-    studentDiv.className = 'flex justify-center mb-4';
+    studentDiv.style.marginBottom = '14px';
     const studentBtn = document.createElement('button');
-    studentBtn.className = 'action-btn py-2.5 px-6 rounded-xl font-bold text-sm uppercase tracking-wider bg-emerald-500/10 border-emerald-500/30 text-emerald-400';
-    studentBtn.innerHTML = '👤 Ученик';
+    studentBtn.className = 'user-btn';
+    studentBtn.style.width = '100%';
+    studentBtn.textContent = 'Ученик';
     studentBtn.onclick = () => selectUser('Ученик');
     studentDiv.appendChild(studentBtn);
     list.appendChild(studentDiv);
 
     const grid = document.createElement('div');
-    grid.className = 'grid grid-cols-2 gap-2';
+    grid.className = 'user-grid';
     uniqueUsers.forEach(name => {
         if (name === 'Ученик') return;
         const btn = document.createElement('button');
         btn.textContent = name;
-        btn.className = 'action-btn py-2.5 px-3 rounded-xl font-bold text-xs uppercase tracking-wider text-center';
+        btn.className = 'user-btn';
         btn.onclick = () => selectUser(name);
         grid.appendChild(btn);
     });
@@ -169,12 +170,8 @@ function updateSalaryWidget() {
     const widget = document.getElementById('salary-widget');
     if (widget) {
         widget.innerHTML = `
-            <div class="bg-white/5 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1 animate-pulse">
-                💳 <span class="text-emerald-400 font-bold">Зарплата</span> ${salaryStr}
-            </div>
-            <div class="bg-white/5 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1 animate-pulse">
-                💰 <span class="text-amber-400 font-bold">Аванс</span> ${advanceStr}
-            </div>
+            <span class="metric"><span class="metric-k">Зарплата</span><span class="metric-v">${salaryStr}</span></span>
+            <span class="metric"><span class="metric-k">Аванс</span><span class="metric-v">${advanceStr}</span></span>
         `;
     }
 }
@@ -182,8 +179,6 @@ function updateSalaryWidget() {
 // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 function toggleTheme() {
     const isLight = document.body.classList.toggle('light-mode');
-    const icon = document.getElementById('theme-icon');
-    if (icon) icon.textContent = isLight ? '☀️' : '🌙';
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
 }
 
@@ -205,8 +200,10 @@ function switchTab(index) {
     document.querySelectorAll('.nav-item').forEach((btn, i) => {
         btn.classList.toggle('active', i === index);
     });
-    
-    if(index === 0) { updateOnDutyWidget(); updateCurrentDateDisplay(); updateSalaryWidget(); }
+
+    if (window.dockSync) window.dockSync(index);
+
+    if(index === 0) { updateOnDutyWidget(); updateCurrentDateDisplay(); updateSalaryWidget(); updateDutyClock(); }
     if(index === 1) {
         renderSchedule(document.getElementById('month-selector').value);
     }
@@ -275,7 +272,7 @@ function updateCurrentDateDisplay() {
     const now = new Date();
     const options = { weekday: 'long', day: 'numeric', month: 'long' };
     const formatted = now.toLocaleDateString('ru-RU', options);
-    dateEl.textContent = formatted;
+    dateEl.textContent = formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
 
 // ==================== ЖИВОЙ ВИДЖЕТ «НА СМЕНЕ» ====================
@@ -283,6 +280,15 @@ function getNowKrasnoyarsk() {
     const now = new Date();
     const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
     return new Date(utc + (3600000 * 7));
+}
+
+function updateDutyClock() {
+    const el = document.getElementById('duty-clock');
+    if (!el) return;
+    const now = getNowKrasnoyarsk();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    el.textContent = `${hh}:${mm} Крск`;
 }
 
 function updateOnDutyWidget() {
@@ -300,7 +306,7 @@ function updateOnDutyWidget() {
     const monthData = scheduleData[monthName];
     
     if (!monthData) {
-        dutyList.innerHTML = '<div class="w-full text-center py-3 opacity-30 text-[10px] font-black uppercase tracking-widest">Нет данных</div>';
+        dutyList.innerHTML = '<div class="duty-empty">Нет данных за этот месяц</div>';
         return;
     }
 
@@ -364,47 +370,21 @@ function updateOnDutyWidget() {
     });
 
     if (dayShiftNames.length === 0 && nightShiftNames.length === 0 && upcomingDayNames.length === 0 && upcomingNightNames.length === 0) {
-        dutyList.innerHTML = '<div class="text-center py-3 opacity-30 text-[10px] font-black uppercase tracking-widest">Нет смен</div>';
+        dutyList.innerHTML = '<div class="duty-empty">Никого нет на смене</div>';
         return;
     }
 
-    let html = '<div class="flex justify-center gap-4 flex-wrap">';
-    if (dayShiftNames.length > 0) {
-        html += `
-            <div class="text-center">
-                <div class="text-[8px] font-black uppercase text-emerald-500/60 mb-1 tracking-wider">День</div>
-                <div class="flex flex-col items-center gap-1">
-                    ${dayShiftNames.map(name => `<span class="bg-emerald-500/5 px-3 py-1 rounded-lg text-emerald-500 border border-emerald-500/10 text-xs font-bold whitespace-nowrap">${name}</span>`).join('')}
-                </div>
-            </div>`;
-    }
-    if (nightShiftNames.length > 0) {
-        html += `
-            <div class="text-center">
-                <div class="text-[8px] font-black uppercase text-blue-400/60 mb-1 tracking-wider">Ночь</div>
-                <div class="flex flex-col items-center gap-1">
-                    ${nightShiftNames.map(name => `<span class="bg-blue-500/5 px-3 py-1 rounded-lg text-blue-400 border border-blue-500/10 text-xs font-bold whitespace-nowrap">${name}</span>`).join('')}
-                </div>
-            </div>`;
-    }
-    if (upcomingDayNames.length > 0) {
-        html += `
-            <div class="text-center">
-                <div class="text-[8px] font-black uppercase text-emerald-500/40 mb-1 tracking-wider">День (ожид.)</div>
-                <div class="flex flex-col items-center gap-1">
-                    ${upcomingDayNames.map(name => `<span class="bg-emerald-500/5 px-3 py-1 rounded-lg text-emerald-500/50 border border-emerald-500/10 text-xs font-bold whitespace-nowrap">${name}</span>`).join('')}
-                </div>
-            </div>`;
-    }
-    if (upcomingNightNames.length > 0) {
-        html += `
-            <div class="text-center">
-                <div class="text-[8px] font-black uppercase text-blue-400/40 mb-1 tracking-wider">Ночь (ожид.)</div>
-                <div class="flex flex-col items-center gap-1">
-                    ${upcomingNightNames.map(name => `<span class="bg-blue-500/5 px-3 py-1 rounded-lg text-blue-400/50 border border-blue-500/10 text-xs font-bold whitespace-nowrap">${name}</span>`).join('')}
-                </div>
-            </div>`;
-    }
+    const group = (label, names, kind) => `
+        <div class="duty-group">
+            <div class="duty-group-label"><i class="tick ${kind}"></i>${label}</div>
+            <div class="duty-names">${names.join(', ')}</div>
+        </div>`;
+
+    let html = '<div class="duty-groups">';
+    if (dayShiftNames.length > 0) html += group('День', dayShiftNames, '');
+    if (nightShiftNames.length > 0) html += group('Ночь', nightShiftNames, 'night');
+    if (upcomingDayNames.length > 0) html += group('День, скоро', upcomingDayNames, 'soon');
+    if (upcomingNightNames.length > 0) html += group('Ночь, скоро', upcomingNightNames, 'night soon');
     html += '</div>';
     dutyList.innerHTML = html;
 }
@@ -648,45 +628,37 @@ function openBlockModal(key) {
 
     if (key === 'siemens_diag') {
         list.innerHTML = `
-            <div class="mb-4">
-                <input type="text" oninput="filterDiag(this.value)" placeholder="Поиск ошибки или кода..." 
-                       class="w-full bg-white/5 border border-white/10 rounded-2xl p-3 text-sm focus:outline-none">
+            <div style="padding-bottom:12px">
+                <input type="text" oninput="filterDiag(this.value)" placeholder="Поиск по коду или описанию" class="input">
             </div>
         `;
     }
 
     if (!mData.items.length) {
-        list.innerHTML += `<div class="py-20 text-center opacity-10 font-black uppercase text-[10px]">Раздел пуст</div>`;
+        list.innerHTML += `<div class="duty-empty" style="padding:36px 0;text-align:center">Раздел пока пуст</div>`;
     } else {
         let groupContainer = null;
 
         mData.items.forEach(item => {
             if (item.type === 'header') {
                 const header = document.createElement('div');
-                header.className = "mt-4 mb-2 first:mt-0";
-                header.innerHTML = `<h4 class="text-xs font-black uppercase tracking-wider text-blue-400/80">${item.title}</h4>`;
+                header.innerHTML = `<h4>${item.title}</h4>`;
                 list.appendChild(header);
-                
+
                 groupContainer = document.createElement('div');
-                groupContainer.className = "space-y-2 mb-3";
+                groupContainer.className = 'diag-group';
                 list.appendChild(groupContainer);
             } else if (item.type === 'item' || item.code) {
                 const div = document.createElement('div');
-                div.className = "diag-card p-3 bg-white/5 rounded-xl border border-white/5";
-                
-                let codeColorClass = 'bg-red-500/20 text-red-400 shadow-[0_0_8px_rgba(239,68,68,0.3)]';
-                if (item.color === 'orange') {
-                    codeColorClass = 'bg-orange-500/20 text-orange-400 shadow-[0_0_8px_rgba(249,115,22,0.3)]';
-                } else if (item.color === 'yellow') {
-                    codeColorClass = 'bg-yellow-500/20 text-yellow-400 shadow-[0_0_8px_rgba(234,179,8,0.3)]';
-                }
-                
+                div.className = "diag-card";
+
+                const tone = item.color === 'orange' ? 'orange' : (item.color === 'yellow' ? 'yellow' : 'red');
                 div.innerHTML = `
-                    <div class="flex items-start gap-3">
-                        <span class="inline-block px-2 py-1 rounded-lg ${codeColorClass} font-black text-xs uppercase tracking-wider">${item.code}</span>
-                        <div class="flex-1">
-                            <div class="text-sm font-medium leading-tight">${item.desc}</div>
-                            <div class="text-xs opacity-60 mt-1 font-medium">💡 ${item.action}</div>
+                    <div class="diag-top">
+                        <span class="diag-code ${tone}">${item.code}</span>
+                        <div style="flex:1;min-width:0">
+                            <div class="diag-desc">${item.desc}</div>
+                            <span class="diag-act">${item.action}</span>
                         </div>
                     </div>
                 `;
@@ -698,17 +670,15 @@ function openBlockModal(key) {
                 }
             } else {
                 const div = document.createElement('div');
-                div.className = "diag-card mb-3";
+                div.className = "doc-row";
                 if (item.link) {
                     const btnId = `share-${Math.random().toString(36).substr(2, 9)}`;
                     div.innerHTML = `
-                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 active:scale-[0.98] transition-transform">
-                            <div onclick="window.open('${item.link}', '_blank')" class="flex-1 cursor-pointer">
-                                <span class="font-bold text-sm block">${item.title}</span>
-                                <span class="text-[9px] opacity-40 uppercase font-black">Открыть документ</span>
-                            </div>
-                            <button id="${btnId}" class="ml-2 px-4 py-2 bg-blue-500/10 text-blue-500 rounded-xl text-[10px] font-black uppercase">Сохранить</button>
-                        </div>`;
+                        <button class="doc-open" onclick="window.open('${item.link}', '_blank')">
+                            <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5h6.5V10"/><path d="M20.5 3.5 11 13"/><path d="M18 14v5.5a1 1 0 0 1-1 1H5.5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1H11"/></svg></span>
+                            <span class="row-main"><span class="doc-title">${item.title}</span><span class="doc-note">PDF, открыть</span></span>
+                        </button>
+                        <button id="${btnId}" class="ghost-btn">Поделиться</button>`;
                     list.appendChild(div);
                     const shareBtn = div.querySelector(`#${btnId}`);
                     shareBtn.onclick = async () => {
@@ -723,11 +693,10 @@ function openBlockModal(key) {
                         }
                     };
                 } else {
+                    div.className = "diag-card";
                     div.innerHTML = `
-                        <div class="p-5 bg-white/5 rounded-[2rem] border border-white/5">
-                            <div class="text-blue-500 font-black text-[10px] uppercase mb-1">${item.title}</div>
-                            <div class="text-sm opacity-80 leading-relaxed">${item.desc}</div>
-                        </div>`;
+                        <div class="diag-code" style="display:inline-block;margin-bottom:8px">${item.title}</div>
+                        <div class="diag-desc">${item.desc}</div>`;
                     list.appendChild(div);
                 }
             }
@@ -736,7 +705,7 @@ function openBlockModal(key) {
 
     const scrollTopBtn = document.createElement('div');
     scrollTopBtn.className = 'modal-sticky-top';
-    scrollTopBtn.innerHTML = '<button>↑</button>';
+    scrollTopBtn.innerHTML = '<button aria-label="Наверх"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 6-6 6 6"/></svg></button>';
     scrollTopBtn.onclick = (e) => {
         e.stopPropagation();
         list.scrollTo({ top: 0, behavior: 'smooth' });
@@ -769,7 +738,7 @@ function filterDiag(val) {
     const headers = document.querySelectorAll('#instructions-list h4');
     headers.forEach(header => {
         const groupContainer = header.nextElementSibling;
-        if (groupContainer && groupContainer.classList.contains('space-y-2')) {
+        if (groupContainer && groupContainer.classList.contains('diag-group')) {
             const visibleItems = Array.from(groupContainer.children).filter(child => child.style.display !== 'none');
             header.style.display = visibleItems.length > 0 ? 'block' : 'none';
             groupContainer.style.display = visibleItems.length > 0 ? 'block' : 'none';
@@ -1086,21 +1055,13 @@ function renderQuestion() {
     q.options.forEach((opt, idx) => {
         const checked = saved.includes(idx) ? 'checked' : '';
         const disabledAttr = (testMode === 'all' && answerRevealed) || testMode === 'review' ? 'disabled' : '';
-        if (isMultiple) {
-            html += `
-                <label class="flex items-start gap-3 p-3 bg-white/5 rounded-xl border border-white/5 cursor-pointer">
-                    <input type="checkbox" name="option" value="${idx}" ${checked} class="mt-1" ${disabledAttr}>
-                    <span class="text-sm">${opt}</span>
-                </label>
-            `;
-        } else {
-            html += `
-                <label class="flex items-start gap-3 p-3 bg-white/5 rounded-xl border border-white/5 cursor-pointer">
-                    <input type="radio" name="option" value="${idx}" ${checked} class="mt-1" ${disabledAttr}>
-                    <span class="text-sm">${opt}</span>
-                </label>
-            `;
-        }
+        const type = isMultiple ? 'checkbox' : 'radio';
+        html += `
+            <label>
+                <input type="${type}" name="option" value="${idx}" ${checked} ${disabledAttr}>
+                <span>${opt}</span>
+            </label>
+        `;
     });
     container.innerHTML = html;
     
@@ -1268,16 +1229,14 @@ function showExamResult(passed, correct, total, mistakes) {
     const title = document.getElementById('result-title');
     const details = document.getElementById('result-details');
     
-    if (passed) {
-        icon.textContent = '✅';
-        title.textContent = 'Экзамен сдан!';
-        title.className = 'text-2xl font-black uppercase tracking-tight mb-2 text-emerald-500';
-    } else {
-        icon.textContent = '❌';
-        title.textContent = 'Экзамен не сдан';
-        title.className = 'text-2xl font-black uppercase tracking-tight mb-2 text-red-500';
-    }
-    details.textContent = `Правильных: ${correct} из ${total}. Ошибок: ${total - correct} (допустимо 2).`;
+    const okSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg>';
+    const failSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+
+    icon.innerHTML = passed ? okSvg : failSvg;
+    icon.className = 'result-icon ' + (passed ? 'ok' : 'fail');
+    title.className = 'result-title';
+    title.textContent = passed ? 'Экзамен сдан' : 'Экзамен не сдан';
+    details.textContent = `Правильных ${correct} из ${total}. Ошибок ${total - correct}, допустимо 2.`;
     
     const reviewBtn = document.getElementById('review-mistakes');
     reviewBtn.textContent = 'Просмотреть ответы';
@@ -1341,7 +1300,7 @@ function renderAccessCategoryItems(category, searchQuery) {
     
     const scrollTopBtn = document.createElement('div');
     scrollTopBtn.className = 'modal-sticky-top';
-    scrollTopBtn.innerHTML = '<button>↑</button>';
+    scrollTopBtn.innerHTML = '<button aria-label="Наверх"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 6-6 6 6"/></svg></button>';
     scrollTopBtn.onclick = (e) => {
         e.stopPropagation();
         listEl.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1350,28 +1309,34 @@ function renderAccessCategoryItems(category, searchQuery) {
 
     if (filtered.length === 0) {
         const emptyMsg = document.createElement('div');
-        emptyMsg.className = 'text-center py-10 opacity-50 text-xs font-black uppercase';
+        emptyMsg.className = 'duty-empty';
+        emptyMsg.style.padding = '28px 0';
+        emptyMsg.style.textAlign = 'center';
         emptyMsg.textContent = 'Ничего не найдено';
         listEl.appendChild(emptyMsg);
     } else {
         filtered.forEach(item => {
             const div = document.createElement('div');
-            div.className = 'bg-white/5 rounded-xl border border-white/5 p-3';
+            div.className = 'card access-item';
+            div.style.marginBottom = '8px';
+            const meta = [
+                item.ip ? 'IP ' + item.ip : '',
+                item.location || '',
+                item.description || ''
+            ].filter(Boolean).join(' · ');
             div.innerHTML = `
-                <div class="font-bold text-sm mb-2">${item.system || ''}</div>
-                <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="access-title">${item.system || ''}</div>
+                <div class="access-grid">
                     <div>
-                        <span class="opacity-50">Логин:</span>
-                        <div class="font-mono bg-white/5 px-2 py-0.5 rounded mt-0.5">${item.login || '—'}</div>
+                        <div class="access-k">Логин</div>
+                        <div class="access-v">${item.login || '—'}</div>
                     </div>
                     <div>
-                        <span class="opacity-50">Пароль:</span>
-                        <div class="font-mono bg-white/5 px-2 py-0.5 rounded mt-0.5">${item.password || '—'}</div>
+                        <div class="access-k">Пароль</div>
+                        <div class="access-v">${item.password || '—'}</div>
                     </div>
                 </div>
-                ${item.ip ? `<div class="mt-2 text-[10px] opacity-50">IP: ${item.ip}</div>` : ''}
-                ${item.location ? `<div class="mt-1 text-[10px] opacity-50">📍 ${item.location}</div>` : ''}
-                ${item.description ? `<div class="mt-1 text-[10px] opacity-50">${item.description}</div>` : ''}
+                ${meta ? `<div class="access-note">${meta}</div>` : ''}
             `;
             listEl.appendChild(div);
         });
@@ -1401,10 +1366,8 @@ function manualCheckForUpdates() {
         const toast = document.querySelector('.update-toast');
         if (toast) {
             toast.innerHTML = `
-                <div class="flex flex-col items-center">
-                    <span class="text-3xl mb-2">🔍</span>
-                    <div class="text-sm font-medium">Проверка обновлений...</div>
-                </div>
+                <span class="update-toast-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg></span>
+                <span class="update-toast-text">Проверка обновлений</span>
             `;
             toast.classList.add('show');
         }
@@ -1423,10 +1386,9 @@ function manualCheckForUpdates() {
                 } else {
                     if (toast) {
                         toast.innerHTML = `
-                            <div class="flex flex-col items-center">
-                                <div class="text-sm font-medium mb-4">У вас последняя версия</div>
-                                <button class="update-action-btn">OK</button>
-                            </div>
+                            <span class="update-toast-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg></span>
+                            <span class="update-toast-text">Обновлений нет</span>
+                            <button class="update-action-btn">Ок</button>
                         `;
                         const okBtn = toast.querySelector('.update-action-btn');
                         okBtn.onclick = () => toast.classList.remove('show');
@@ -1496,89 +1458,30 @@ function switchInstallGuide(platform) {
     const iosBtn = document.getElementById('select-ios');
     const androidBtn = document.getElementById('select-android');
     const content = document.getElementById('install-guide-content');
+    if (!iosBtn || !androidBtn || !content) return;
 
-    if (platform === 'ios') {
-        iosBtn.classList.add('bg-blue-500', 'border-blue-500', 'text-white');
-        iosBtn.classList.remove('bg-white/5', 'border-white/10');
-        androidBtn.classList.add('bg-white/5', 'border-white/10');
-        androidBtn.classList.remove('bg-blue-500', 'border-blue-500', 'text-white');
+    const isIos = platform === 'ios';
+    iosBtn.classList.toggle('on', isIos);
+    androidBtn.classList.toggle('on', !isIos);
 
-        content.innerHTML = `
-            <div class="space-y-6">
-                <div class="flex items-start gap-4">
-                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">1</div>
-                    <div class="text-sm">
-                        <p class="font-semibold">Откройте приложение в Safari</p>
-                        <p class="opacity-60 text-xs mt-1">Скопируйте адрес сайта и откройте в Safari</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">2</div>
-                    <div class="text-sm">
-                        <div class="flex items-center gap-2">
-                            <p class="font-semibold">Нажмите кнопку «Поделиться»</p>
-                            <span class="text-2xl opacity-80">↗️</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">3</div>
-                    <div class="text-sm">
-                        <p class="font-semibold">Выберите «На экран „Домой“»</p>
-                        <p class="opacity-60 text-xs mt-1">Прокрутите меню вниз и найдите эту опцию</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">4</div>
-                    <div class="text-sm">
-                        <p class="font-semibold">Нажмите «Добавить»</p>
-                        <p class="opacity-60 text-xs mt-1">Иконка приложения появится на рабочем столе</p>
-                    </div>
-                </div>
-            </div>
-        `;
-    } else {
-        androidBtn.classList.add('bg-blue-500', 'border-blue-500', 'text-white');
-        androidBtn.classList.remove('bg-white/5', 'border-white/10');
-        iosBtn.classList.add('bg-white/5', 'border-white/10');
-        iosBtn.classList.remove('bg-blue-500', 'border-blue-500', 'text-white');
+    const steps = isIos ? [
+        ['Откройте сайт в Safari', 'Скопируйте адрес и откройте его в Safari'],
+        ['Нажмите «Поделиться»', 'Кнопка в нижней панели браузера'],
+        ['Выберите «На экран Домой»', 'Пункт в нижней части меню'],
+        ['Нажмите «Добавить»', 'Значок появится на рабочем столе']
+    ] : [
+        ['Откройте сайт в Chrome', 'Скопируйте адрес и откройте его в Chrome'],
+        ['Откройте меню', 'Три точки в правом верхнем углу'],
+        ['Выберите «Установить приложение»', 'Название пункта может отличаться'],
+        ['Подтвердите установку', 'Значок появится на главном экране']
+    ];
 
-        content.innerHTML = `
-            <div class="space-y-6">
-                <div class="flex items-start gap-4">
-                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">1</div>
-                    <div class="text-sm">
-                        <p class="font-semibold">Откройте приложение в Chrome</p>
-                        <p class="opacity-60 text-xs mt-1">Скопируйте адрес и откройте в Chrome</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">2</div>
-                    <div class="text-sm">
-                        <div class="flex items-center gap-2">
-                            <p class="font-semibold">Нажмите меню</p>
-                            <span class="text-2xl opacity-80">⋮</span>
-                            <p class="font-semibold">в правом верхнем углу</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">3</div>
-                    <div class="text-sm">
-                        <p class="font-semibold">Выберите «Установить приложение» или «Добавить на гл. экран»</p>
-                        <p class="opacity-60 text-xs mt-1">Название пункта может немного отличаться</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">4</div>
-                    <div class="text-sm">
-                        <p class="font-semibold">Подтвердите действие</p>
-                        <p class="opacity-60 text-xs mt-1">Ярлык появится на домашнем экране</p>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
+    content.innerHTML = '<div class="steps">' + steps.map(function (s, i) {
+        return '<div class="step">' +
+            '<span class="step-num">' + (i + 1) + '</span>' +
+            '<div class="step-text"><b>' + s[0] + '</b><span>' + s[1] + '</span></div>' +
+            '</div>';
+    }).join('') + '</div>';
 }
 
 window.onload = () => {
@@ -1587,6 +1490,8 @@ window.onload = () => {
     updateCurrentDateDisplay();
     updateOnDutyWidget();
     updateSalaryWidget();
+    updateDutyClock();
+    setInterval(updateDutyClock, 30000);
     updateVersionNumber();
     startWeatherUpdates();
     

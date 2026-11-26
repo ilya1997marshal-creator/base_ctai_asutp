@@ -1,9 +1,10 @@
-const CACHE_NAME = 'ctai-base-v9'; // актуальная версия кэша
+const CACHE_NAME = 'ctai-base-v10'; // актуальная версия кэша
 const STATIC_ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
+  './dock.js',
   './data.js',
   './questions.js',
   './questions-fire.js',
@@ -11,8 +12,7 @@ const STATIC_ASSETS = [
   './credentials.js',
   './manifest.json',
   './apple-touch-icon.png',
-  'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap'
+  'https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap'
 ];
 
 self.addEventListener('install', event => {

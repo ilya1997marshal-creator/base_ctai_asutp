@@ -2,10 +2,13 @@
   "name": "База данных ЦТАИ",
   "short_name": "База ЦТАИ",
   "description": "Информационная панель ЦТАИ АСУ ТП",
-  "start_url": "index.html",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#070708",
-  "theme_color": "#070708",
+  "background_color": "#0d0f12",
+  "theme_color": "#0d0f12",
+  "lang": "ru",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "apple-touch-icon.png",

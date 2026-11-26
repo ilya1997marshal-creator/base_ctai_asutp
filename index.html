@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ЦТАИ АСУ ТП</title>
     <meta name="description" content="Информационная панель и база данных подразделения ЦТАИ АСУ ТП">
     <meta property="og:title" content="ЦТАИ АСУ ТП">
@@ -10,486 +10,591 @@
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0d0f12">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        .bg-night-custom { background-color: #5d6dfa; }
-        .bg-vacation-custom { background-color: #3f3f46; }
-        @keyframes bolt-pulse {
-            0%, 100% { text-shadow: 0 0 8px rgba(250,204,21,0.6), 0 0 16px rgba(250,204,21,0.3); }
-            50% { text-shadow: 0 0 18px rgba(250,204,21,0.9), 0 0 32px rgba(250,204,21,0.5); }
-        }
-        .bolt-animate { animation: bolt-pulse 2s ease-in-out infinite; }
-        .text-gradient {
-            background: linear-gradient(135deg, #60a5fa, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 20px rgba(59,130,246,0.5);
-        }
-        .modal-sticky-top {
-            position: sticky; top: 8px; z-index: 10;
-            display: flex; justify-content: center;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.2s ease;
-        }
-        .modal-sticky-top.visible { opacity: 1; pointer-events: auto; }
-        .modal-sticky-top button {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.2);
-            color: rgba(96,165,250,0.8); font-size: 1.1rem;
-            display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(8px); transition: background 0.2s;
-        }
-        .modal-sticky-top button:active { background: rgba(59,130,246,0.3); }
-        #clear-selection-btn {
-            display: none;
-            padding: 4px 16px;
-            border-radius: 100px;
-            background: rgba(239,68,68,0.15);
-            border: 1px solid rgba(239,68,68,0.3);
-            color: #ef4444;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        #clear-selection-btn.show { display: inline-block; }
-        .highlighted-col { background-color: rgba(59,130,246,0.1) !important; }
-        .blurred-col { opacity: 0.2; }
-        .blurred-row { opacity: 0.15 !important; }
-    </style>
 </head>
-<body class="pb-32">
+<body>
 
-    <!-- ПРЕЛОАДЕР -->
-    <div id="app-loader" style="position:fixed; inset:0; z-index:9999; background-color:var(--bg-main); display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <div style="width:44px; height:44px; border:4px solid rgba(255,255,255,0.15); border-top:4px solid #3b82f6; border-radius:50%; animation:spin 0.8s linear infinite;"></div>
-        <p style="margin-top:16px; font-family:'Manrope',sans-serif; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.15em; color:rgba(255,255,255,0.5);">Загрузка...</p>
+<!-- ПРЕЛОАДЕР -->
+<div id="app-loader">
+    <div class="loader-bar"><i></i></div>
+    <p>Загрузка</p>
+</div>
+
+<!-- ВЕРХНЯЯ ПАНЕЛЬ -->
+<header class="topbar">
+    <div class="topbar-brand">
+        <span class="brand-name">ЦТАИ</span>
+        <span class="brand-sub">АСУ ТП</span>
     </div>
+    <button class="icon-btn" id="theme-icon" onclick="toggleTheme()" aria-label="Переключить тему">
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 14.5A8.2 8.2 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/>
+        </svg>
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"/>
+        </svg>
+    </button>
+</header>
 
-    <button onclick="toggleTheme()" class="theme-toggle" id="theme-icon">🌙</button>
+<main class="shell">
 
-    <div class="max-w-xl mx-auto min-h-screen relative px-4">
-        <!-- Главная -->
-        <section id="tab-home" class="tab-content active pt-10">
-            <div class="flex flex-col items-center mb-6 text-center">
-                <div class="flex items-center justify-center gap-3">
-                    <span class="text-3xl text-yellow-400 bolt-animate drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]">⚡</span>
-                    <h1 class="text-3xl font-black tracking-tight" style="font-family: 'Inter', 'Manrope', sans-serif;">
-                        <span class="text-gradient">ЦТАИ АСУ ТП</span>
-                    </h1>
+    <!-- ================= ГЛАВНАЯ ================= -->
+    <section id="tab-home" class="tab-content active">
+
+        <div class="home-head">
+            <div class="home-date" id="current-date-display"></div>
+            <div class="home-weather" id="weather-widget"></div>
+            <div class="metrics" id="salary-widget"></div>
+        </div>
+
+        <div class="card duty" id="on-duty-container">
+            <div class="duty-head">
+                <span class="dot-live"></span>
+                <span class="duty-title">На смене</span>
+                <span class="duty-time" id="duty-clock"></span>
+            </div>
+            <div id="duty-list"></div>
+        </div>
+
+                <div class="group-label">Энергоблоки</div>
+        <div class="grid-2">
+            <button onclick="openBlockModal('block_1')" class="tile-btn">
+                <span class="row-num">01</span>
+                <span class="tile-title">Энергоблок 1</span>
+            </button>
+            <button onclick="openBlockModal('block_2')" class="tile-btn">
+                <span class="row-num">02</span>
+                <span class="tile-title">Энергоблок 2</span>
+            </button>
+            <button onclick="openBlockModal('block_3')" class="tile-btn">
+                <span class="row-num">03</span>
+                <span class="tile-title">Энергоблок 3</span>
+            </button>
+            <button onclick="openBlockModal('block_4')" class="tile-btn">
+                <span class="row-num">04</span>
+                <span class="tile-title">Энергоблок 4</span>
+            </button>
+            <button onclick="openBlockModal('block_5')" class="tile-btn">
+                <span class="row-num">05</span>
+                <span class="tile-title">Энергоблок 5</span>
+            </button>
+            <button onclick="openBlockModal('block_6')" class="tile-btn">
+                <span class="row-num">06</span>
+                <span class="tile-title">Энергоблок 6</span>
+            </button>
+        </div>
+
+<div class="group-label">Системы</div>
+        <div class="stack">
+            <button onclick="openBlockModal('siemens_diag')" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M10 3.5v3M14 3.5v3M10 17.5v3M14 17.5v3M3.5 10h3M3.5 14h3M17.5 10h3M17.5 14h3"/></svg></span>
+                <span class="row-main"><span class="row-title">Диагностика Siemens</span><span class="row-meta">Коды индикаторов S7-300/400, ET200, SICAM</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </button>
+            <button onclick="openBlockModal('reglab_diag')" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h9M17 17h3"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="17" r="2"/></svg></span>
+                <span class="row-main"><span class="row-title">Диагностика REGLAB</span><span class="row-meta">Модули PP, CU, AI 16 011</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </button>
+        </div>
+
+        <div class="group-label">Документы</div>
+        <div class="stack">
+            <button onclick="openBlockModal('other')" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5h9a3 3 0 0 1 3 3V20a2.5 2.5 0 0 0-2.5-2.5H5z"/><path d="M5 4.5V20"/></svg></span>
+                <span class="row-main"><span class="row-title">Инструкции</span><span class="row-meta">Руководства и описания</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </button>
+            <button onclick="openBlockModal('zip')" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3.5 8 4.2v8.6L12 20.5 4 16.3V7.7z"/><path d="M4 7.7 12 12l8-4.3M12 12v8.5"/></svg></span>
+                <span class="row-main"><span class="row-title">ЗИП АСУ ТП</span><span class="row-meta">Перечень и остатки</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </button>
+        </div>
+    </section>
+
+    <!-- ================= ГРАФИК ================= -->
+    <section id="tab-schedule" class="tab-content">
+        <div class="section-head">
+            <div>
+                <div class="eyebrow">График</div>
+                <h1 class="page-title">Смены</h1>
+            </div>
+            <div class="scale"></div>
+        </div>
+
+        <div class="month-picker-wrapper">
+            <span id="current-month-display">Декабрь 2026</span>
+            <span class="month-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+            <select id="month-selector" onchange="renderSchedule(this.value)">
+                <option value="Январь">Январь 2026</option>
+                <option value="Февраль">Февраль 2026</option>
+                <option value="Март">Март 2026</option>
+                <option value="Апрель">Апрель 2026</option>
+                <option value="Май">Май 2026</option>
+                <option value="Июнь">Июнь 2026</option>
+                <option value="Июль">Июль 2026</option>
+                <option value="Август">Август 2026</option>
+                <option value="Сентябрь">Сентябрь 2026</option>
+                <option value="Октябрь">Октябрь 2026</option>
+                <option value="Ноябрь">Ноябрь 2026</option>
+                <option value="Декабрь">Декабрь 2026</option>
+            </select>
+        </div>
+
+        <div id="schedule-viewport" class="schedule-container" style="margin-top:12px"></div>
+
+        <div class="legend">
+            <span class="legend-item"><i class="legend-swatch day"></i>День</span>
+            <span class="legend-item"><i class="legend-swatch night"></i>Ночь</span>
+            <span class="legend-item"><i class="legend-swatch spec"></i>Спецподготовка</span>
+            <span class="legend-item"><i class="legend-swatch off"></i>Отпуск</span>
+            <span class="legend-item"><i class="legend-swatch trip"></i>Командировка</span>
+            <span class="legend-item"><i class="legend-swatch sick"></i>Больничный</span>
+        </div>
+        <div class="hint">Число в ячейке — нормативная длительность смены в часах. Нажмите на имя или на дату, чтобы выделить строку или столбец.</div>
+
+        <div style="display:flex;justify-content:center;margin-top:14px">
+            <button id="clear-selection-btn" class="ghost-btn" onclick="clearSelection()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                Сбросить выделение
+            </button>
+        </div>
+    </section>
+
+    <!-- ================= ТЕСТЫ ================= -->
+    <section id="tab-tests" class="tab-content">
+        <div class="section-head">
+            <div>
+                <div class="eyebrow">Проверка знаний</div>
+                <h1 class="page-title">Тесты</h1>
+            </div>
+            <div class="scale"></div>
+        </div>
+
+        <div style="margin-bottom:16px">
+            <span class="user-chip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;color:var(--muted)"><circle cx="12" cy="8" r="3.5"/><path d="M5 19.5c1.2-3.2 3.8-5 7-5s5.8 1.8 7 5"/></svg>
+                <span class="user-chip-name" id="current-user-name">Не выбран</span>
+                <button id="change-user-btn">Сменить</button>
+            </span>
+        </div>
+
+        <div id="test-list-screen">
+            <div class="stack">
+                <button id="pte-test-btn" class="test-row">
+                    <span class="test-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4.5h8a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-14a1 1 0 0 1 1-1z"/><path d="M10 9h4M10 12.5h4M10 16h2.5"/></svg></span>
+                    <span class="test-body">
+                        <span class="test-name">Техническая эксплуатация</span>
+                        <span class="test-meta">ПТЭ · <span id="pte-progress-text">Нет попыток</span></span>
+                        <span class="test-bar"><i id="pte-progress-bar"></i></span>
+                    </span>
+                </button>
+                <button id="fire-test-btn" class="test-row">
+                    <span class="test-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c3 3.5 5.5 5.9 5.5 9a5.5 5.5 0 0 1-11 0c0-1.6.7-3 1.8-4.3.4 1.4 1.1 2.1 2 2.4-.6-2.6.3-5 1.7-7.1z"/></svg></span>
+                    <span class="test-body">
+                        <span class="test-name">Пожарная безопасность</span>
+                        <span class="test-meta">ППБ · <span id="fire-progress-text">Нет попыток</span></span>
+                        <span class="test-bar"><i id="fire-progress-bar"></i></span>
+                    </span>
+                </button>
+                <button id="labor-test-btn" class="test-row">
+                    <span class="test-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 5 6.2v5.4c0 4.2 2.9 7.4 7 8.9 4.1-1.5 7-4.7 7-8.9V6.2z"/><path d="m9 12 2 2 4-4"/></svg></span>
+                    <span class="test-body">
+                        <span class="test-name">Охрана труда</span>
+                        <span class="test-meta">ПОТ ЭЭ · <span id="labor-progress-text">Нет попыток</span></span>
+                        <span class="test-bar"><i id="labor-progress-bar"></i></span>
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <div id="test-mode-selector" class="hidden">
+            <button id="back-to-test-list" class="ghost-btn" style="margin-bottom:14px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="m15 5-7 7 7 7"/></svg>
+                К списку
+            </button>
+            <div class="stack">
+                <button id="start-exam-mode" class="mode-btn">
+                    <span class="test-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5h14v15H5z"/><path d="m8.5 12 2 2 4.5-4.5"/></svg></span>
+                    <span class="row-main">
+                        <span class="mode-title">Пробный экзамен</span>
+                        <span class="mode-sub">20 случайных вопросов, до 2 ошибок</span>
+                    </span>
+                </button>
+                <button id="start-all-mode" class="mode-btn">
+                    <span class="test-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h7M4 12h7M4 17.5h7"/><path d="M15 6.5h5M15 12h5M15 17.5h5"/></svg></span>
+                    <span class="row-main">
+                        <span class="mode-title">Все вопросы</span>
+                        <span class="mode-sub">Обучение с проверкой после каждого</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <div id="test-runner" class="hidden">
+            <div class="test-topline">
+                <button id="exit-test" class="ghost-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="m15 5-7 7 7 7"/></svg>
+                    Выйти
+                </button>
+                <span class="counter"><span id="current-q-num">1</span> / <span id="total-q-num">20</span></span>
+            </div>
+            <div class="test-progress"><i id="test-progress"></i></div>
+
+            <div id="question-card" class="q-card">
+                <div class="q-label">Вопрос <span id="question-id-display">1</span></div>
+                <div id="question-text" class="q-text"></div>
+                <div id="multiple-hint" class="q-hint"></div>
+                <div id="options-container"></div>
+            </div>
+
+            <div class="btn-row">
+                <button id="prev-question" class="btn">Назад</button>
+                <button id="next-question" class="btn btn-primary">Далее</button>
+            </div>
+            <button id="finish-test" class="btn btn-primary hidden" style="width:100%;margin-top:10px">Завершить тест</button>
+        </div>
+
+        <div id="test-results" class="hidden">
+            <div class="card card-pad" style="align-items:flex-start;display:flex;flex-direction:column">
+                <div id="result-icon" class="result-icon"></div>
+                <div id="result-title" class="result-title"></div>
+                <div id="result-details" class="result-details"></div>
+                <div class="stack" style="width:100%;margin-top:20px">
+                    <button id="review-mistakes" class="btn">Посмотреть ошибки</button>
+                    <button id="back-to-mode" class="btn">К выбору теста</button>
                 </div>
-                <p class="text-zinc-500 text-[9px] mt-1 font-extrabold uppercase tracking-[0.2em] opacity-70">Информационная панель подразделения</p>
-                <div id="current-date-display" class="mt-2 text-[11px] font-bold uppercase tracking-wider text-blue-400/70"></div>
-                <div id="weather-widget" class="mt-1 text-xs font-medium text-zinc-400"></div>
-                <div id="salary-widget" class="mt-2 flex gap-3 justify-center flex-wrap"></div>
             </div>
+        </div>
+    </section>
 
-            <div id="on-duty-container" class="mb-6 flex justify-center">
-                <div class="bg-blue-600/5 border border-blue-500/10 rounded-3xl p-5 inline-block w-auto">
-                    <div class="flex items-center justify-center gap-2 mb-4">
-                        <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                        <span class="text-blue-500 text-[10px] font-black uppercase tracking-[0.2em]">На смене:</span>
-                    </div>
-                    <div id="duty-list"></div>
-                </div>
+    <!-- ================= ИНСТРУМЕНТЫ ================= -->
+    <section id="tab-tools" class="tab-content">
+        <div class="section-head">
+            <div>
+                <div class="eyebrow">Расчёты</div>
+                <h1 class="page-title">Инструменты</h1>
             </div>
+            <div class="scale"></div>
+        </div>
 
-            <div class="grid grid-cols-1 gap-3 pb-20">
-                <button onclick="openBlockModal('block_1')" class="w-full action-btn p-5 rounded-3xl flex items-center justify-between active:scale-[0.97]">
-                    <div class="flex items-center gap-4"><span class="text-blue-500 font-black italic text-xl w-10 text-center">01</span><span class="font-bold text-sm uppercase tracking-wide">Энергоблок 1</span></div><span class="opacity-30">›</span>
+        <div id="tools-list-screen">
+            <div class="stack">
+                <button id="calc-4-20ma-btn" class="row">
+                    <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18V6M4 18h16"/><path d="m7 15 4-4 3 2 5-6"/></svg></span>
+                    <span class="row-main"><span class="row-title">Калькулятор 4–20 мА</span><span class="row-meta">Ток в значение и обратно</span></span>
+                    <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
                 </button>
-                <button onclick="openBlockModal('block_2')" class="w-full action-btn p-5 rounded-3xl flex items-center justify-between active:scale-[0.97]">
-                    <div class="flex items-center gap-4"><span class="text-blue-500 font-black italic text-xl w-10 text-center">02</span><span class="font-bold text-sm uppercase tracking-wide">Энергоблок 2</span></div><span class="opacity-30">›</span>
-                </button>
-                <button onclick="openBlockModal('block_3')" class="w-full action-btn p-5 rounded-3xl flex items-center justify-between active:scale-[0.97]">
-                    <div class="flex items-center gap-4"><span class="text-blue-500 font-black italic text-xl w-10 text-center">03</span><span class="font-bold text-sm uppercase tracking-wide">Энергоблок 3</span></div><span class="opacity-30">›</span>
-                </button>
-                <button onclick="openBlockModal('block_4')" class="w-full action-btn p-5 rounded-3xl flex items-center justify-between active:scale-[0.97]">
-                    <div class="flex items-center gap-4"><span class="text-blue-500 font-black italic text-xl w-10 text-center">04</span><span class="font-bold text-sm uppercase tracking-wide">Энергоблок 4</span></div><span class="opacity-30">›</span>
-                </button>
-                <button onclick="openBlockModal('block_5')" class="w-full action-btn p-5 rounded-3xl flex items-center justify-between active:scale-[0.97]">
-                    <div class="flex items-center gap-4"><span class="text-blue-500 font-black italic text-xl w-10 text-center">05</span><span class="font-bold text-sm uppercase tracking-wide">Энергоблок 5</span></div><span class="opacity-30">›</span>
-                </button>
-                <button onclick="openBlockModal('block_6')" class="w-full action-btn p-5 rounded-3xl flex items-center justify-between active:scale-[0.97]">
-                    <div class="flex items-center gap-4"><span class="text-blue-500 font-black italic text-xl w-10 text-center">06</span><span class="font-bold text-sm uppercase tracking-wide">Энергоблок 6</span></div><span class="opacity-30">›</span>
-                </button>
-
-                <button onclick="openBlockModal('siemens_diag')" class="w-full action-btn p-5 rounded-3xl flex items-center justify-between active:scale-[0.97] border border-blue-500/20 bg-blue-500/5">
-                    <div class="flex items-center gap-4"><div class="w-10 h-10 bg-blue-500/10 text-blue-500 rounded-xl flex items-center justify-center text-xl">💻</div><span class="font-bold text-sm uppercase tracking-wide">Диагностика Siemens</span></div><span class="opacity-30">›</span>
-                </button>
-                <button onclick="openBlockModal('reglab_diag')" class="w-full action-btn p-5 rounded-3xl flex items-center justify-between active:scale-[0.97] border border-purple-500/20 bg-purple-500/5">
-                    <div class="flex items-center gap-4"><div class="w-10 h-10 bg-purple-500/10 text-purple-500 rounded-xl flex items-center justify-center text-xl">🔧</div><span class="font-bold text-sm uppercase tracking-wide">Диагностика REGLAB</span></div><span class="opacity-30">›</span>
-                </button>
-                <button onclick="openBlockModal('other')" class="w-full action-btn p-5 rounded-3xl flex items-center justify-between active:scale-[0.97]">
-                    <div class="flex items-center gap-4"><div class="w-10 h-10 bg-amber-500/10 text-amber-500 rounded-xl flex items-center justify-center text-xl">📌</div><span class="font-bold text-sm uppercase tracking-wide">Инструкции</span></div><span class="opacity-30">›</span>
-                </button>
-                <button onclick="openBlockModal('zip')" class="w-full action-btn p-5 rounded-3xl flex items-center justify-between active:scale-[0.97]">
-                    <div class="flex items-center gap-4"><div class="w-10 h-10 bg-emerald-500/10 text-emerald-500 rounded-xl flex items-center justify-center text-xl">🔧</div><span class="font-bold text-sm uppercase tracking-wide">ЗИП АСУ ТП</span></div><span class="opacity-30">›</span>
+                <button id="converter-btn" class="row">
+                    <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span>
+                    <span class="row-main"><span class="row-title">Конвертер единиц</span><span class="row-meta">Давление, температура, уровень, расход</span></span>
+                    <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
                 </button>
             </div>
-        </section>
+        </div>
 
-        <!-- График -->
-        <section id="tab-schedule" class="tab-content pt-10">
-            <div class="flex flex-col items-center mb-6 text-center">
-                <div class="header-icon-main"><span>📅</span></div>
-                <h1 class="text-3xl font-extrabold tracking-tight">График</h1>
-                <div class="mt-4 relative z-[50] flex items-center justify-center">
-                    <div class="month-picker-wrapper">
-                        <span id="current-month-display">Май 2026</span>
-                        <select id="month-selector" onchange="renderSchedule(this.value)">
-                            <option value="Январь">Январь 2026</option>
-                            <option value="Февраль">Февраль 2026</option>
-                            <option value="Март">Март 2026</option>
-                            <option value="Апрель">Апрель 2026</option>
-                            <option value="Май" selected>Май 2026</option>
-                            <option value="Июнь">Июнь 2026</option>
-                            <option value="Июль">Июль 2026</option>
-                            <option value="Август">Август 2026</option>
-                            <option value="Сентябрь">Сентябрь 2026</option>
-                            <option value="Октябрь">Октябрь 2026</option>
-                            <option value="Ноябрь">Ноябрь 2026</option>
-                            <option value="Декабрь">Декабрь 2026</option>
+        <div id="calc-4-20ma-screen" class="hidden">
+            <button id="back-to-tools-list" class="ghost-btn" style="margin-bottom:14px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="m15 5-7 7 7 7"/></svg>
+                К инструментам
+            </button>
+            <div class="card card-pad">
+                <div class="stack stack-16">
+                    <div class="field">
+                        <label class="field-label" for="calc-unit-type">Тип величины</label>
+                        <select id="calc-unit-type" class="input" onchange="onCalcUnitTypeChange()">
+                            <option value="pressure">Давление</option>
+                            <option value="temperature">Температура</option>
+                            <option value="level">Уровень</option>
+                            <option value="flow">Расход</option>
+                            <option value="custom">Другое</option>
                         </select>
-                        <span class="ml-2 text-[10px] opacity-40">▼</span>
                     </div>
-                </div>
-            </div>
-            <div id="schedule-viewport" class="schedule-container shadow-2xl relative z-[10]"></div>
-            <div class="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 px-2">
-                <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-emerald-500"></div><span class="text-[9px] font-black uppercase opacity-40 tracking-tighter">День</span></div>
-                <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-night-custom"></div><span class="text-[9px] font-black uppercase opacity-40 tracking-tighter">Ночь</span></div>
-                <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-amber-500"></div><span class="text-[9px] font-black uppercase opacity-40 tracking-tighter">Спец</span></div>
-                <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-vacation-custom"></div><span class="text-[9px] font-black uppercase opacity-40 tracking-tighter">Отпуск</span></div>
-                <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-purple-500"></div><span class="text-[9px] font-black uppercase opacity-40 tracking-tighter">Командировка</span></div>
-            </div>
-            <div class="text-center mt-2 text-[8px] opacity-50 font-medium">Цифра в ячейке — продолжительность смены (часов)</div>
-            <!-- Кнопка сброса выделения -->
-            <div class="flex justify-center mt-2">
-                <button id="clear-selection-btn" onclick="clearSelection()">✕ Сброс</button>
-            </div>
-        </section>
-
-        <!-- Тесты -->
-        <section id="tab-tests" class="tab-content pt-10">
-            <div class="flex flex-col items-center mb-6 text-center">
-                <div class="header-icon-main"><span>🎓</span></div>
-                <h1 class="text-3xl font-extrabold tracking-tight">Тесты</h1>
-                <div id="current-user-display" class="mt-3 flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-4 py-1.5">
-                    <span class="text-[11px] font-bold text-blue-400 uppercase tracking-wider" id="current-user-name">Не выбран</span>
-                    <button id="change-user-btn" class="text-[9px] font-black uppercase text-blue-500/60 tracking-widest hover:text-blue-400 transition">Сменить</button>
-                </div>
-            </div>
-            <div id="test-list-screen" class="w-full max-w-md mx-auto px-4">
-                <div class="grid grid-cols-1 gap-4">
-                    <button id="pte-test-btn" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] border border-blue-500/20 bg-blue-500/5">
-                        <div class="text-4xl">📋</div><span class="font-black text-sm uppercase tracking-widest">Техническая эксплуатация ПТЭ</span><span class="text-[10px] opacity-60 font-medium">166 вопросов</span>
-                        <div class="w-full mt-2">
-                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1"><span class="opacity-50">Прогресс</span><span id="pte-progress-text" class="text-blue-400">Нет попыток</span></div>
-                            <div class="w-full h-1.5 bg-white/10 rounded-full"><div id="pte-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div></div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label class="field-label" for="calc-min-val">Мин.</label>
+                            <input type="number" id="calc-min-val" value="0" step="any" class="input input-mono" oninput="calcCurrentToValue()">
                         </div>
-                    </button>
-                    <button id="fire-test-btn" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] border border-red-500/20 bg-red-500/5">
-                        <div class="text-4xl">🔥</div><span class="font-black text-sm uppercase tracking-widest">Пожарная Безопасность ППБ</span><span class="text-[10px] opacity-60 font-medium">63 вопроса</span>
-                        <div class="w-full mt-2">
-                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1"><span class="opacity-50">Прогресс</span><span id="fire-progress-text" class="text-blue-400">Нет попыток</span></div>
-                            <div class="w-full h-1.5 bg-white/10 rounded-full"><div id="fire-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div></div>
-                        </div>
-                    </button>
-                    <button id="labor-test-btn" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] border border-green-500/20 bg-green-500/5">
-                        <div class="text-4xl">🛡️</div><span class="font-black text-sm uppercase tracking-widest">Охрана труда ПОТ ЭЭ</span><span class="text-[10px] opacity-60 font-medium">181 вопрос</span>
-                        <div class="w-full mt-2">
-                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1"><span class="opacity-50">Прогресс</span><span id="labor-progress-text" class="text-blue-400">Нет попыток</span></div>
-                            <div class="w-full h-1.5 bg-white/10 rounded-full"><div id="labor-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div></div>
-                        </div>
-                    </button>
-                </div>
-            </div>
-            <div id="test-mode-selector" class="hidden w-full max-w-md mx-auto px-4">
-                <button id="back-to-test-list" class="mb-4 action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1">← Назад к списку</button>
-                <div class="grid grid-cols-1 gap-4">
-                    <button id="start-exam-mode" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95] border border-blue-500/20 bg-blue-500/5"><div class="text-4xl">📝</div><span class="font-black text-sm uppercase tracking-widest">Пробный экзамен</span><span class="text-[10px] opacity-60 font-medium">20 случайных вопросов, до 2 ошибок</span></button>
-                    <button id="start-all-mode" class="w-full action-btn p-8 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 active:scale-[0.95]"><div class="text-4xl">📚</div><span class="font-black text-sm uppercase tracking-widest">Все вопросы</span><span class="text-[10px] opacity-60 font-medium">Обучение с мгновенной проверкой</span></button>
-                </div>
-            </div>
-            <div id="test-runner" class="hidden w-full max-w-xl mx-auto px-2 pb-20">
-                <div class="flex items-center justify-between mb-4">
-                    <button id="exit-test" class="action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">← Выйти</button>
-                    <span class="text-xs font-bold opacity-60 uppercase tracking-wider"><span id="current-q-num">1</span>/<span id="total-q-num">20</span></span>
-                    <div class="w-16"></div>
-                </div>
-                <div class="w-full h-1.5 bg-white/10 rounded-full mb-6"><div id="test-progress" class="h-full bg-blue-500 rounded-full transition-all duration-300" style="width: 0%"></div></div>
-                <div id="question-card" class="action-btn p-6 rounded-3xl mb-4">
-                    <div class="text-xs font-black uppercase tracking-wider text-blue-500/70 mb-3">Вопрос <span id="question-id-display">1</span></div>
-                    <div id="question-text" class="text-sm font-medium leading-relaxed mb-4"></div>
-                    <div id="multiple-hint" class="text-[10px] font-bold uppercase tracking-wider text-amber-500/80 mb-3"></div>
-                    <div id="options-container" class="space-y-3"></div>
-                </div>
-                <div class="flex gap-3">
-                    <button id="prev-question" class="flex-1 action-btn py-4 rounded-2xl font-bold text-sm uppercase tracking-wider disabled:opacity-30 disabled:pointer-events-none">← Назад</button>
-                    <button id="next-question" class="flex-1 action-btn py-4 rounded-2xl font-bold text-sm uppercase tracking-wider bg-blue-500/20 border-blue-500/30">Далее →</button>
-                </div>
-                <button id="finish-test" class="hidden w-full mt-4 action-btn py-4 rounded-2xl font-bold text-sm uppercase tracking-wider bg-emerald-500/20 border-emerald-500/30 text-emerald-500">Завершить тест</button>
-            </div>
-            <div id="test-results" class="hidden w-full max-w-md mx-auto px-4 pb-20">
-                <div class="action-btn p-8 rounded-[2.5rem] flex flex-col items-center">
-                    <div id="result-icon" class="text-6xl mb-4"></div>
-                    <h2 id="result-title" class="text-2xl font-black uppercase tracking-tight mb-2"></h2>
-                    <p id="result-details" class="text-sm opacity-60 mb-6"></p>
-                    <div class="w-full space-y-3">
-                        <button id="review-mistakes" class="w-full action-btn py-4 rounded-2xl font-bold text-sm uppercase tracking-wider">Посмотреть ошибки</button>
-                        <button id="back-to-mode" class="w-full action-btn py-4 rounded-2xl font-bold text-sm uppercase tracking-wider">К выбору теста</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Инструменты -->
-        <section id="tab-tools" class="tab-content pt-10">
-            <div class="flex flex-col items-center mb-6 text-center">
-                <div class="header-icon-main"><span>🛠️</span></div>
-                <h1 class="text-3xl font-extrabold tracking-tight">Инструменты</h1>
-            </div>
-            <div id="tools-list-screen" class="w-full max-w-md mx-auto px-4">
-                <div class="grid grid-cols-1 gap-4">
-                    <button id="calc-4-20ma-btn" class="w-full action-btn p-5 rounded-2xl flex items-center justify-between active:scale-[0.97]">
-                        <div class="flex items-center gap-4"><div class="w-10 h-10 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center text-xl">📊</div><span class="font-bold text-sm uppercase tracking-wide">Калькулятор 4–20 мА</span></div><span class="opacity-30">›</span>
-                    </button>
-                    <button id="converter-btn" class="w-full action-btn p-5 rounded-2xl flex items-center justify-between active:scale-[0.97]">
-                        <div class="flex items-center gap-4"><div class="w-10 h-10 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center text-xl">🔄</div><span class="font-bold text-sm uppercase tracking-wide">Конвертер единиц</span></div><span class="opacity-30">›</span>
-                    </button>
-                </div>
-            </div>
-            <div id="calc-4-20ma-screen" class="hidden w-full max-w-md mx-auto px-4">
-                <button id="back-to-tools-list" class="mb-4 action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1">← Назад к списку</button>
-                <div class="action-btn p-6 rounded-3xl">
-                    <h3 class="text-xl font-black uppercase tracking-wide mb-6 text-center text-blue-400">Калькулятор 4–20 мА</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Тип величины</label>
-                            <select id="calc-unit-type" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" onchange="onCalcUnitTypeChange()">
-                                <option value="pressure">Давление</option>
-                                <option value="temperature">Температура</option>
-                                <option value="level">Уровень</option>
-                                <option value="flow">Расход</option>
-                                <option value="custom">Другое</option>
-                            </select>
-                        </div>
-                        <div class="flex gap-4">
-                            <div class="flex-1"><label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Мин. значение</label><input type="number" id="calc-min-val" value="0" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="calcCurrentToValue()"></div>
-                            <div class="flex-1"><label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Макс. значение</label><input type="number" id="calc-max-val" value="100" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="calcCurrentToValue()"></div>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Единицы измерения</label>
-                            <select id="calc-unit-select" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" onchange="calcCurrentToValue()"></select>
-                        </div>
-                        <div class="flex gap-4">
-                            <div class="flex-1"><label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Ток (мА)</label><input type="number" id="calc-current" value="12" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="calcCurrentToValue()"></div>
-                            <div class="flex-1"><label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Значение</label><input type="number" id="calc-value" value="50" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="calcValueToCurrent()"></div>
-                        </div>
-                        <div id="calc-result" class="text-center text-sm font-black py-3 bg-blue-500/10 rounded-xl text-blue-300"></div>
-                        <div class="mt-6 flex justify-center">
-                            <button onclick="copyCalcResult()" class="action-btn py-3 px-8 rounded-xl font-bold text-sm uppercase tracking-wider">Копировать</button>
+                        <div class="field">
+                            <label class="field-label" for="calc-max-val">Макс.</label>
+                            <input type="number" id="calc-max-val" value="100" step="any" class="input input-mono" oninput="calcCurrentToValue()">
                         </div>
                     </div>
-                </div>
-            </div>
-            <div id="converter-screen" class="hidden w-full max-w-md mx-auto px-4">
-                <button id="back-to-tools-from-converter" class="mb-4 action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1">← Назад к списку</button>
-                <div class="action-btn p-6 rounded-3xl">
-                    <h3 class="text-xl font-black uppercase tracking-wide mb-6 text-center text-amber-400">Конвертер единиц</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Тип величины</label>
-                            <select id="conv-unit-type" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" onchange="updateConverterUnits()">
-                                <option value="pressure">Давление</option>
-                                <option value="temperature">Температура</option>
-                                <option value="level">Уровень</option>
-                                <option value="flow">Расход</option>
-                            </select>
+                    <div class="field">
+                        <label class="field-label" for="calc-unit-select">Единицы</label>
+                        <select id="calc-unit-select" class="input" onchange="calcCurrentToValue()"></select>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label class="field-label" for="calc-current">Ток, мА</label>
+                            <input type="number" id="calc-current" value="12" step="any" class="input input-mono" oninput="calcCurrentToValue()">
                         </div>
-                        <div class="flex gap-4">
-                            <div class="flex-1">
-                                <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Значение</label>
-                                <input type="number" id="conv-value" value="1" step="any" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" oninput="convertUnits()">
-                            </div>
-                            <div class="flex-1">
-                                <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Из</label>
-                                <select id="conv-from-unit" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" onchange="convertUnits()"></select>
-                            </div>
-                        </div>
-                        <div class="flex gap-4 items-end">
-                            <div class="flex-1">
-                                <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Результат</label>
-                                <input type="text" id="conv-result" readonly class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm opacity-60 font-mono">
-                            </div>
-                            <div class="flex-1">
-                                <label class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">В</label>
-                                <select id="conv-to-unit" class="calc-input w-full bg-[var(--bg-item)] border border-[var(--border)] rounded-xl p-3 text-sm focus:outline-none" onchange="convertUnits()"></select>
-                            </div>
-                        </div>
-                        <div class="mt-6 flex justify-center">
-                            <button onclick="copyConvResult()" class="action-btn py-3 px-8 rounded-xl font-bold text-sm uppercase tracking-wider">Копировать</button>
+                        <div class="field">
+                            <label class="field-label" for="calc-value">Значение</label>
+                            <input type="number" id="calc-value" value="50" step="any" class="input input-mono" oninput="calcValueToCurrent()">
                         </div>
                     </div>
+                    <div id="calc-result" class="calc-result"></div>
+                    <button onclick="copyCalcResult()" class="btn">Копировать</button>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- ДОСТУП -->
-        <section id="tab-access" class="tab-content pt-10 pb-20">
-            <div class="flex flex-col items-center mb-8 text-center">
-                <div class="header-icon-main"><span>🔑</span></div>
-                <h1 class="text-3xl font-extrabold tracking-tight">Доступ</h1>
-                <p class="text-zinc-500 text-[9px] mt-1 font-extrabold uppercase tracking-[0.2em] opacity-70">Учётные данные систем</p>
-            </div>
-            <div class="px-4 max-w-md mx-auto">
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="openAccessCategory('Windows')" class="action-btn p-6 rounded-3xl flex flex-col items-center justify-center gap-2 active:scale-95">
-                        <span class="text-3xl">🖥️</span>
-                        <span class="font-black text-sm uppercase">Windows</span>
-                    </button>
-                    <button onclick="openAccessCategory('SCADA/HMI')" class="action-btn p-6 rounded-3xl flex flex-col items-center justify-center gap-2 active:scale-95">
-                        <span class="text-3xl">🖧</span>
-                        <span class="font-black text-sm uppercase">SCADA/HMI</span>
-                    </button>
-                    <button onclick="openAccessCategory('ПЛК')" class="action-btn p-6 rounded-3xl flex flex-col items-center justify-center gap-2 active:scale-95">
-                        <span class="text-3xl">📦</span>
-                        <span class="font-black text-sm uppercase">ПЛК</span>
-                    </button>
-                    <button onclick="openAccessCategory('Коммутаторы')" class="action-btn p-6 rounded-3xl flex flex-col items-center justify-center gap-2 active:scale-95">
-                        <span class="text-3xl">🔀</span>
-                        <span class="font-black text-sm uppercase">Коммутаторы</span>
-                    </button>
+        <div id="converter-screen" class="hidden">
+            <button id="back-to-tools-from-converter" class="ghost-btn" style="margin-bottom:14px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="m15 5-7 7 7 7"/></svg>
+                К инструментам
+            </button>
+            <div class="card card-pad">
+                <div class="stack stack-16">
+                    <div class="field">
+                        <label class="field-label" for="conv-unit-type">Тип величины</label>
+                        <select id="conv-unit-type" class="input" onchange="updateConverterUnits()">
+                            <option value="pressure">Давление</option>
+                            <option value="temperature">Температура</option>
+                            <option value="level">Уровень</option>
+                            <option value="flow">Расход</option>
+                        </select>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label class="field-label" for="conv-value">Значение</label>
+                            <input type="number" id="conv-value" value="1" step="any" class="input input-mono" oninput="convertUnits()">
+                        </div>
+                        <div class="field">
+                            <label class="field-label" for="conv-from-unit">Из</label>
+                            <select id="conv-from-unit" class="input" onchange="convertUnits()"></select>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label class="field-label" for="conv-result">Результат</label>
+                            <input type="text" id="conv-result" readonly class="input input-mono" style="color:var(--text-2)">
+                        </div>
+                        <div class="field">
+                            <label class="field-label" for="conv-to-unit">В</label>
+                            <select id="conv-to-unit" class="input" onchange="convertUnits()"></select>
+                        </div>
+                    </div>
+                    <button onclick="copyConvResult()" class="btn">Копировать</button>
                 </div>
             </div>
-        </section>
-
-        <!-- Поддержка -->
-        <section id="tab-help" class="tab-content pt-10">
-            <div class="flex flex-col items-center mb-8 text-center">
-                <div class="header-icon-main"><span>📡</span></div>
-                <h1 class="text-3xl font-extrabold tracking-tight">Поддержка</h1>
-            </div>
-            <div class="flex flex-col items-center justify-center gap-4 w-full max-w-md mx-auto px-6 mb-4 text-center">
-                <a href="https://t.me/IlyaMar5hal" target="_blank" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
-                    <div class="text-2xl">🤖</div>
-                    <span class="font-black text-xs uppercase tracking-widest">Telegram</span>
-                    <span class="text-[10px] opacity-40 font-medium">Связь с разработчиком</span>
-                </a>
-                <a href="mailto:admin@ctai.ru" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.95]">
-                    <div class="text-2xl">📨</div>
-                    <span class="font-black text-xs uppercase tracking-widest">Email</span>
-                    <span class="text-[10px] opacity-40 font-medium">Предложения по улучшению</span>
-                </a>
-                <button id="manual-update-check" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-2 active:scale-[0.95]">
-                    <div class="text-2xl">📱</div>
-                    <span class="font-black text-xs uppercase tracking-widest">Проверить обновления</span>
-                </button>
-                <button id="install-guide-btn" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-2 active:scale-[0.95]">
-                    <div class="text-2xl">📲</div>
-                    <span class="font-black text-xs uppercase tracking-widest">На экран телефона</span>
-                </button>
-                <a href="apk/ctai-asutp.apk" class="w-full action-btn p-4 rounded-[2rem] flex flex-col items-center justify-center gap-2 active:scale-[0.95] bg-blue-500/10 border-blue-500/20">
-                    <div class="text-2xl">📦</div>
-                    <span class="font-black text-xs uppercase tracking-widest">Скачать приложение (APK)</span>
-                </a>
-            </div>
-            <div class="text-center mt-2"><span class="text-[10px] font-black opacity-20 uppercase tracking-[0.5em]">Версия <span id="app-version">V88</span></span></div>
-        </section>
-    </div>
-
-    <!-- Навигация -->
-    <nav class="fixed bottom-6 left-4 right-4 max-w-xl mx-auto z-[100] custom-nav shadow-2xl">
-        <div class="flex h-full items-center justify-around px-1">
-            <button onclick="switchTab(0)" class="nav-item active"><div class="nav-icon">🏠</div><span class="nav-label">Главная</span></button>
-            <button onclick="switchTab(1)" class="nav-item"><div class="nav-icon">📅</div><span class="nav-label">График</span></button>
-            <button onclick="switchTab(2)" class="nav-item"><div class="nav-icon">🎓</div><span class="nav-label">Тесты</span></button>
-            <button onclick="switchTab(3)" class="nav-item"><div class="nav-icon">🛠️</div><span class="nav-label">Инстр.</span></button>
-            <button onclick="switchTab(4)" class="nav-item"><div class="nav-icon">🔑</div><span class="nav-label">Доступ</span></button>
-            <button onclick="switchTab(5)" class="nav-item"><div class="nav-icon">📡</div><span class="nav-label">Помощь</span></button>
         </div>
-    </nav>
+    </section>
 
-    <!-- Модалка категорий доступа -->
-    <div id="access-modal" onclick="if(event.target===this) closeAccessModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center z-[200]">
-        <div class="card-bg border-t sm:border rounded-t-[3rem] sm:rounded-[3rem] w-full max-w-md max-h-[85vh] flex flex-col">
-            <div class="px-8 py-6 border-b flex items-center justify-between">
-                <h3 id="access-modal-title" class="font-black text-xl uppercase tracking-tighter text-main"></h3>
-                <button onclick="closeAccessModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-500/10 font-bold text-lg">✕</button>
+    <!-- ================= ДОСТУП ================= -->
+    <section id="tab-access" class="tab-content">
+        <div class="section-head">
+            <div>
+                <div class="eyebrow">Учётные данные</div>
+                <h1 class="page-title">Доступ</h1>
             </div>
-            <div class="px-6 pt-4">
-                <input type="text" id="access-search" oninput="filterAccessCategory()" 
-                       placeholder="Поиск внутри категории..." 
-                       class="w-full bg-white/5 border border-white/10 rounded-2xl p-3 text-sm focus:outline-none">
+            <div class="scale"></div>
+        </div>
+
+        <div class="stack">
+            <button onclick="openAccessCategory('Windows')" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 20h8"/></svg></span>
+                <span class="row-main"><span class="row-title">Windows</span><span class="row-meta">АРМ, серверы, службы</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </button>
+            <button onclick="openAccessCategory('SCADA/HMI')" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="12" rx="2"/><path d="M7.5 9h4M7.5 12h6"/><path d="M9 20h6"/></svg></span>
+                <span class="row-main"><span class="row-title">SCADA и HMI</span><span class="row-meta">WinCC, панели оператора</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </button>
+            <button onclick="openAccessCategory('ПЛК')" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/><path d="M10 3v3.5M14 3v3.5M10 17.5V21M14 17.5V21"/></svg></span>
+                <span class="row-main"><span class="row-title">ПЛК</span><span class="row-meta">S7-400, пароли доступа</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </button>
+            <button onclick="openAccessCategory('Коммутаторы')" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="2"/><path d="M7 12h.01M11 12h.01M15 12h.01M18 12h.01"/></svg></span>
+                <span class="row-main"><span class="row-title">Коммутаторы</span><span class="row-meta">Moxa, Scalance, Mikrotik</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </button>
+        </div>
+
+        <div class="hint">Раздел содержит служебные пароли. Не передавайте их за пределы подразделения.</div>
+    </section>
+
+    <!-- ================= ПОМОЩЬ ================= -->
+    <section id="tab-help" class="tab-content">
+        <div class="section-head">
+            <div>
+                <div class="eyebrow">Связь и обновления</div>
+                <h1 class="page-title">Поддержка</h1>
             </div>
-            <div id="access-category-list" class="flex-1 overflow-auto p-6 space-y-3"></div>
+            <div class="scale"></div>
+        </div>
+
+        <div class="stack">
+            <a href="https://t.me/IlyaMar5hal" target="_blank" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m20.5 4.5-3 15-6-4.5-3 3v-5l9-7-11 6-3.5-1z"/></svg></span>
+                <span class="row-main"><span class="row-title">Telegram</span><span class="row-meta">Связь с разработчиком</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </a>
+            <a href="mailto:admin@ctai.ru" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg></span>
+                <span class="row-main"><span class="row-title">Почта</span><span class="row-meta">Предложения по улучшению</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </a>
+        </div>
+
+        <div class="group-label">Приложение</div>
+        <div class="stack">
+            <button id="manual-update-check" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4.5V10h-5.5"/></svg></span>
+                <span class="row-main"><span class="row-title">Проверить обновления</span><span class="row-meta">Загрузить новую версию</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </button>
+            <button id="install-guide-btn" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span>
+                <span class="row-main"><span class="row-title">На экран телефона</span><span class="row-meta">Установить как приложение</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </button>
+            <a href="apk/ctai-asutp.apk" class="row">
+                <span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v11M8 11l4 4 4-4"/><path d="M4.5 17v2.5h15V17"/></svg></span>
+                <span class="row-main"><span class="row-title">Скачать APK</span><span class="row-meta">Android, 1,8 МБ</span></span>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+            </a>
+        </div>
+
+        <div class="version">Версия <span id="app-version">V89</span></div>
+    </section>
+</main>
+
+<!-- НИЖНЯЯ НАВИГАЦИЯ -->
+<nav class="dock" aria-label="Разделы">
+    <div class="dock-track" id="dock-tabs">
+        <span class="dock-ind" id="dock-ind" aria-hidden="true"></span>
+
+        <button class="nav-item active" data-i="0" onclick="switchTab(0)" aria-label="Главная">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.6 12 4l9 6.6"/><path d="M5.5 9.6V20h13V9.6"/><path d="M9.5 20v-5.5h5V20"/></svg>
+            <span class="nav-label">Главная</span>
+        </button>
+        <button class="nav-item" data-i="1" onclick="switchTab(1)" aria-label="График">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>
+            <span class="nav-label">График</span>
+        </button>
+        <button class="nav-item" data-i="2" onclick="switchTab(2)" aria-label="Тесты">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5h6v2.5H9z"/><path d="M9 5.8H6.5A1.5 1.5 0 0 0 5 7.3V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19V7.3a1.5 1.5 0 0 0-1.5-1.5H15"/><path d="m9 13.5 2 2 4-4.5"/></svg>
+            <span class="nav-label">Тесты</span>
+        </button>
+        <button class="nav-item" data-i="3" onclick="switchTab(3)" aria-label="Инструменты">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h9M17 17h3"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="17" r="2"/></svg>
+            <span class="nav-label">Расчёты</span>
+        </button>
+        <button class="nav-item" data-i="4" onclick="switchTab(4)" aria-label="Доступ">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15.5" r="3.5"/><path d="m10.6 13 8-8M16.5 4.5 19 7M14 7l2.5 2.5"/></svg>
+            <span class="nav-label">Доступ</span>
+        </button>
+        <button class="nav-item" data-i="5" onclick="switchTab(5)" aria-label="Помощь">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="m6 6 3.5 3.5M18 6l-3.5 3.5M18 18l-3.5-3.5M6 18l3.5-3.5"/></svg>
+            <span class="nav-label">Помощь</span>
+        </button>
+    </div>
+</nav>
+
+<!-- ================= МОДАЛКИ ================= -->
+
+<!-- Блок / диагностика -->
+<div id="block-modal" class="modal hidden" onclick="if(event.target===this) closeBlockModal()">
+    <div class="sheet">
+        <div class="sheet-head">
+            <div class="sheet-title" id="modal-block-title"></div>
+            <button class="icon-btn" onclick="closeBlockModal()" aria-label="Закрыть">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+        </div>
+        <div id="instructions-list" class="sheet-body"></div>
+    </div>
+</div>
+
+<!-- Категория доступа -->
+<div id="access-modal" class="modal hidden" onclick="if(event.target===this) closeAccessModal()">
+    <div class="sheet">
+        <div class="sheet-head">
+            <div class="sheet-title" id="access-modal-title"></div>
+            <button class="icon-btn" onclick="closeAccessModal()" aria-label="Закрыть">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+        </div>
+        <div class="search-wrap">
+            <input type="text" id="access-search" oninput="filterAccessCategory()" placeholder="Поиск: система, логин, IP" class="input">
+        </div>
+        <div id="access-category-list" class="sheet-body"></div>
+    </div>
+</div>
+
+<!-- Инструкция по установке -->
+<div id="install-modal" class="modal hidden" onclick="if(event.target===this) closeInstallModal()">
+    <div class="sheet">
+        <div class="sheet-head">
+            <div class="sheet-title">На экран телефона</div>
+            <button class="icon-btn" onclick="closeInstallModal()" aria-label="Закрыть">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+        </div>
+        <div class="install-tabs">
+            <button id="select-ios" class="install-tab on" onclick="switchInstallGuide('ios')">iPhone</button>
+            <button id="select-android" class="install-tab" onclick="switchInstallGuide('android')">Android</button>
+        </div>
+        <div id="install-guide-content" class="sheet-body"></div>
+    </div>
+</div>
+
+<!-- Выбор пользователя -->
+<div id="user-select-modal" class="modal hidden">
+    <div class="sheet">
+        <div class="sheet-head">
+            <div class="sheet-title">Кто проходит тест</div>
+            <button class="icon-btn" onclick="cancelUserSelection()" aria-label="Закрыть">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+        </div>
+        <div class="sheet-body" id="user-list-container"></div>
+    </div>
+</div>
+
+<!-- Пароль -->
+<div id="access-password-modal" class="modal hidden">
+    <div class="sheet lock-sheet">
+        <div class="lock-glyph">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+        </div>
+        <div class="sheet-title">Доступ ограничен</div>
+        <div class="page-sub" style="margin-top:6px">Введите пароль для раздела с учётными данными</div>
+        <input type="password" id="access-password-input" placeholder="••••" class="pin-input" maxlength="4" inputmode="numeric" autocomplete="off">
+        <div class="error-text hidden" id="access-password-error">Неверный пароль</div>
+        <div class="btn-row" style="width:100%;margin-top:16px">
+            <button onclick="checkAccessPassword()" class="btn btn-primary">Войти</button>
+            <button onclick="cancelAccessPassword()" class="btn">Отмена</button>
         </div>
     </div>
+</div>
 
-    <!-- Модалки блоков -->
-    <div id="block-modal" onclick="if(event.target===this) closeBlockModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center z-[200]">
-        <div class="card-bg border-t sm:border rounded-t-[3rem] sm:rounded-[3rem] w-full max-w-md max-h-[85vh] flex flex-col">
-            <div class="px-8 py-6 border-b flex items-center justify-between"><h3 id="modal-block-title" class="font-black text-xl uppercase tracking-tighter text-main"></h3><button onclick="closeBlockModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-500/10 font-bold text-lg">✕</button></div>
-            <div id="instructions-list" class="flex-1 overflow-auto p-6 space-y-3"></div>
-        </div>
-    </div>
+<!-- Тост обновления -->
+<div class="update-toast">
+    <span class="update-toast-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4.5V10h-5.5"/></svg>
+    </span>
+    <span class="update-toast-text">Доступна новая версия</span>
+    <button class="update-action-btn">Обновить</button>
+</div>
 
-    <!-- Модалка инструкции установки PWA -->
-    <div id="install-modal" onclick="if(event.target===this) closeInstallModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center z-[200]">
-        <div class="card-bg border-t sm:border rounded-t-[3rem] sm:rounded-[3rem] w-full max-w-md max-h-[85vh] flex flex-col">
-            <div class="px-8 py-6 border-b flex items-center justify-between">
-                <h3 class="font-black text-xl uppercase tracking-tighter text-main">На экран телефона</h3>
-                <button onclick="closeInstallModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-500/10 font-bold text-lg">✕</button>
-            </div>
-            <div class="flex-1 overflow-auto p-6">
-                <div class="flex gap-3 mb-6">
-                    <button id="select-ios" onclick="switchInstallGuide('ios')" class="flex-1 py-3 rounded-full font-bold text-sm uppercase tracking-wide border border-white/10 bg-white/5 hover:bg-white/10 transition">🍏 iPhone</button>
-                    <button id="select-android" onclick="switchInstallGuide('android')" class="flex-1 py-3 rounded-full font-bold text-sm uppercase tracking-wide border border-white/10 bg-white/5 hover:bg-white/10 transition">🤖 Android</button>
-                </div>
-                <div id="install-guide-content" class="space-y-4"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Модалка выбора пользователя -->
-    <div id="user-select-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center z-[300]">
-        <div class="card-bg border-t sm:border rounded-t-[3rem] sm:rounded-[3rem] w-full max-w-md max-h-[85vh] flex flex-col">
-            <div class="px-8 py-6 border-b flex items-center justify-between">
-                <h3 class="font-black text-xl uppercase tracking-tighter text-main">Выберите пользователя</h3>
-                <button onclick="cancelUserSelection()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-500/10 font-bold text-lg">✕</button>
-            </div>
-            <div class="flex-1 overflow-auto p-6" id="user-list-container"></div>
-        </div>
-    </div>
-
-    <!-- Модалка ввода пароля -->
-    <div id="access-password-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center z-[350]">
-        <div class="card-bg border-t sm:border rounded-t-[3rem] sm:rounded-[3rem] w-full max-w-md p-8 flex flex-col items-center text-center">
-            <div class="text-4xl mb-4">🔐</div>
-            <h3 class="font-black text-xl uppercase tracking-tight text-main mb-2" style="word-spacing: 0.3em;">ДОСТУП ОГРАНИЧЕН</h3>
-            <p class="text-xs opacity-60 mb-6">Введите пароль для просмотра раздела</p>
-            <input type="password" id="access-password-input" placeholder="Введите пароль" class="w-full bg-white/5 border border-white/10 rounded-2xl p-3 text-sm mb-4 focus:outline-none text-center" maxlength="4" inputmode="numeric">
-            <div class="flex gap-3 w-full">
-                <button onclick="checkAccessPassword()" class="flex-1 bg-blue-500 text-white py-3 rounded-xl font-bold text-sm uppercase tracking-wider">Войти</button>
-                <button onclick="cancelAccessPassword()" class="flex-1 action-btn py-3 rounded-xl font-bold text-sm uppercase tracking-wider">Отмена</button>
-            </div>
-            <p id="access-password-error" class="text-red-400 text-xs mt-3 hidden">Неверный пароль</p>
-        </div>
-    </div>
-
-    <div class="update-toast"><div class="text-lg mb-2">✨ Доступна новая версия</div><div class="text-sm opacity-60 mb-4">Обновите приложение для улучшения работы</div><button class="update-action-btn">Обновить сейчас</button></div>
-
-    <script src="credentials.js"></script>
-    <script src="data.js"></script>
-    <script src="questions.js"></script>
-    <script src="questions-fire.js"></script>
-    <script src="questions-labor.js"></script>
-    <script src="app.js"></script>
+<script src="credentials.js"></script>
+<script src="data.js"></script>
+<script src="questions.js"></script>
+<script src="questions-fire.js"></script>
+<script src="questions-labor.js"></script>
+<script src="app.js"></script>
+<script src="dock.js"></script>
 </body>
 </html>
