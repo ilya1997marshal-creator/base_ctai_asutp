@@ -4,7 +4,7 @@
    Одна нейтральная графитовая шкала, один стальной акцент, моно-цифры.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Unbounded:wght@400;600&display=swap');
 
 :root {
     color-scheme: dark;
@@ -59,6 +59,9 @@
     --dock-bg: rgba(20, 23, 27, .82);
     --shadow-card: none;
     --shadow-dock: 0 18px 40px -22px rgba(0, 0, 0, .9);
+
+    /* подсветка заголовка (r, g, b) */
+    --title-glow: 134, 182, 232;
 }
 
 .light-mode {
@@ -98,6 +101,8 @@
     --dock-bg: rgba(255, 255, 255, .84);
     --shadow-card: 0 1px 2px rgba(18, 24, 32, .04);
     --shadow-dock: 0 18px 40px -26px rgba(18, 24, 32, .35);
+
+    --title-glow: 47, 111, 181;
 }
 
 /* ---------- база ---------- */
@@ -461,18 +466,18 @@ svg {
 }
 
 .hero-mark {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     display: grid;
     place-items: center;
     color: var(--acc);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     animation: markIn .55s cubic-bezier(.22, .61, .36, 1) both;
 }
 
 .hero-mark svg {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
 }
 
 @keyframes markIn {
@@ -481,13 +486,24 @@ svg {
 }
 
 .hero-title {
-    font-family: var(--mono);
-    font-size: 28px;
+    font-family: 'Unbounded', var(--font);
+    font-size: 24px;
     font-weight: 600;
-    letter-spacing: -.01em;
-    line-height: 1.15;
+    letter-spacing: -.005em;
+    line-height: 1.25;
     white-space: nowrap;
     cursor: default;
+    animation: titlePulse 6.5s ease-in-out infinite;
+    will-change: text-shadow;
+}
+
+@keyframes titlePulse {
+    0%, 100% {
+        text-shadow: 0 0 10px rgba(var(--title-glow), .07), 0 0 26px rgba(var(--title-glow), .04);
+    }
+    50% {
+        text-shadow: 0 0 16px rgba(var(--title-glow), .22), 0 0 44px rgba(var(--title-glow), .11);
+    }
 }
 
 .t-line {
@@ -499,11 +515,11 @@ svg {
     transform-origin: 50% 80%;
     will-change: transform, opacity;
     color: var(--text-2);
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .t-line .g.sp {
-    width: .32em;
+    width: .3em;
 }
 
 .t-line .g.lead {

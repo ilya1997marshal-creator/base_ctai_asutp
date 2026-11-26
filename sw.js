@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ctai-base-v13'; // актуальная версия кэша
+const CACHE_NAME = 'ctai-base-v14'; // актуальная версия кэша
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -13,7 +13,7 @@ const STATIC_ASSETS = [
   './credentials.js',
   './manifest.json',
   './apple-touch-icon.png',
-  'https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap'
+  'https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Unbounded:wght@400;600&display=swap'
 ];
 
 self.addEventListener('install', event => {
