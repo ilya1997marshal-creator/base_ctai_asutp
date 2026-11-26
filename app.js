@@ -1424,10 +1424,11 @@ function updateProgress() {
 
 // ==================== ДОСТУП (КАТЕГОРИИ) ====================
 // ==================== ДОСТУП (учётные данные) ====================
-let accessBlock = 'all';
+// ==================== ДОСТУП (учётные данные) ====================
+let accessBlock = null;          // null — экран блоков
 let accessKind = 'all';
-let accessQuery = '';
 let accessIndex = null;
+let copyToastTimer = 0;
 
 function accessAllItems() {
     if (accessIndex) return accessIndex;
@@ -1451,167 +1452,231 @@ function accessAllItems() {
     return out;
 }
 
-function accessKinds() {
-    const set = [];
-    accessAllItems().forEach(function (it) {
-        if (set.indexOf(it.k) < 0) set.push(it.k);
+function accessFiltered(q) {
+    return accessAllItems().filter(function (it) {
+        if (accessBlock !== null && it.block !== accessBlock) return false;
+        if (accessKind !== 'all' && it.k !== accessKind) return false;
+        if (!q) return true;
+        const hay = [it.s, it.l, it.p, it.i, it.n, it.g, it.blockTitle].join(' ').toLowerCase();
+        return hay.indexOf(q) >= 0;
     });
-    return set;
+}
+
+function accessEl(tag, cls, text) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined && text !== null) n.textContent = text;
+    return n;
 }
 
 function accessChip(label, active, onclick) {
-    const b = document.createElement('button');
-    b.className = 'chip-btn' + (active ? ' on' : '');
-    b.textContent = label;
+    const b = accessEl('button', 'chip-btn' + (active ? ' on' : ''), label);
     b.onclick = onclick;
     return b;
 }
 
-function renderAccessFilters() {
-    const blocksEl = document.getElementById('access-blocks');
-    const kindsEl = document.getElementById('access-kinds');
-    if (!blocksEl || !kindsEl) return;
-
-    blocksEl.innerHTML = '';
-    blocksEl.appendChild(accessChip('Все', accessBlock === 'all', function () {
-        accessBlock = 'all';
-        renderAccess();
-    }));
+function renderAccessBlocks() {
+    const list = document.getElementById('access-block-list');
+    if (!list) return;
+    list.innerHTML = '';
     (credentialsData.blocks || []).forEach(function (b) {
-        const n = (b.items || []).length;
-        blocksEl.appendChild(accessChip(b.title + ' · ' + n, accessBlock === b.id, function () {
+        const btn = accessEl('button', 'row');
+        const main = accessEl('span', 'row-main');
+        main.appendChild(accessEl('span', 'row-title', b.title));
+        btn.appendChild(main);
+        btn.appendChild(accessEl('span', 'row-count', String((b.items || []).length)));
+        const chev = accessEl('span', 'chev');
+        chev.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>';
+        btn.appendChild(chev);
+        btn.onclick = function () {
             accessBlock = b.id;
+            accessKind = 'all';
             renderAccess();
-        }));
+        };
+        list.appendChild(btn);
     });
+}
 
-    kindsEl.innerHTML = '';
-    const kinds = accessKinds();
+function renderAccessFilters() {
+    const el = document.getElementById('access-kinds');
+    if (!el) return;
+    el.innerHTML = '';
+
+    const pool = accessAllItems().filter(function (it) {
+        return accessBlock === null || it.block === accessBlock;
+    });
+    const kinds = [];
+    pool.forEach(function (it) {
+        if (kinds.indexOf(it.k) < 0) kinds.push(it.k);
+    });
     if (kinds.length < 2) return;
-    kindsEl.appendChild(accessChip('Все типы', accessKind === 'all', function () {
+
+    el.appendChild(accessChip('Все типы', accessKind === 'all', function () {
         accessKind = 'all';
         renderAccess();
     }));
     kinds.forEach(function (k) {
-        kindsEl.appendChild(accessChip(k, accessKind === k, function () {
+        el.appendChild(accessChip(k, accessKind === k, function () {
             accessKind = k;
             renderAccess();
         }));
     });
 }
 
-function accessCard(it) {
-    const card = document.createElement('div');
-    card.className = 'cred';
+function accessRow(it, showBlock) {
+    const btn = accessEl('button', 'acc-row');
 
-    const top = document.createElement('div');
-    top.className = 'cred-top';
-    const sys = document.createElement('span');
-    sys.className = 'cred-sys';
-    sys.textContent = it.s || 'Без названия';
-    const kind = document.createElement('span');
-    kind.className = 'cred-kind';
-    kind.textContent = it.k;
-    top.appendChild(sys);
-    top.appendChild(kind);
-    card.appendChild(top);
+    const top = accessEl('span', 'acc-top');
+    top.appendChild(accessEl('span', 'acc-sys', it.s || '—'));
+    top.appendChild(accessEl('span', 'acc-type', it.k));
+    btn.appendChild(top);
 
-    function line(label, value, copyable) {
-        const row = document.createElement('div');
-        row.className = 'cred-line';
-        const k = document.createElement('span');
-        k.className = 'cred-k';
-        k.textContent = label;
-        row.appendChild(k);
-        if (copyable) {
-            const b = document.createElement('button');
-            b.className = 'cred-v cred-copy';
-            b.textContent = value;
-            b.onclick = function () { copyCred(value); };
-            row.appendChild(b);
-        } else {
-            const v = document.createElement('span');
-            v.className = 'cred-v';
-            v.textContent = value;
-            row.appendChild(v);
-        }
-        return row;
+    const creds = accessEl('span', 'acc-creds');
+    creds.appendChild(accessEl('span', 'acc-login', it.l || '—'));
+    creds.appendChild(accessEl('span', 'acc-pass', it.p || '—'));
+    btn.appendChild(creds);
+
+    const meta = [showBlock ? it.blockTitle : '', it.i, it.g].filter(Boolean).join(' · ');
+    if (meta) btn.appendChild(accessEl('span', 'acc-meta', meta));
+
+    if (it.p) {
+        btn.onclick = function () { copyCred(it.p); };
     }
-
-    card.appendChild(line('Логин', it.l || '—', !!it.l));
-    card.appendChild(line('Пароль', it.p || '—', !!it.p));
-    if (it.i) card.appendChild(line('IP', it.i, true));
-
-    const meta = [it.g, it.n].filter(Boolean).join(' · ');
-    if (meta) {
-        const note = document.createElement('div');
-        note.className = 'cred-note';
-        note.textContent = meta;
-        card.appendChild(note);
-    }
-    return card;
+    return btn;
 }
 
-function copyCred(text) {
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(function () { alert('Скопировано: ' + text); });
-    } else {
-        alert('Буфер обмена недоступен');
+function accessAccount(it) {
+    const btn = accessEl('button', 'acc-item');
+    btn.appendChild(accessEl('span', 'acc-login', it.l || '—'));
+    btn.appendChild(accessEl('span', 'acc-pass', it.p || '—'));
+
+    const meta = [it.i, it.g, it.n].filter(Boolean).join(' · ');
+    if (meta) btn.appendChild(accessEl('span', 'acc-meta', meta));
+
+    if (it.p) {
+        btn.onclick = function () { copyCred(it.p); };
     }
+    return btn;
+}
+
+function accessGrouped(items) {
+    const map = new Map();
+    items.forEach(function (it) {
+        const key = it.block + '|' + it.s;
+        if (!map.has(key)) {
+            map.set(key, { system: it.s, blockTitle: it.blockTitle, kinds: [], accounts: [] });
+        }
+        const g = map.get(key);
+        if (g.kinds.indexOf(it.k) < 0) g.kinds.push(it.k);
+        g.accounts.push(it);
+    });
+    return Array.from(map.values());
+}
+
+function accessGroup(g) {
+    const wrap = accessEl('div', 'acc-group');
+
+    const head = accessEl('div', 'acc-group-head');
+    head.appendChild(accessEl('span', 'acc-sys', g.system || '—'));
+    head.appendChild(accessEl('span', 'acc-type', g.kinds.join(' · ')));
+    wrap.appendChild(head);
+
+    g.accounts.forEach(function (it) {
+        wrap.appendChild(accessAccount(it));
+    });
+    return wrap;
+}
+
+function renderAccessRows(q) {
+    const rowsEl = document.getElementById('access-rows');
+    const titleEl = document.getElementById('access-title');
+    if (!rowsEl) return;
+
+    const block = accessBlock === null ? null : (credentialsData.blocks || []).filter(function (b) {
+        return b.id === accessBlock;
+    })[0];
+    if (titleEl) titleEl.textContent = q ? 'результаты поиска' : (block ? block.title : '');
+
+    renderAccessFilters();
+
+    const items = accessFiltered(q);
+    rowsEl.innerHTML = '';
+    if (!items.length) {
+        const e = accessEl('div', 'duty-empty', 'Ничего не найдено');
+        e.style.padding = '20px 0';
+        rowsEl.appendChild(e);
+        return;
+    }
+    if (q) {
+        items.forEach(function (it) {
+            rowsEl.appendChild(accessRow(it, true));
+        });
+    } else {
+        accessGrouped(items).forEach(function (g) {
+            rowsEl.appendChild(accessGroup(g));
+        });
+    }
+}
+
+function renderAccess() {
+    const input = document.getElementById('access-search');
+    const q = (input ? input.value : '').trim().toLowerCase();
+    if (q) accessBlock = null;
+
+    const blocksScreen = document.getElementById('access-blocks-screen');
+    const listScreen = document.getElementById('access-list-screen');
+    if (!blocksScreen || !listScreen) return;
+
+    const showBlocks = !q && accessBlock === null;
+    blocksScreen.classList.toggle('hidden', !showBlocks);
+    listScreen.classList.toggle('hidden', showBlocks);
+
+    if (showBlocks) renderAccessBlocks();
+    else renderAccessRows(q);
+
+    const countEl = document.getElementById('access-count');
+    if (countEl) {
+        const total = accessAllItems().length;
+        const shown = accessFiltered(q).length;
+        countEl.textContent = (q || accessBlock !== null || accessKind !== 'all')
+            ? 'Найдено: ' + shown + ' из ' + total
+            : 'Всего записей: ' + total + ' · сверено ' + (credentialsData.updated || '');
+    }
+}
+
+function accessBack() {
+    accessBlock = null;
+    accessKind = 'all';
+    renderAccess();
 }
 
 function clearAccessSearch() {
     const el = document.getElementById('access-search');
     if (el) el.value = '';
-    accessQuery = '';
+    accessBlock = null;
+    accessKind = 'all';
     renderAccess();
 }
 
-function renderAccess() {
-    renderAccessFilters();
+function showCopyToast(text) {
+    const t = document.getElementById('copy-toast');
+    if (!t) return;
+    t.textContent = text;
+    t.classList.add('show');
+    clearTimeout(copyToastTimer);
+    copyToastTimer = setTimeout(function () { t.classList.remove('show'); }, 1500);
+}
 
-    const listEl = document.getElementById('access-list');
-    const countEl = document.getElementById('access-count');
-    if (!listEl) return;
-
-    const searchEl = document.getElementById('access-search');
-    if (searchEl) accessQuery = searchEl.value || '';
-
-    const q = accessQuery.trim().toLowerCase();
-    const items = accessAllItems().filter(function (it) {
-        if (accessBlock !== 'all' && it.block !== accessBlock) return false;
-        if (accessKind !== 'all' && it.k !== accessKind) return false;
-        if (!q) return true;
-        const hay = [it.s, it.l, it.p, it.i, it.n, it.g, it.blockTitle].join(' ').toLowerCase();
-        return hay.indexOf(q) >= 0;
-    });
-
-    listEl.innerHTML = '';
-    let lastBlock = null;
-    items.forEach(function (it) {
-        if (accessBlock === 'all' && it.block !== lastBlock) {
-            const h = document.createElement('div');
-            h.className = 'group-label';
-            h.textContent = it.blockTitle;
-            listEl.appendChild(h);
-            lastBlock = it.block;
-        }
-        listEl.appendChild(accessCard(it));
-    });
-
-    if (!items.length) {
-        const e = document.createElement('div');
-        e.className = 'duty-empty';
-        e.style.padding = '20px 0';
-        e.textContent = 'Ничего не найдено';
-        listEl.appendChild(e);
-    }
-
-    if (countEl) {
-        const filtered = q || accessBlock !== 'all' || accessKind !== 'all';
-        countEl.textContent = filtered
-            ? 'Найдено: ' + items.length + ' из ' + accessAllItems().length
-            : 'Всего записей: ' + items.length + ' · сверено ' + (credentialsData.updated || '');
+function copyCred(text) {
+    if (!text) return;
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () {
+            showCopyToast('Пароль скопирован');
+        }).catch(function () {
+            showCopyToast('Не удалось скопировать');
+        });
+    } else {
+        showCopyToast('Буфер обмена недоступен');
     }
 }
 

@@ -443,22 +443,32 @@
             <div class="scale"></div>
         </div>
 
-                <div class="search-box">
+        <div class="search-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg>
-            <input id="access-search" class="search-input" placeholder="Система, логин, IP, блок" autocomplete="off" spellcheck="false" oninput="renderAccess()">
+            <input id="access-search" class="search-input" placeholder="Система, логин, пароль, IP" autocomplete="off" spellcheck="false" oninput="renderAccess()">
             <button class="search-clear" onclick="clearAccessSearch()" aria-label="Очистить">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
             </button>
         </div>
 
-        <div class="chips-row" id="access-blocks"></div>
-        <div class="chips-row" id="access-kinds"></div>
+        <div id="access-blocks-screen">
+            <div id="access-block-list" class="stack"></div>
+        </div>
 
-        <div class="hint" id="access-count" style="padding:2px 4px 8px"></div>
+        <div id="access-list-screen" class="hidden">
+            <div class="access-topbar">
+                <button class="ghost-btn" onclick="accessBack()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg>
+                    Блоки
+                </button>
+                <span class="access-title" id="access-title"></span>
+            </div>
+            <div class="chips-row" id="access-kinds"></div>
+            <div id="access-rows"></div>
+        </div>
 
-        <div id="access-list" class="stack"></div>
-
-<div class="hint">Раздел содержит служебные пароли. Не передавайте их за пределы подразделения.</div>
+        <div class="hint" id="access-count"></div>
+        <div class="hint">Служебные пароли. Не передавайте за пределы подразделения. Тап по строке копирует пароль.</div>
     </section>
 
     <!-- ================= ПОМОЩЬ ================= -->
@@ -503,7 +513,7 @@
             </a>
         </div>
 
-        <div class="version">Версия <span id="app-version">V95</span></div>
+        <div class="version">Версия <span id="app-version">V96</span></div>
     </section>
 </main>
 
@@ -618,5 +628,6 @@
 <script src="app.js"></script>
 <script src="dock.js"></script>
 <script src="hero.js"></script>
+<div class="copy-toast" id="copy-toast"></div>
 </body>
 </html>
