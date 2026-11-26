@@ -203,7 +203,7 @@ function switchTab(index) {
 
     if (window.dockSync) window.dockSync(index);
 
-    if(index === 0) { updateOnDutyWidget(); updateCurrentDateDisplay(); updateSalaryWidget(); updateDutyClock(); }
+    if(index === 0) { updateOnDutyWidget(); updateCurrentDateDisplay(); updateSalaryWidget(); }
     if(index === 1) {
         renderSchedule(document.getElementById('month-selector').value);
     }
@@ -282,15 +282,6 @@ function getNowKrasnoyarsk() {
     return new Date(utc + (3600000 * 7));
 }
 
-function updateDutyClock() {
-    const el = document.getElementById('duty-clock');
-    if (!el) return;
-    const now = getNowKrasnoyarsk();
-    const hh = String(now.getHours()).padStart(2, '0');
-    const mm = String(now.getMinutes()).padStart(2, '0');
-    el.textContent = `${hh}:${mm} Крск`;
-}
-
 function updateOnDutyWidget() {
     const dutyList = document.getElementById('duty-list');
     if (!dutyList) return;
@@ -306,7 +297,7 @@ function updateOnDutyWidget() {
     const monthData = scheduleData[monthName];
     
     if (!monthData) {
-        dutyList.innerHTML = '<div class="duty-empty">Нет данных за этот месяц</div>';
+        dutyList.innerHTML = '<span class="duty-empty">нет данных</span>';
         return;
     }
 
@@ -370,22 +361,18 @@ function updateOnDutyWidget() {
     });
 
     if (dayShiftNames.length === 0 && nightShiftNames.length === 0 && upcomingDayNames.length === 0 && upcomingNightNames.length === 0) {
-        dutyList.innerHTML = '<div class="duty-empty">Никого нет на смене</div>';
+        dutyList.innerHTML = '<span class="duty-empty">никого</span>';
         return;
     }
 
-    const group = (label, names, kind) => `
-        <div class="duty-group">
-            <div class="duty-group-label"><i class="tick ${kind}"></i>${label}</div>
-            <div class="duty-names">${names.join(', ')}</div>
-        </div>`;
+    const item = (label, names, kind) => `
+        <span class="duty-item"><i class="tick ${kind}"></i><b>${label}</b><span>${names.join(', ')}</span></span>`;
 
-    let html = '<div class="duty-groups">';
-    if (dayShiftNames.length > 0) html += group('День', dayShiftNames, '');
-    if (nightShiftNames.length > 0) html += group('Ночь', nightShiftNames, 'night');
-    if (upcomingDayNames.length > 0) html += group('День, скоро', upcomingDayNames, 'soon');
-    if (upcomingNightNames.length > 0) html += group('Ночь, скоро', upcomingNightNames, 'night soon');
-    html += '</div>';
+    let html = '';
+    if (dayShiftNames.length > 0) html += item('День', dayShiftNames, '');
+    if (nightShiftNames.length > 0) html += item('Ночь', nightShiftNames, 'night');
+    if (upcomingDayNames.length > 0) html += item('День, скоро', upcomingDayNames, 'soon');
+    if (upcomingNightNames.length > 0) html += item('Ночь, скоро', upcomingNightNames, 'night soon');
     dutyList.innerHTML = html;
 }
 
@@ -1490,8 +1477,6 @@ window.onload = () => {
     updateCurrentDateDisplay();
     updateOnDutyWidget();
     updateSalaryWidget();
-    updateDutyClock();
-    setInterval(updateDutyClock, 30000);
     updateVersionNumber();
     startWeatherUpdates();
     

@@ -26,9 +26,12 @@
 
 <!-- ВЕРХНЯЯ ПАНЕЛЬ -->
 <header class="topbar">
-    <div class="topbar-brand">
-        <span class="brand-name">ЦТАИ</span>
-        <span class="brand-sub">АСУ ТП</span>
+    <div class="topbar-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" class="mark-sm">
+            <rect x="1.75" y="1.75" width="28.5" height="28.5" rx="9" stroke="currentColor" stroke-opacity=".3" stroke-width="1.5"/>
+            <path d="M7 20.5h4l3-9 4 13 3-4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-sub">ЦТАИ · АСУ ТП</span>
     </div>
     <button class="icon-btn" id="theme-icon" onclick="toggleTheme()" aria-label="Переключить тему">
         <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -46,19 +49,24 @@
     <!-- ================= ГЛАВНАЯ ================= -->
     <section id="tab-home" class="tab-content active">
 
-        <div class="home-head">
-            <div class="home-date" id="current-date-display"></div>
-            <div class="home-weather" id="weather-widget"></div>
+        <div class="hero">
+            <div class="hero-mark">
+                <svg viewBox="0 0 32 32" fill="none">
+                    <rect x="1.75" y="1.75" width="28.5" height="28.5" rx="9" stroke="currentColor" stroke-opacity=".28" stroke-width="1.5"/>
+                    <path d="M7 20.5h4l3-9 4 13 3-4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h1 class="hero-title">ЦТАИ <span>АСУ ТП</span></h1>
+            <p class="hero-sub">Информационная панель подразделения</p>
+            <p class="hero-date" id="current-date-display"></p>
+            <p class="hero-weather" id="weather-widget"></p>
             <div class="metrics" id="salary-widget"></div>
         </div>
 
-        <div class="card duty" id="on-duty-container">
-            <div class="duty-head">
-                <span class="dot-live"></span>
-                <span class="duty-title">На смене</span>
-                <span class="duty-time" id="duty-clock"></span>
-            </div>
-            <div id="duty-list"></div>
+        <div class="duty" id="on-duty-container">
+            <span class="dot-live"></span>
+            <span class="duty-title">На смене</span>
+            <div id="duty-list" class="duty-list"></div>
         </div>
 
                 <div class="group-label">Энергоблоки</div>
@@ -466,7 +474,7 @@
             </a>
         </div>
 
-        <div class="version">Версия <span id="app-version">V89</span></div>
+        <div class="version">Версия <span id="app-version">V90</span></div>
     </section>
 </main>
 
